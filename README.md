@@ -46,7 +46,8 @@ keeps the switcher honest instead of producing dead links.
 cd backend
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-python -m app.seed        # creates fyi.db (SQLite) and seeds 3 brands + sample articles
+python -m app.seed        # creates fyi.db (SQLite) and seeds the 3 brands
+python -m app.ingest_news --all-brands   # populates the feed with real news
 uvicorn app.main:app --reload
 ```
 
@@ -74,7 +75,8 @@ the theme/content actually change.
 docker compose up --build
 ```//
 Then run `python -m app.seed` once against that Postgres instance (or add
-a one-off seed step to the compose file) to populate the three brands.
+a one-off seed step to the compose file) to populate the three brands, and
+`python -m app.ingest_news --all-brands` to populate the feed.
 
 ## Deploying to the real domains
 
@@ -101,7 +103,8 @@ backend/
     models.py       Brand + Article tables (one shared schema, brand_id column)
     deps.py         resolve_brand() — the multi-tenant resolution logic
     routers/        /api/brands, /api/articles — both brand-scoped
-    seed.py         populates the 3 brands + sample articles
+    seed.py         populates the 3 brands
+    ingest_news.py  populates the feed with real, current news per topic
 frontend/
   middleware.ts     Host header -> brand slug, on every request
   lib/api.ts        server-side fetch helper that forwards the brand header

@@ -1,7 +1,14 @@
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import { getArticle } from "../../lib/api";
+import { getArticle, getArticles } from "../../lib/api";
 import { categoryColor } from "../../lib/colors";
+import ShareButtons from "../../components/ShareButtons";
+import ArticleList from "../../components/ArticleList";
+
+function readingTime(bodyMd: string): number {
+  const words = bodyMd.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
 
 export default async function ArticlePage({
   params,
@@ -10,6 +17,10 @@ export default async function ArticlePage({
 }) {
   const { slug } = await params;
   const article = await getArticle(slug);
+
+  const related = article.category
+    ? (await getArticles(article.category)).filter((a) => a.slug !== slug).slice(0, 4)
+    : [];
 
   return (
     <article>
@@ -33,12 +44,22 @@ export default async function ArticlePage({
             day: "numeric",
             year: "numeric",
           })}
+          {" · "}
+          {readingTime(article.body_md)} min read
         </div>
+        <ShareButtons title={article.title} />
       </div>
 
       <div className="article-body">
         <ReactMarkdown>{article.body_md}</ReactMarkdown>
       </div>
+
+      {related.length > 0 && (
+        <div className="related-section">
+          <p className="section-label">More in {article.category}</p>
+          <ArticleList articles={related} emptyMessage="" />
+        </div>
+      )}
     </article>
   );
 }

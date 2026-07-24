@@ -9,7 +9,7 @@ export default async function HomePage() {
       <p className="section-label">Latest</p>
       <ArticleList
         articles={articles}
-        emptyMessage="No articles yet — run the seed script, or publish your first post."
+        emptyMessage="No articles yet — run `python -m app.ingest_news --all-brands` to populate the feed."
       />
     </>
   );

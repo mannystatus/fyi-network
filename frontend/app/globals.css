@@ -339,6 +339,54 @@ main {
   color: var(--blue);
 }
 
+.share-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.share-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--comment);
+  margin-right: 2px;
+}
+
+.share-buttons button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--comment);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+  font-family: inherit;
+}
+
+.share-buttons button:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.share-buttons .share-copy {
+  width: auto;
+  border-radius: 20px;
+  padding: 0 14px;
+  font-size: 12px;
+}
+
+.related-section {
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
 footer {
   max-width: 700px;
   margin-top: 8px;
