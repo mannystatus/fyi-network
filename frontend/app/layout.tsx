@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Script from "next/script";
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
@@ -10,6 +11,14 @@ import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
 import CookieBanner from "../components/CookieBanner";
 import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID } from "../lib/analytics";
+
+// A plain <meta> tag has no JS dependency, unlike next/script's adsbygoogle
+// loader (which Next only ever injects client-side, even with
+// strategy="beforeInteractive") — AdSense's non-JS-executing verifier can
+// only find this one.
+export const metadata: Metadata = {
+  other: { "google-adsense-account": ADSENSE_CLIENT_ID },
+};
 
 export default async function RootLayout({
   children,
