@@ -10,7 +10,7 @@ name: Ingest news
 
 on:
   schedule:
-    - cron: "0 13 * * *" # daily at 13:00 UTC
+    - cron: "17 13 * * *" # daily at 13:17 UTC — offset from :00 since GitHub's most congested/delayed slot is the top of the hour
   workflow_dispatch: {} # lets you trigger a run manually from the Actions tab
 
 jobs:
