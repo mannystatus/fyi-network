@@ -7,6 +7,7 @@ import { categoryColor } from "../../lib/colors";
 import ShareButtons from "../../components/ShareButtons";
 import ArticleList from "../../components/ArticleList";
 import AdSlot from "../../components/AdSlot";
+import FlyNowCrossPromo from "../../components/FlyNowCrossPromo";
 import { AD_SLOTS } from "../../lib/analytics";
 
 function readingTime(bodyMd: string): number {
@@ -112,6 +113,8 @@ export default async function ArticlePage({
       </div>
 
       <AdSlot slot={AD_SLOTS.inArticle} />
+
+      {brand.slug === "fyimac" && <FlyNowCrossPromo />}
 
       {related.length > 0 && (
         <div className="related-section">
