@@ -1,9 +1,9 @@
 :root {
-  --bg: #1a1b26;
-  --bg-alt: #16161e;
-  --border: #2a2e42;
-  --fg: #c0caf5;
-  --comment: #565f89;
+  --bg: #1c1e2e;
+  --bg-alt: #191b28;
+  --border: #333856;
+  --fg: #d3dbfa;
+  --comment: #838dc0;
   --red: #f7768e;
   --yellow: #e0af68;
   --green: #9ece6a;
@@ -134,17 +134,26 @@ a {
 }
 
 .topic-pill {
+  --pill-color: var(--comment);
   font-size: 12px;
-  color: var(--comment);
+  font-weight: 500;
+  color: var(--pill-color);
   text-decoration: none;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--pill-color) 45%, transparent);
   border-radius: 20px;
   padding: 5px 14px;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
 
 .topic-pill:hover {
+  border-color: var(--pill-color);
+  background: color-mix(in srgb, var(--pill-color) 12%, transparent);
+}
+
+.topic-pill[data-active="true"] {
   color: var(--fg);
-  border-color: var(--comment);
+  border-color: var(--pill-color);
+  background: color-mix(in srgb, var(--pill-color) 22%, transparent);
 }
 
 main {
@@ -168,19 +177,33 @@ main {
   border-radius: 10px;
   padding: 20px 22px;
   margin-bottom: 14px;
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .article-card:hover {
   border-color: var(--comment);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  transform: translateY(-1px);
 }
 
 .category {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11px;
   color: var(--blue);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.category::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
 }
 
 .article-card .category {
@@ -510,8 +533,7 @@ footer {
 }
 
 #site.theme-win .article-card .category {
-  color: var(--blue);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 #site.theme-win .section-label,
@@ -624,8 +646,7 @@ footer {
 }
 
 #site.theme-google .article-card .category {
-  color: var(--blue);
-  font-weight: 500;
+  font-weight: 700;
 }
 
 #site.theme-google .section-label,

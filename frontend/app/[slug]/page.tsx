@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { getArticle } from "../../lib/api";
+import { categoryColor } from "../../lib/colors";
 
 export default async function ArticlePage({
   params,
@@ -17,7 +18,11 @@ export default async function ArticlePage({
       </p>
 
       <div className="article-header">
-        {article.category && <span className="category">{article.category}</span>}
+        {article.category && (
+          <span className="category" style={{ color: categoryColor(article.category) }}>
+            {article.category}
+          </span>
+        )}
         <h1 className="article-title">{article.title}</h1>
         {article.dek && <p className="article-dek">{article.dek}</p>}
         <div className="article-meta">

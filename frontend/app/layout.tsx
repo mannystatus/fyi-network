@@ -1,7 +1,7 @@
-import Link from "next/link";
 import "./globals.css";
 import { getCurrentBrand, getAllBrands } from "../lib/api";
 import DomainSwitcher from "../components/DomainSwitcher";
+import TopicsNav from "../components/TopicsNav";
 
 export default async function RootLayout({
   children,
@@ -91,18 +91,7 @@ export default async function RootLayout({
               <DomainSwitcher brands={brands} currentSlug={brand.slug} />
             </div>
 
-            {brand.topics.length > 0 && (
-              <nav className="topics-nav">
-                <Link href="/" className="topic-pill">
-                  All
-                </Link>
-                {brand.topics.map((topic) => (
-                  <Link key={topic} href={`/topics/${encodeURIComponent(topic)}`} className="topic-pill">
-                    {topic}
-                  </Link>
-                ))}
-              </nav>
-            )}
+            {brand.topics.length > 0 && <TopicsNav topics={brand.topics} />}
 
             <main>{children}</main>
 
