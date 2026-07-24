@@ -41,7 +41,12 @@ export type ArticleDetail = ArticleListItem & { body_md: string };
 
 export const getCurrentBrand = (): Promise<Brand> => apiFetch("/api/brands/current");
 export const getAllBrands = (): Promise<Brand[]> => apiFetch("/api/brands");
-export const getArticles = (category?: string): Promise<ArticleListItem[]> =>
-  apiFetch(category ? `/api/articles?category=${encodeURIComponent(category)}` : "/api/articles");
+export const getArticles = (category?: string, limit?: number): Promise<ArticleListItem[]> => {
+  const params = new URLSearchParams();
+  if (category) params.set("category", category);
+  if (limit) params.set("limit", String(limit));
+  const qs = params.toString();
+  return apiFetch(qs ? `/api/articles?${qs}` : "/api/articles");
+};
 export const getArticle = (slug: string): Promise<ArticleDetail> =>
   apiFetch(`/api/articles/${slug}`);
