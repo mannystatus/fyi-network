@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { getCurrentBrand, getAllBrands } from "../lib/api";
 import DomainSwitcher from "../components/DomainSwitcher";
@@ -8,7 +8,7 @@ import TopicsNav from "../components/TopicsNav";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
 import CookieBanner from "../components/CookieBanner";
-import { GTM_IDS } from "../lib/gtm";
+import { GTM_IDS, GA_IDS } from "../lib/analytics";
 
 export default async function RootLayout({
   children,
@@ -22,10 +22,12 @@ export default async function RootLayout({
   const htmlThemeProps = themeCookie === "light" || themeCookie === "dark" ? { "data-theme": themeCookie } : {};
   const cookieConsented = cookieStore.get("cookie-consent")?.value === "accepted";
   const gtmId = GTM_IDS[brand.slug];
+  const gaId = GA_IDS[brand.slug];
 
   return (
     <html lang="en" {...htmlThemeProps}>
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
+      {gaId && <GoogleAnalytics gaId={gaId} />}
       <body style={{ "--accent": brand.accent_color } as React.CSSProperties}>
         <div className={`browser-frame theme-${brand.icon}`}>
           {brand.icon === "mac" && (
