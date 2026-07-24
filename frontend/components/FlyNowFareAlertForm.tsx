@@ -1,10 +1,12 @@
-"use client";
-
+// No fare-alert backend exists yet — inputs are disabled rather than
+// accepting a submission that would silently go nowhere.
 export default function FlyNowFareAlertForm() {
   return (
-    <form className="hero-form" onSubmit={(e) => e.preventDefault()}>
-      <input type="email" placeholder="you@email.com" required />
-      <button type="submit">Get Fare Alerts</button>
+    <form className="hero-form">
+      <input type="email" placeholder="you@email.com" disabled />
+      <button type="button" disabled>
+        Coming Soon
+      </button>
     </form>
   );
 }

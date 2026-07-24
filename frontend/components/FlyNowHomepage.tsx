@@ -1,6 +1,11 @@
+import Link from "next/link";
 import type { Brand } from "../lib/api";
+import { getArticles } from "../lib/api";
+import { categoryColor } from "../lib/colors";
 import DomainSwitcher from "./DomainSwitcher";
 import FlyNowFareAlertForm from "./FlyNowFareAlertForm";
+
+const BLOG_POST_COUNT = 6;
 
 const DEALS = [
   {
@@ -100,7 +105,9 @@ function LogoFlaps({ big = false }: { big?: boolean }) {
   );
 }
 
-export default function FlyNowHomepage({ brands, currentSlug }: { brands: Brand[]; currentSlug: string }) {
+export default async function FlyNowHomepage({ brands, currentSlug }: { brands: Brand[]; currentSlug: string }) {
+  const posts = (await getArticles()).slice(0, BLOG_POST_COUNT);
+
   return (
     <div className="flynow-homepage">
       <style>{`
@@ -270,47 +277,122 @@ export default function FlyNowHomepage({ brands, currentSlug }: { brands: Brand[
     .flynow-homepage .footer-col a { display:block; font-size:13px; color:#b7c3de; text-decoration:none; margin-bottom:10px; }
     .flynow-homepage .footer-col a:hover { color:#fff; }
     .flynow-homepage .footer-bottom { margin-top:48px; padding-top:24px; border-top:1px solid #16264d; display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; color:var(--text-dimmer); letter-spacing:.03em; }
+
+    /* ---------- BLOG (real posts — the first thing on the page) ---------- */
+    .flynow-homepage .blog-section { padding-top: 64px; }
+    .flynow-homepage .blog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    @media (max-width:880px){ .flynow-homepage .blog-grid{ grid-template-columns:1fr 1fr; } }
+    @media (max-width:600px){ .flynow-homepage .blog-grid{ grid-template-columns:1fr; } }
+    .flynow-homepage .blog-card {
+      display:block; text-decoration:none;
+      background:var(--navy2); border:1px solid var(--line); border-radius:10px; padding:22px;
+      transition:border-color .15s, transform .15s;
+    }
+    .flynow-homepage .blog-card:hover { border-color:var(--coral); transform:translateY(-2px); }
+    .flynow-homepage .blog-category { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:10px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:10px; display:inline-block; }
+    .flynow-homepage .blog-title { font-family: var(--font-flynow-display), 'Archivo Black', sans-serif; font-weight:400; font-size:16px; color:#fff; line-height:1.35; margin-bottom:10px; }
+    .flynow-homepage .blog-dek { font-size:13px; color:var(--text-dim); line-height:1.6; font-weight:300; margin-bottom:16px; }
+    .flynow-homepage .blog-meta { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; color:var(--text-dimmer); }
+    .flynow-homepage .blog-empty { color:var(--text-dim); font-size:14px; }
+
+    /* ---------- "coming soon" states for the not-yet-real fare-alert feature ---------- */
+    .flynow-homepage .coming-soon-pill {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; font-weight:500;
+      color:var(--amber); border:1px solid var(--amber); padding:9px 18px; border-radius:24px;
+      letter-spacing:.04em; white-space:nowrap; text-decoration:none;
+    }
+    .flynow-homepage .hero-form input:disabled,
+    .flynow-homepage .hero-form button:disabled {
+      opacity:.55; cursor:not-allowed;
+    }
+    .flynow-homepage .hero-form button:disabled {
+      background:var(--navy2); color:var(--text-dim); border:1px solid var(--line);
+    }
       `}</style>
 
       <header className="site-nav">
         <div className="nav-inner">
           <LogoFlaps />
           <nav className="links">
+            <a href="#blog">Blog</a>
             <a href="#deals">Today&apos;s Deals</a>
             <a href="#how">How It Works</a>
             <a href="#">Destinations</a>
             <a href="#subscribe">Subscribe</a>
           </nav>
           <DomainSwitcher brands={brands} currentSlug={currentSlug} />
-          <a className="nav-cta" href="#subscribe">
-            Get Fare Alerts
+          <a className="coming-soon-pill" href="#subscribe">
+            <span className="pulse-dot" />
+            Fare Alerts: Coming Soon
           </a>
         </div>
       </header>
+
+      <section className="section blog-section" id="blog">
+        <div className="wrap">
+          <div className="section-head">The fyiFlyNow Blog</div>
+          <h2>Travel tips, hacks &amp; real fares</h2>
+          <p className="desc">
+            Real coverage from real publishers — airline news, fare-booking tips, and travel hacks, updated
+            daily. (Live fare alerts are still on the way — see below.)
+          </p>
+
+          {posts.length > 0 ? (
+            <div className="blog-grid">
+              {posts.map((post) => (
+                <Link className="blog-card" href={`/${post.slug}`} key={post.slug}>
+                  {post.category && (
+                    <span className="blog-category" style={{ color: categoryColor(post.category) }}>
+                      {post.category}
+                    </span>
+                  )}
+                  <div className="blog-title">{post.title}</div>
+                  {post.dek && <p className="blog-dek">{post.dek}</p>}
+                  <div className="blog-meta">
+                    {post.author}
+                    {post.author && " · "}
+                    {new Date(post.published_at).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="blog-empty">
+              No posts yet — run `python -m app.ingest_news --brand fyiflynow` to populate the blog.
+            </p>
+          )}
+        </div>
+      </section>
 
       <section className="hero">
         <div className="wrap hero-grid">
           <div>
             <div className="hero-kicker">
               <span className="pulse-dot" />
-              Now Boarding · Live Fare Tracking
+              Now Boarding · Fare Tracking Coming Soon
             </div>
             <LogoFlaps big />
             <h1>
-              We watch fares across hundreds of routes, <span className="accent">so you don&apos;t have to.</span>
+              We&apos;ll watch fares across hundreds of routes, <span className="accent">so you don&apos;t have to.</span>
             </h1>
             <p className="lede">
-              The moment a fare falls through the floor, you&apos;ll know — before the airlines notice and pull it
-              back. No spam, just the drops worth booking.
+              Live fare tracking is on the way — the moment a fare falls through the floor, you&apos;ll know, before
+              the airlines notice and pull it back. Until then, real travel deals and tips are already live in the
+              blog above.
             </p>
             <FlyNowFareAlertForm />
-            <div className="hero-microcopy">Free forever · Unsubscribe anytime · ~3 alerts a week</div>
+            <div className="hero-microcopy">Not live yet — check back soon, or read the blog above in the meantime.</div>
           </div>
 
           <div className="board-card">
             <div className="board-title">
               <span>Departure Board</span>
-              <span>Live</span>
+              <span>Preview</span>
             </div>
             {BOARD_ROWS.map((row) => {
               const [from, to] = row.route.split(" → ");
@@ -351,9 +433,12 @@ export default function FlyNowHomepage({ brands, currentSlug }: { brands: Brand[
 
       <section className="section" id="deals">
         <div className="wrap">
-          <div className="section-head">Today&apos;s Board</div>
+          <div className="section-head">Preview · Coming Soon</div>
           <h2>Fares worth booking</h2>
-          <p className="desc">Pulled straight off the board — updated as they drop. Book fast; the good ones don&apos;t last.</p>
+          <p className="desc">
+            A preview of what the live board will look like once fare tracking launches — these example fares
+            aren&apos;t bookable yet.
+          </p>
 
           <div className="deal-grid">
             {DEALS.map((deal) => (
@@ -401,8 +486,8 @@ export default function FlyNowHomepage({ brands, currentSlug }: { brands: Brand[
 
       <div className="cta-band" id="subscribe">
         <div className="wrap">
-          <h2>Never miss a fare drop</h2>
-          <p>Join the board — free fare alerts, straight to your inbox, about 3 times a week.</p>
+          <h2>Fare alerts: coming soon</h2>
+          <p>We&apos;re building free, real-time fare alerts. In the meantime, the blog above has real travel deals and tips.</p>
           <FlyNowFareAlertForm />
         </div>
       </div>
@@ -420,6 +505,7 @@ export default function FlyNowHomepage({ brands, currentSlug }: { brands: Brand[
           <div className="footer-cols">
             <div className="footer-col">
               <h4>Site</h4>
+              <a href="#blog">Blog</a>
               <a href="#deals">Today&apos;s Deals</a>
               <a href="#how">How It Works</a>
               <a href="#">Destinations</a>
