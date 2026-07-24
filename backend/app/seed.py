@@ -13,21 +13,21 @@ db = SessionLocal()
 BRANDS = [
     dict(
         slug="fyimac", name="fyiMac", domain="fyimac.com",
-        accent_color="#e8e8ed", icon="mac",
+        accent_color="#0071e3", icon="mac",  # Apple's own site blue — reads well in light and dark
         tagline="Apple news. Decoded daily.",
-        topics="Mac,iPhone,iPad,Apple Watch,Services",
+        topics="Mac,iPhone,iPad,Apple Watch,Apple TV+,Services",
     ),
     dict(
         slug="fyiwin", name="fyiWin", domain="fyiwin.com",
-        accent_color="#7aa2f7", icon="win",
+        accent_color="#0078d4", icon="win",  # Microsoft's Fluent/Windows 11 accent blue
         tagline="Windows news. Decoded daily.",
         topics="Windows 11,Hardware,Copilot",
     ),
     dict(
         slug="fyigoogle", name="fyiGoogle", domain="fyigoogle.com",
-        accent_color="#7aa2f7", icon="google",
+        accent_color="#4285f4", icon="google",  # Google's own brand blue
         tagline="Google news. Decoded daily.",
-        topics="Pixel,Chrome,Android",
+        topics="Pixel,Chrome,Android,YouTube",
     ),
     dict(
         slug="fyinetflix", name="fyiNetflix", domain="fyinetflix.com",
@@ -41,7 +41,11 @@ brand_rows = {}
 for b in BRANDS:
     existing = db.query(Brand).filter(Brand.slug == b["slug"]).first()
     if existing:
-        existing.topics = b["topics"]  # keep topics current on reseed of an existing DB
+        # Brand is the single source of truth — keep every field current on
+        # reseed of an existing DB, not just topics, so metadata changes
+        # (like an accent color update) actually take effect on redeploy.
+        for field, value in b.items():
+            setattr(existing, field, value)
         brand_rows[b["slug"]] = existing
         continue
     row = Brand(**b)

@@ -103,7 +103,7 @@ export default async function RootLayout({
                 <div className="tagline">{brand.tagline}</div>
               </div>
               <div className="header-actions">
-                <NewsNotifications brandSlug={brand.slug} brandName={brand.name} />
+                <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
                 <ThemeToggle />
                 <DomainSwitcher brands={brands} currentSlug={brand.slug} />
               </div>
@@ -114,8 +114,11 @@ export default async function RootLayout({
             <main>{children}</main>
 
             <footer>
-              <span>&copy; fyi network</span>
+              <span>&copy; fyi -m-w-g-n</span>
               <span className="footer-links">
+                <a href={`mailto:tips@${brand.domain}?subject=${encodeURIComponent(`Tip for ${brand.name}`)}`}>
+                  Send us a tip
+                </a>
                 <Link href="/terms">Terms</Link>
                 <Link href="/privacy">Privacy</Link>
                 <span>{brand.domain}</span>

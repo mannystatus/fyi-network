@@ -46,6 +46,7 @@ QUERY_OVERRIDES = {
     "iPhone": "Apple iPhone",
     "iPad": "Apple iPad",
     "Apple Watch": "Apple Watch",
+    "Apple TV+": "\"Apple TV+\" OR \"Apple TV Plus\"",
     "Services": "Apple Services App Store iCloud",
     "Windows 11": "Windows 11",
     "Hardware": "Windows PC laptop hardware",
@@ -53,6 +54,7 @@ QUERY_OVERRIDES = {
     "Pixel": "Google Pixel",
     "Chrome": "Google Chrome browser",
     "Android": "Android OS",
+    "YouTube": "YouTube",
     "New Releases": "Netflix new releases",
     "Netflix Originals": "Netflix original series OR movie",
     "Renewals & Cancellations": "Netflix renewed OR canceled series",
@@ -68,6 +70,7 @@ FILTER_KEYWORDS = {
     "iPhone": ["iphone"],
     "iPad": ["ipad"],
     "Apple Watch": ["apple watch", "watchos"],
+    "Apple TV+": ["apple tv+", "apple tv plus", "apple tv"],
     "Services": ["apple", "icloud", "app store", "apple music", "apple tv"],
     "Windows 11": ["windows"],
     "Hardware": ["laptop", "pc", "processor", "chip", "hardware", "desktop"],
@@ -75,6 +78,7 @@ FILTER_KEYWORDS = {
     "Pixel": ["pixel"],
     "Chrome": ["chrome"],
     "Android": ["android"],
+    "YouTube": ["youtube"],
     # These topic names are generic on their own ("Top 10" of what?), so
     # require "netflix" itself rather than a softer product keyword.
     "New Releases": ["netflix"],
