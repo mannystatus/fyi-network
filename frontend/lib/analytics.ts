@@ -19,5 +19,9 @@ export const ADSENSE_CLIENT_ID = "ca-pub-6138840929831792";
 export const AD_SLOTS = {
   header: process.env.NEXT_PUBLIC_AD_SLOT_HEADER,
   inFeed: process.env.NEXT_PUBLIC_AD_SLOT_IN_FEED,
+  // The in-feed unit is AdSense's "Fluid" native-in-feed format, which
+  // (unlike header/in-article's plain "auto" display format) requires this
+  // extra layout key from the same ad unit — the two only work as a pair.
+  inFeedLayoutKey: process.env.NEXT_PUBLIC_AD_LAYOUT_KEY_IN_FEED,
   inArticle: process.env.NEXT_PUBLIC_AD_SLOT_IN_ARTICLE,
 };

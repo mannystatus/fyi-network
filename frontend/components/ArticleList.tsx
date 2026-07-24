@@ -42,7 +42,9 @@ export default function ArticleList({
               })}
             </div>
           </Link>
-          {i > 0 && (i + 1) % IN_FEED_INTERVAL === 0 && <AdSlot slot={AD_SLOTS.inFeed} />}
+          {i > 0 && (i + 1) % IN_FEED_INTERVAL === 0 && (
+            <AdSlot slot={AD_SLOTS.inFeed} layoutKey={AD_SLOTS.inFeedLayoutKey} />
+          )}
         </Fragment>
       ))}
     </div>

@@ -14,7 +14,18 @@ declare global {
 // empty placeholder so the layout position is visible before any AdSense
 // unit exists; once a slot ID is set, it renders the real AdSense unit and
 // requests a fill.
-export default function AdSlot({ slot, label = "Advertisement" }: { slot?: string; label?: string }) {
+export default function AdSlot({
+  slot,
+  label = "Advertisement",
+  layoutKey,
+}: {
+  slot?: string;
+  label?: string;
+  // Presence of a layout key means this is a Fluid/native in-feed ad unit,
+  // which needs data-ad-format="fluid" + the key instead of the plain
+  // "auto" display format everywhere else uses.
+  layoutKey?: string;
+}) {
   const requested = useRef(false);
 
   useEffect(() => {
@@ -37,8 +48,9 @@ export default function AdSlot({ slot, label = "Advertisement" }: { slot?: strin
           style={{ display: "block" }}
           data-ad-client={ADSENSE_CLIENT_ID}
           data-ad-slot={slot}
-          data-ad-format="auto"
-          data-full-width-responsive="true"
+          {...(layoutKey
+            ? { "data-ad-format": "fluid", "data-ad-layout-key": layoutKey }
+            : { "data-ad-format": "auto", "data-full-width-responsive": "true" })}
         />
       ) : (
         <div className="ad-slot-placeholder">Ad space</div>
