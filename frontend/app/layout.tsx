@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Script from "next/script";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { getCurrentBrand, getAllBrands } from "../lib/api";
@@ -16,9 +16,17 @@ import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID } from "../lib/analytics";
 // loader (which Next only ever injects client-side, even with
 // strategy="beforeInteractive") — AdSense's non-JS-executing verifier can
 // only find this one.
-export const metadata: Metadata = {
-  other: { "google-adsense-account": ADSENSE_CLIENT_ID },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
+  const brandSlug = h.get("x-brand-slug") || "fyimac";
+  return {
+    other: { "google-adsense-account": ADSENSE_CLIENT_ID },
+    icons: {
+      icon: `/icons/${brandSlug}-512.png`,
+      apple: `/icons/${brandSlug}-180.png`,
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
