@@ -2,7 +2,7 @@ import Link from "next/link";
 import Script from "next/script";
 import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
-import { Archivo_Black, Space_Grotesk } from "next/font/google";
+import { Archivo_Black, Space_Grotesk, Inter } from "next/font/google";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { getCurrentBrand, getAllBrands } from "../lib/api";
@@ -18,6 +18,7 @@ import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID, AD_SLOTS } from "../lib/analytics";
 // by next/font so there's no extra external request for the other brands.
 const flynowDisplay = Archivo_Black({ weight: "400", subsets: ["latin"], variable: "--font-flynow-display" });
 const flynowBody = Space_Grotesk({ weight: "500", subsets: ["latin"], variable: "--font-flynow-body" });
+const flynowSans = Inter({ weight: ["300", "400", "500", "600"], subsets: ["latin"], variable: "--font-flynow-sans" });
 
 // A plain <meta> tag has no JS dependency, unlike next/script's adsbygoogle
 // loader (which Next only ever injects client-side, even with
@@ -62,7 +63,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [brand, brands, cookieStore] = await Promise.all([getCurrentBrand(), getAllBrands(), cookies()]);
+  const [brand, brands, cookieStore, h] = await Promise.all([
+    getCurrentBrand(),
+    getAllBrands(),
+    cookies(),
+    headers(),
+  ]);
   const suffix = brand.name.replace("fyi", "");
 
   const themeCookie = cookieStore.get("theme")?.value;
@@ -70,13 +76,17 @@ export default async function RootLayout({
   const cookieConsented = cookieStore.get("cookie-consent")?.value === "accepted";
   const gtmId = GTM_IDS[brand.slug];
   const gaId = GA_IDS[brand.slug];
+  // fyiFlyNow's homepage is a bespoke full-bleed design that supplies its own
+  // nav/footer — it skips the shared browser-frame chrome entirely. Every
+  // other route on the domain (privacy, terms, articles) keeps it.
+  const isFlynowHome = brand.icon === "flynow" && h.get("x-pathname") === "/";
 
   return (
     <html lang="en" {...htmlThemeProps}>
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
       <body
-        className={`${flynowDisplay.variable} ${flynowBody.variable}`}
+        className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable}`}
         style={{ "--accent": brand.accent_color } as React.CSSProperties}
       >
         <Script
@@ -85,6 +95,9 @@ export default async function RootLayout({
           crossOrigin="anonymous"
           strategy="beforeInteractive"
         />
+        {isFlynowHome ? (
+          children
+        ) : (
         <div className={`browser-frame theme-${brand.icon}`}>
           {brand.icon === "mac" && (
             <div className="browser-chrome">
@@ -220,6 +233,7 @@ export default async function RootLayout({
             </footer>
           </div>
         </div>
+        )}
 
         <CookieBanner initiallyDismissed={cookieConsented} />
       </body>
