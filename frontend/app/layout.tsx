@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Script from "next/script";
 import { cookies } from "next/headers";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
@@ -8,7 +9,7 @@ import TopicsNav from "../components/TopicsNav";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
 import CookieBanner from "../components/CookieBanner";
-import { GTM_IDS, GA_IDS } from "../lib/analytics";
+import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID } from "../lib/analytics";
 
 export default async function RootLayout({
   children,
@@ -29,6 +30,12 @@ export default async function RootLayout({
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
       <body style={{ "--accent": brand.accent_color } as React.CSSProperties}>
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <div className={`browser-frame theme-${brand.icon}`}>
           {brand.icon === "mac" && (
             <div className="browser-chrome">
