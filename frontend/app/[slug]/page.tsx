@@ -6,6 +6,8 @@ import { ApiError, getArticle, getArticles, getCurrentBrand } from "../../lib/ap
 import { categoryColor } from "../../lib/colors";
 import ShareButtons from "../../components/ShareButtons";
 import ArticleList from "../../components/ArticleList";
+import AdSlot from "../../components/AdSlot";
+import { AD_SLOTS } from "../../lib/analytics";
 
 function readingTime(bodyMd: string): number {
   const words = bodyMd.trim().split(/\s+/).filter(Boolean).length;
@@ -108,6 +110,8 @@ export default async function ArticlePage({
       <div className="article-body">
         <ReactMarkdown>{article.body_md}</ReactMarkdown>
       </div>
+
+      <AdSlot slot={AD_SLOTS.inArticle} />
 
       {related.length > 0 && (
         <div className="related-section">

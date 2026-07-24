@@ -146,6 +146,8 @@ a {
   align-items: flex-start;
   justify-content: space-between;
   padding: 28px 32px 10px;
+  max-width: 700px;
+  margin-inline: auto;
 }
 
 .header-actions {
@@ -318,6 +320,8 @@ a {
   gap: 8px;
   padding: 0 32px;
   margin-bottom: 8px;
+  max-width: 700px;
+  margin-inline: auto;
 }
 
 .topic-pill {
@@ -347,6 +351,8 @@ main {
   flex: 1;
   padding: 24px 32px 0;
   max-width: 700px;
+  width: 100%;
+  margin-inline: auto;
 }
 
 .section-label {
@@ -355,6 +361,37 @@ main {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin: 0 0 14px;
+}
+
+.ad-slot-wrap {
+  max-width: 700px;
+  width: 100%;
+  margin-inline: auto;
+  padding: 0 32px;
+}
+
+.ad-slot {
+  margin: 20px 0;
+}
+
+.ad-slot-label {
+  display: block;
+  font-size: 10px;
+  color: var(--comment);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.ad-slot-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  color: var(--comment);
+  font-size: 12px;
 }
 
 .article-card {
@@ -593,7 +630,8 @@ main {
 
 footer {
   max-width: 700px;
-  margin-top: 8px;
+  width: 100%;
+  margin: 8px auto 0;
   padding: 24px 32px 40px;
   border-top: 1px solid var(--border);
   font-size: 12px;

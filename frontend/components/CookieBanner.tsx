@@ -17,7 +17,8 @@ export default function CookieBanner({ initiallyDismissed }: { initiallyDismisse
     <div className="cookie-banner" role="dialog" aria-label="Cookie notice">
       <p>
         This site uses a couple of first-party cookies to remember your theme and which network site you&apos;re
-        on &mdash; no ads, no tracking. See the <Link href="/privacy">Privacy Policy</Link> for details.
+        on, and works with Google AdSense, which may use cookies to show ads. See the{" "}
+        <Link href="/privacy">Privacy Policy</Link> for details.
       </p>
       <button type="button" className="cookie-accept" onClick={accept}>
         Got it

@@ -11,3 +11,13 @@ export const GA_IDS: Record<string, string> = {
 
 // One AdSense account for the whole network — loaded sitewide, not per-brand.
 export const ADSENSE_CLIENT_ID = "ca-pub-6138840929831792";
+
+// Per-placement ad unit IDs, set once each unit is created in the AdSense
+// dashboard (Ads > By ad unit > Display ads) and its slot ID added as a
+// Vercel env var. A placement with no slot ID configured renders an empty
+// "Ad space" placeholder instead of a live ad — see components/AdSlot.tsx.
+export const AD_SLOTS = {
+  header: process.env.NEXT_PUBLIC_AD_SLOT_HEADER,
+  inFeed: process.env.NEXT_PUBLIC_AD_SLOT_IN_FEED,
+  inArticle: process.env.NEXT_PUBLIC_AD_SLOT_IN_ARTICLE,
+};

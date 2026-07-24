@@ -10,7 +10,8 @@ import TopicsNav from "../components/TopicsNav";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
 import CookieBanner from "../components/CookieBanner";
-import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID } from "../lib/analytics";
+import AdSlot from "../components/AdSlot";
+import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID, AD_SLOTS } from "../lib/analytics";
 
 // A plain <meta> tag has no JS dependency, unlike next/script's adsbygoogle
 // loader (which Next only ever injects client-side, even with
@@ -164,6 +165,10 @@ export default async function RootLayout({
             </div>
 
             {brand.topics.length > 0 && <TopicsNav topics={brand.topics} />}
+
+            <div className="ad-slot-wrap">
+              <AdSlot slot={AD_SLOTS.header} />
+            </div>
 
             <main>{children}</main>
 
