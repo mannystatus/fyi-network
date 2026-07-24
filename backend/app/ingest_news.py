@@ -83,7 +83,6 @@ def fetch_headlines(topic: str, when: str = "3d") -> list[dict]:
 def make_article(brand_id: int, topic: str, item: dict) -> Article:
     source = item["source"] or "a news source"
     body_md = (
-        f"**{item['title']}**\n\n"
         f"{source} is reporting on this story. This brief was surfaced automatically "
         f"from real {topic} coverage — follow the link below for the full report.\n\n"
         f"[Read the full story at {source} →]({item['link']})"

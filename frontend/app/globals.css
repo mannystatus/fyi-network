@@ -175,13 +175,16 @@ main {
   border-color: var(--comment);
 }
 
-.article-card .category {
+.category {
   display: inline-block;
   font-size: 11px;
   color: var(--blue);
-  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.article-card .category {
+  margin-bottom: 8px;
 }
 
 .article-card h2 {
@@ -202,6 +205,115 @@ main {
   font-size: 12px;
   color: var(--comment);
   margin-top: 12px;
+}
+
+/* ---------- article detail page ---------- */
+
+.article-header {
+  margin-bottom: 28px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.article-header .category {
+  margin-bottom: 10px;
+}
+
+.article-title {
+  margin: 8px 0 12px;
+  font-size: 28px;
+  line-height: 1.35;
+  color: var(--fg);
+  font-weight: 400;
+}
+
+.article-dek {
+  margin: 0 0 14px;
+  color: var(--comment);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.article-body {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--fg);
+  padding-bottom: 48px;
+}
+
+.article-body > *:first-child {
+  margin-top: 0;
+}
+
+.article-body p {
+  margin: 0 0 18px;
+}
+
+.article-body h2,
+.article-body h3 {
+  margin: 30px 0 12px;
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.article-body h2 {
+  font-size: 19px;
+}
+
+.article-body h3 {
+  font-size: 16px;
+}
+
+.article-body strong {
+  color: var(--fg);
+}
+
+.article-body ul,
+.article-body ol {
+  margin: 0 0 18px;
+  padding-left: 22px;
+}
+
+.article-body li {
+  margin-bottom: 6px;
+}
+
+.article-body a {
+  color: var(--blue);
+  text-decoration-color: rgba(122, 162, 247, 0.35);
+  text-underline-offset: 3px;
+}
+
+.article-body a:hover {
+  text-decoration-color: var(--blue);
+}
+
+.article-body blockquote {
+  margin: 0 0 18px;
+  padding-left: 16px;
+  border-left: 2px solid var(--border);
+  color: var(--comment);
+}
+
+/* Auto-ingested briefs end in a solitary "Read the full story" link —
+   style it as a button so it reads as a call to action, not body text. */
+.article-body p:last-child:has(> a:only-child) {
+  margin-top: 4px;
+}
+
+.article-body p:last-child > a:only-child {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--fg);
+  font-size: 13px;
+}
+
+.article-body p:last-child > a:only-child:hover {
+  border-color: var(--blue);
+  color: var(--blue);
 }
 
 footer {
@@ -363,7 +475,10 @@ footer {
 #site.theme-win .tagline,
 #site.theme-win .switcher-btn,
 #site.theme-win .brand-opt,
-#site.theme-win .article-meta {
+#site.theme-win .article-meta,
+#site.theme-win .article-title,
+#site.theme-win .article-dek,
+#site.theme-win .article-body {
   font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -466,7 +581,10 @@ footer {
 #site.theme-google .tagline,
 #site.theme-google .switcher-btn,
 #site.theme-google .brand-opt,
-#site.theme-google .article-meta {
+#site.theme-google .article-meta,
+#site.theme-google .article-title,
+#site.theme-google .article-dek,
+#site.theme-google .article-body {
   font-family: "Google Sans", "Roboto", system-ui, sans-serif;
 }
 

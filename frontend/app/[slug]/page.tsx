@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import { getArticle } from "../../lib/api";
 
 export default async function ArticlePage({
@@ -14,22 +15,25 @@ export default async function ArticlePage({
       <p className="section-label">
         <Link href="/">&larr; Latest</Link>
       </p>
-      {article.category && <span className="category">{article.category}</span>}
-      <h1 style={{ margin: "8px 0", fontSize: 26, color: "var(--fg)", fontWeight: 400 }}>
-        {article.title}
-      </h1>
-      {article.dek && <p style={{ color: "var(--comment)" }}>{article.dek}</p>}
-      <div className="article-meta" style={{ marginBottom: 24 }}>
-        {article.author}
-        {article.author && " · "}
-        {new Date(article.published_at).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })}
+
+      <div className="article-header">
+        {article.category && <span className="category">{article.category}</span>}
+        <h1 className="article-title">{article.title}</h1>
+        {article.dek && <p className="article-dek">{article.dek}</p>}
+        <div className="article-meta">
+          {article.author}
+          {article.author && " · "}
+          {new Date(article.published_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </div>
       </div>
-      {/* body_md is markdown — swap in your renderer of choice (e.g. react-markdown) */}
-      <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}>{article.body_md}</div>
+
+      <div className="article-body">
+        <ReactMarkdown>{article.body_md}</ReactMarkdown>
+      </div>
     </article>
   );
 }
