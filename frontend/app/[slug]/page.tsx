@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
 import { ApiError, getArticle, getArticles } from "../../lib/api";
 import { categoryColor } from "../../lib/colors";
@@ -9,6 +10,29 @@ import ArticleList from "../../components/ArticleList";
 function readingTime(bodyMd: string): number {
   const words = bodyMd.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  let article;
+  try {
+    article = await getArticle(slug);
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) return {};
+    throw err;
+  }
+
+  const description = article.dek || undefined;
+  return {
+    title: article.title,
+    description,
+    openGraph: { title: article.title, description, type: "article" },
+    twitter: { title: article.title, description },
+  };
 }
 
 export default async function ArticlePage({

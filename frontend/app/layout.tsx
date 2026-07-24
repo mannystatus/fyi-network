@@ -19,11 +19,33 @@ import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID } from "../lib/analytics";
 export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
   const brandSlug = h.get("x-brand-slug") || "fyimac";
+  const brand = await getCurrentBrand();
+  const logoUrl = `/icons/${brandSlug}-512.png`;
+  const bannerUrl = `/og/${brandSlug}.png`;
+
   return {
+    metadataBase: new URL(`https://${brand.domain}`),
+    title: { default: brand.name, template: `%s | ${brand.name}` },
+    description: brand.tagline,
     other: { "google-adsense-account": ADSENSE_CLIENT_ID },
     icons: {
-      icon: `/icons/${brandSlug}-512.png`,
+      icon: logoUrl,
       apple: `/icons/${brandSlug}-180.png`,
+    },
+    openGraph: {
+      title: brand.name,
+      description: brand.tagline,
+      url: `https://${brand.domain}`,
+      siteName: brand.name,
+      images: [{ url: bannerUrl, width: 1200, height: 630, alt: `${brand.name} banner` }],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: brand.name,
+      description: brand.tagline,
+      images: [bannerUrl],
     },
   };
 }
