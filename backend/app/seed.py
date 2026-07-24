@@ -33,7 +33,7 @@ BRANDS = [
         slug="fyinetflix", name="fyiNetflix", domain="fyinetflix.com",
         accent_color="#e50914", icon="netflix",
         tagline="Netflix news. Decoded daily.",
-        topics="New Releases,Netflix Originals,Renewals & Cancellations,Top 10",
+        topics="New Releases,Netflix Originals,Renewals & Cancellations,Top 10,K-Drama",
     ),
 ]
 

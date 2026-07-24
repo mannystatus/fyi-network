@@ -25,6 +25,13 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
+      # Reseeds brand metadata (name/topics/etc.) before every ingest run so
+      # editing app/seed.py — e.g. adding a topic — takes effect in
+      # production on the next scheduled run, with no separate manual step.
+      # Safe to rerun: existing rows are updated in place, nothing duplicated.
+      - run: python -m app.seed
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - run: python -m app.ingest_news --all-brands --per-topic 3
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

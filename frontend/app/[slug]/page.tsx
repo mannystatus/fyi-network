@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
-import { ApiError, getArticle, getArticles } from "../../lib/api";
+import { ApiError, getArticle, getArticles, getCurrentBrand } from "../../lib/api";
 import { categoryColor } from "../../lib/colors";
 import ShareButtons from "../../components/ShareButtons";
 import ArticleList from "../../components/ArticleList";
@@ -30,7 +30,8 @@ export async function generateMetadata({
   return {
     title: article.title,
     description,
-    openGraph: { title: article.title, description, type: "article" },
+    alternates: { canonical: `/${slug}` },
+    openGraph: { title: article.title, description, type: "article", publishedTime: article.published_at },
     twitter: { title: article.title, description },
   };
 }
@@ -49,12 +50,35 @@ export default async function ArticlePage({
     throw err;
   }
 
-  const related = article.category
-    ? (await getArticles(article.category)).filter((a) => a.slug !== slug).slice(0, 4)
-    : [];
+  const [related, brand] = await Promise.all([
+    article.category ? getArticles(article.category).then((a) => a.filter((x) => x.slug !== slug).slice(0, 4)) : [],
+    getCurrentBrand(),
+  ]);
+
+  const url = `https://${brand.domain}/${slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: article.title,
+    description: article.dek || undefined,
+    datePublished: article.published_at,
+    author: article.author ? { "@type": "Organization", name: article.author } : undefined,
+    publisher: {
+      "@type": "Organization",
+      name: brand.name,
+      logo: { "@type": "ImageObject", url: `https://${brand.domain}/icons/${brand.slug}-512.png` },
+    },
+    image: [`https://${brand.domain}/og/${brand.slug}.png`],
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+  };
 
   return (
     <article>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <p className="section-label">
         <Link href="/">&larr; Latest</Link>
       </p>

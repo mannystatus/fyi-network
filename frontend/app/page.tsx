@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { getArticles } from "../lib/api";
 import ArticleList from "../components/ArticleList";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const articles = await getArticles();

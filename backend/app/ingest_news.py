@@ -59,6 +59,7 @@ QUERY_OVERRIDES = {
     "Netflix Originals": "Netflix original series OR movie",
     "Renewals & Cancellations": "Netflix renewed OR canceled series",
     "Top 10": "Netflix Top 10 chart",
+    "K-Drama": "K-drama premiere OR upcoming Korean drama OR must-watch K-drama",
 }
 
 # Bing News search occasionally returns loosely-related filler when a topic
@@ -85,6 +86,7 @@ FILTER_KEYWORDS = {
     "Netflix Originals": ["netflix"],
     "Renewals & Cancellations": ["netflix"],
     "Top 10": ["netflix"],
+    "K-Drama": ["k-drama", "kdrama", "korean drama"],
 }
 
 # A product keyword can show up in a story that has nothing to do with the
@@ -93,11 +95,23 @@ FILTER_KEYWORDS = {
 # the item regardless of whether a FILTER_KEYWORDS term also matched.
 EXCLUDE_KEYWORDS = ["ransom", "kidnap", "murder", "homicide", "manhunt", "crime podcast", "missing person"]
 
+# Dedicated trade press for a topic covers it accurately without necessarily
+# repeating the topic's own name in every headline (a Soompi casting brief
+# says "confirmed for new drama", not "Korean drama confirmed") — the
+# FILTER_KEYWORDS check alone drops these as false negatives. A source match
+# here is accepted outright, skipping the keyword requirement.
+TRUSTED_SOURCES = {
+    "K-Drama": ["soompi", "allkpop", "koreaboo", "korea herald", "koreajoongangdaily"],
+}
+
 
 def is_relevant(topic: str, item: dict) -> bool:
     haystack = f"{item['title']} {item['description'] or ''}".lower()
     if any(k in haystack for k in EXCLUDE_KEYWORDS):
         return False
+    trusted = TRUSTED_SOURCES.get(topic)
+    if trusted and item["source"] and any(s in item["source"].lower() for s in trusted):
+        return True
     keywords = FILTER_KEYWORDS.get(topic)
     if not keywords:
         return True
