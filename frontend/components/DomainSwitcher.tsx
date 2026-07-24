@@ -8,6 +8,7 @@ const ICONS: Record<Brand["icon"], string> = {
   win: "▦",
   google: "●",
   netflix: "▶",
+  flynow: "✈",
 };
 
 // Properties outside the fyi-network multi-tenant system (different app,

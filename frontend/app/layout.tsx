@@ -2,6 +2,7 @@ import Link from "next/link";
 import Script from "next/script";
 import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
+import { Archivo_Black, Space_Grotesk } from "next/font/google";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { getCurrentBrand, getAllBrands } from "../lib/api";
@@ -12,6 +13,11 @@ import NewsNotifications from "../components/NewsNotifications";
 import CookieBanner from "../components/CookieBanner";
 import AdSlot from "../components/AdSlot";
 import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID, AD_SLOTS } from "../lib/analytics";
+
+// Only fyiFlyNow's theme references these (via --font-flynow-*) — self-hosted
+// by next/font so there's no extra external request for the other brands.
+const flynowDisplay = Archivo_Black({ weight: "400", subsets: ["latin"], variable: "--font-flynow-display" });
+const flynowBody = Space_Grotesk({ weight: "500", subsets: ["latin"], variable: "--font-flynow-body" });
 
 // A plain <meta> tag has no JS dependency, unlike next/script's adsbygoogle
 // loader (which Next only ever injects client-side, even with
@@ -69,7 +75,10 @@ export default async function RootLayout({
     <html lang="en" {...htmlThemeProps}>
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
-      <body style={{ "--accent": brand.accent_color } as React.CSSProperties}>
+      <body
+        className={`${flynowDisplay.variable} ${flynowBody.variable}`}
+        style={{ "--accent": brand.accent_color } as React.CSSProperties}
+      >
         <Script
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
@@ -133,6 +142,32 @@ export default async function RootLayout({
             <div className="netflix-titlebar">
               <div className="netflix-logo">N</div>
               <div className="netflix-title">{brand.name}</div>
+            </div>
+          )}
+
+          {brand.icon === "flynow" && (
+            <div className="flynow-titlebar">
+              <div className="flynow-flaps">
+                {["f", "y", "i"].map((ch, i) => (
+                  <span key={`s${i}`} className="flynow-flap sky">
+                    {ch}
+                  </span>
+                ))}
+                {["F", "l", "y"].map((ch, i) => (
+                  <span key={`c${i}`} className="flynow-flap coral">
+                    {ch}
+                  </span>
+                ))}
+                {["N", "o", "w"].map((ch, i) => (
+                  <span key={`a${i}`} className="flynow-flap amber">
+                    {ch}
+                  </span>
+                ))}
+              </div>
+              <div className="flynow-status">
+                <span className="flynow-dot" />
+                Now boarding &middot; {brand.domain}
+              </div>
             </div>
           )}
 

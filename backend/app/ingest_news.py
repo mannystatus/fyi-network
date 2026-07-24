@@ -60,6 +60,9 @@ QUERY_OVERRIDES = {
     "Renewals & Cancellations": "Netflix renewed OR canceled series",
     "Top 10": "Netflix Top 10 chart",
     "K-Drama": "K-drama premiere OR upcoming Korean drama OR must-watch K-drama",
+    "Flight Deals": "flight deals OR cheap flights OR airfare sale",
+    "Airline News": "airline news",
+    "Travel Tips": "travel tips flying OR airport tips",
 }
 
 # Bing News search occasionally returns loosely-related filler when a topic
@@ -87,6 +90,9 @@ FILTER_KEYWORDS = {
     "Renewals & Cancellations": ["netflix"],
     "Top 10": ["netflix"],
     "K-Drama": ["k-drama", "kdrama", "korean drama"],
+    "Flight Deals": ["flight", "flights", "airfare", "fare"],
+    "Airline News": ["airline", "airlines"],
+    "Travel Tips": ["travel", "flight", "airport", "flying", "trip"],
 }
 
 # A product keyword can show up in a story that has nothing to do with the

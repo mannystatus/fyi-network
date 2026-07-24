@@ -27,6 +27,12 @@
   --cros-omnibox-bg: #23242f;
   --netflix-chrome-bg: #000;
   --netflix-card-bg: rgba(255, 255, 255, 0.05);
+
+  /* Fixed, not tokenized per light/dark like the others above — a split-flap
+     departure board is always a dark board with lit letters; there's no
+     real "light mode" version of the physical object it's imitating. */
+  --flynow-chrome-bg: #06122b;
+  --flynow-line: #1c3363;
 }
 
 /* Light mode: explicit user choice (data-theme, set by ThemeToggle + the
@@ -1083,5 +1089,124 @@ footer {
 }
 
 #site.theme-netflix .article-card .category {
+  font-weight: 700;
+}
+
+/* ---------- fyiFlyNow theme, used only when fyiFlyNow is active ---------- */
+/* Split-flap airport departure board — always dark, regardless of the site's
+   light/dark toggle (see --flynow-chrome-bg above). Coral (this brand's
+   accent_color) drives the wordmark suffix, active switcher state, and
+   article-card hover, same pattern every other theme uses var(--accent) for. */
+
+.flynow-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--flynow-chrome-bg);
+  border-bottom: 1px solid var(--flynow-line);
+}
+
+.flynow-flaps {
+  display: flex;
+  gap: 2px;
+}
+
+.flynow-flap {
+  font-family: var(--font-flynow-display), "Archivo Black", sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  color: #fff;
+  background: #0a1a3d;
+  border: 1px solid var(--flynow-line);
+  border-radius: 2px;
+  padding: 3px 4px 4px;
+}
+
+.flynow-flap.sky {
+  color: #4fc3ff;
+}
+
+.flynow-flap.coral {
+  color: #ff6b4a;
+}
+
+.flynow-flap.amber {
+  color: #ffb627;
+}
+
+.flynow-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-flynow-body), "Space Grotesk", sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #6a7fa8;
+}
+
+.flynow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffb627;
+  animation: flynow-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes flynow-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+#site.theme-flynow {
+  font-family: var(--font-flynow-body), "Space Grotesk", sans-serif;
+}
+
+#site.theme-flynow .wordmark {
+  font-family: var(--font-flynow-display), "Archivo Black", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+#site.theme-flynow .article-title {
+  font-family: var(--font-flynow-display), "Archivo Black", sans-serif;
+  font-weight: 400;
+}
+
+#site.theme-flynow .tagline,
+#site.theme-flynow .switcher-btn,
+#site.theme-flynow .brand-opt,
+#site.theme-flynow .article-meta,
+#site.theme-flynow .article-dek,
+#site.theme-flynow .article-body,
+#site.theme-flynow .legal-body,
+#site.theme-flynow .section-label,
+#site.theme-flynow footer {
+  font-family: var(--font-flynow-body), "Space Grotesk", sans-serif;
+}
+
+#site.theme-flynow .switcher-btn {
+  border-radius: 30px;
+}
+
+#site.theme-flynow .article-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+#site.theme-flynow .article-card:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg-alt));
+  box-shadow: 0 8px 24px rgba(255, 107, 74, 0.18);
+}
+
+#site.theme-flynow .article-card .category {
   font-weight: 700;
 }

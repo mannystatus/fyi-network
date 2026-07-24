@@ -38,6 +38,20 @@ function logoGlyph(icon) {
       <rect x="${x0 + s + gap}" y="${y0 + s + gap}" width="${s}" height="${s}" rx="4" fill="#7fba00"/>
     `;
   }
+  if (icon === "flynow") {
+    // Same paper-airplane + departure-trail motif as the fyiFlyNow app icon,
+    // scaled up from its 200x200 source into this glyph slot.
+    const s = 1.6;
+    const dx = cx - 96 * s;
+    const dy = cy - 106 * s;
+    return `
+      <g transform="translate(${dx},${dy}) scale(${s})">
+        <path d="M48 138 L152 62 L120 138 L102 118 L48 138 Z" fill="#ff6b4a"/>
+        <path d="M48 138 L102 118 L92 132 Z" fill="#c94a30"/>
+        <path d="M40 150 Q90 140 150 66" stroke="#ffb627" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="1 10"/>
+      </g>
+    `;
+  }
   // netflix — same bold serif "N" the live site renders in .netflix-logo
   return `<text x="${cx}" y="${cy + 60}" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="800" font-size="200" fill="#e50914" letter-spacing="-6">N</text>`;
 }
@@ -72,6 +86,7 @@ const BRANDS = [
   { slug: "fyiwin", suffix: "Win", icon: "win", tagline: "Windows news. Decoded daily." },
   { slug: "fyigoogle", suffix: "Google", icon: "google", tagline: "Google news. Decoded daily." },
   { slug: "fyinetflix", suffix: "Netflix", icon: "netflix", tagline: "Netflix news. Decoded daily." },
+  { slug: "fyiflynow", suffix: "FlyNow", icon: "flynow", tagline: "Flight deals. Decoded daily." },
 ];
 
 mkdirSync(OUT_DIR, { recursive: true });

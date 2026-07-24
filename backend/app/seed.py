@@ -35,6 +35,12 @@ BRANDS = [
         tagline="Netflix news. Decoded daily.",
         topics="New Releases,Netflix Originals,Renewals & Cancellations,Top 10,K-Drama",
     ),
+    dict(
+        slug="fyiflynow", name="fyiFlyNow", domain="fyiflynow.com",
+        accent_color="#FF6B4A", icon="flynow",  # coral — the promo module's CTA/highlight color
+        tagline="Flight deals. Decoded daily.",
+        topics="Flight Deals,Airline News,Travel Tips",
+    ),
 ]
 
 brand_rows = {}
