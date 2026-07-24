@@ -125,6 +125,28 @@ a {
   margin-top: 6px;
 }
 
+.topics-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 32px;
+  margin-bottom: 8px;
+}
+
+.topic-pill {
+  font-size: 12px;
+  color: var(--comment);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 14px;
+}
+
+.topic-pill:hover {
+  color: var(--fg);
+  border-color: var(--comment);
+}
+
 main {
   flex: 1;
   padding: 24px 32px 0;

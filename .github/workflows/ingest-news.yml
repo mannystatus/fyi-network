@@ -1,0 +1,30 @@
+name: Ingest news
+
+# Runs app/ingest_news.py on a schedule so each brand's feed keeps getting
+# real, current articles for its topics without anyone doing it by hand.
+# Requires a DATABASE_URL repo secret pointing at the same Postgres the
+# deployed backend reads from (see backend/app/database.py) — without it,
+# this job writes into a throwaway SQLite file that's discarded when the
+# runner exits, which is harmless but pointless. Set the secret once the
+# backend is deployed (Neon/Render/Fly/etc.).
+
+on:
+  schedule:
+    - cron: "0 13 * * *" # daily at 13:00 UTC
+  workflow_dispatch: {} # lets you trigger a run manually from the Actions tab
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m app.ingest_news --all-brands --per-topic 3
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

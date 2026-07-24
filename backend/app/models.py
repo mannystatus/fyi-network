@@ -19,6 +19,7 @@ class Brand(Base):
     accent_color = Column(String(16), nullable=False)            # "#e8e8ed"
     tagline = Column(String(256), nullable=False)
     icon = Column(String(32), nullable=False)                    # "mac" | "win" | "google"
+    topics = Column(String(512), nullable=False, default="")     # comma-separated, e.g. "Mac,iPhone,iPad"
 
     articles = relationship("Article", back_populates="brand")
 

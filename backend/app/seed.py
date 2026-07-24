@@ -14,16 +14,19 @@ BRANDS = [
         slug="fyimac", name="fyiMac", domain="fyimac.com",
         accent_color="#e8e8ed", icon="mac",
         tagline="Apple news. Decoded daily.",
+        topics="Mac,iPhone,iPad,Apple Watch,Services",
     ),
     dict(
         slug="fyiwin", name="fyiWin", domain="fyiwin.com",
         accent_color="#7aa2f7", icon="win",
         tagline="Windows news. Decoded daily.",
+        topics="Windows 11,Hardware,Copilot",
     ),
     dict(
         slug="fyigoogle", name="fyiGoogle", domain="fyigoogle.com",
         accent_color="#7aa2f7", icon="google",
         tagline="Google news. Decoded daily.",
+        topics="Pixel,Chrome,Android",
     ),
 ]
 
@@ -76,6 +79,7 @@ brand_rows = {}
 for b in BRANDS:
     existing = db.query(Brand).filter(Brand.slug == b["slug"]).first()
     if existing:
+        existing.topics = b["topics"]  # keep topics current on reseed of an existing DB
         brand_rows[b["slug"]] = existing
         continue
     row = Brand(**b)

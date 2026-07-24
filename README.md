@@ -110,6 +110,36 @@ frontend/
     DomainSwitcher.tsx   the dropdown that links across all 3 domains
 ```
 
+## Topics and automatic news ingestion
+
+Each brand has a `topics` column (comma-separated, e.g. fyiMac's
+`Mac,iPhone,iPad,Apple Watch,Services`) — the same "single source of
+truth" pattern as the rest of `Brand`. The frontend reads it to render
+the topic pill nav (`app/layout.tsx`) and the per-topic pages at
+`/topics/<topic>` (`app/topics/[topic]/page.tsx`), which just call
+`GET /api/articles?category=<topic>`.
+
+`backend/app/ingest_news.py` keeps each brand's feed populated
+automatically:
+
+```bash
+cd backend && source venv/bin/activate
+python -m app.ingest_news --brand fyimac        # one brand
+python -m app.ingest_news --all-brands          # every brand
+```
+
+For each of a brand's topics, it pulls real, current headlines from
+Google News RSS (no API key needed), writes a short attributed "brief"
+article per headline (title/author = the real outlet, with a link to
+the full story), and skips anything it's already added (deduped by
+slug) — so reruns only add what's new. Add a topic to a brand by editing
+its `topics` column; ingestion picks it up automatically next run.
+
+`.github/workflows/ingest-news.yml` runs this on a daily cron via GitHub
+Actions so the feed keeps updating on its own. It needs a `DATABASE_URL`
+repo secret pointing at your deployed Postgres — until that's set, the
+workflow just writes into a throwaway SQLite file each run.
+
 ## Extending this
 
 - **Markdown rendering**: `body_md` is raw markdown right now — drop in

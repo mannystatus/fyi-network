@@ -25,6 +25,7 @@ export type Brand = {
   accent_color: string;
   tagline: string;
   icon: "mac" | "win" | "google";
+  topics: string[];
 };
 
 export type ArticleListItem = {
@@ -40,6 +41,7 @@ export type ArticleDetail = ArticleListItem & { body_md: string };
 
 export const getCurrentBrand = (): Promise<Brand> => apiFetch("/api/brands/current");
 export const getAllBrands = (): Promise<Brand[]> => apiFetch("/api/brands");
-export const getArticles = (): Promise<ArticleListItem[]> => apiFetch("/api/articles");
+export const getArticles = (category?: string): Promise<ArticleListItem[]> =>
+  apiFetch(category ? `/api/articles?category=${encodeURIComponent(category)}` : "/api/articles");
 export const getArticle = (slug: string): Promise<ArticleDetail> =>
   apiFetch(`/api/articles/${slug}`);
