@@ -53,6 +53,10 @@ QUERY_OVERRIDES = {
     "Pixel": "Google Pixel",
     "Chrome": "Google Chrome browser",
     "Android": "Android OS",
+    "New Releases": "Netflix new releases",
+    "Netflix Originals": "Netflix original series OR movie",
+    "Renewals & Cancellations": "Netflix renewed OR canceled series",
+    "Top 10": "Netflix Top 10 chart",
 }
 
 # Bing News search occasionally returns loosely-related filler when a topic
@@ -71,6 +75,12 @@ FILTER_KEYWORDS = {
     "Pixel": ["pixel"],
     "Chrome": ["chrome"],
     "Android": ["android"],
+    # These topic names are generic on their own ("Top 10" of what?), so
+    # require "netflix" itself rather than a softer product keyword.
+    "New Releases": ["netflix"],
+    "Netflix Originals": ["netflix"],
+    "Renewals & Cancellations": ["netflix"],
+    "Top 10": ["netflix"],
 }
 
 # A product keyword can show up in a story that has nothing to do with the

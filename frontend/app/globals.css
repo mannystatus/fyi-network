@@ -13,6 +13,61 @@
   --accent: #e8e8ed;
 
   --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
+
+  /* Per-theme "OS chrome" colors that are solid fills or white-alpha
+     overlays rather than hue tints — those don't survive a light/dark
+     flip on their own, so they're tokenized here instead of hardcoded
+     in the theme blocks below. */
+  --win-chrome-bg: #1f2029;
+  --win-chrome-hover: rgba(255, 255, 255, 0.08);
+  --win-card-bg: rgba(255, 255, 255, 0.035);
+  --win-card-border: rgba(255, 255, 255, 0.09);
+  --cros-chrome-bg: #101116;
+  --cros-tab-bg: #1a1b26;
+  --cros-omnibox-bg: #23242f;
+  --netflix-chrome-bg: #000;
+  --netflix-card-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* Light mode: explicit user choice (data-theme, set by ThemeToggle + the
+   `theme` cookie read server-side in layout.tsx) always wins; absent that,
+   fall back to the OS-level preference. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f9;
+    --bg-alt: #ffffff;
+    --border: #d8dbe8;
+    --fg: #20222f;
+    --comment: #5b6178;
+
+    --win-chrome-bg: #e4e6ef;
+    --win-chrome-hover: rgba(0, 0, 0, 0.06);
+    --win-card-bg: rgba(0, 0, 0, 0.02);
+    --win-card-border: rgba(0, 0, 0, 0.08);
+    --cros-chrome-bg: #dfe1e8;
+    --cros-tab-bg: #f4f5f9;
+    --cros-omnibox-bg: #eceef5;
+    --netflix-chrome-bg: #ffffff;
+    --netflix-card-bg: rgba(0, 0, 0, 0.035);
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f5f9;
+  --bg-alt: #ffffff;
+  --border: #d8dbe8;
+  --fg: #20222f;
+  --comment: #5b6178;
+
+  --win-chrome-bg: #e4e6ef;
+  --win-chrome-hover: rgba(0, 0, 0, 0.06);
+  --win-card-bg: rgba(0, 0, 0, 0.02);
+  --win-card-border: rgba(0, 0, 0, 0.08);
+  --cros-chrome-bg: #dfe1e8;
+  --cros-tab-bg: #f4f5f9;
+  --cros-omnibox-bg: #eceef5;
+  --netflix-chrome-bg: #ffffff;
+  --netflix-card-bg: rgba(0, 0, 0, 0.035);
 }
 
 html,
@@ -91,6 +146,59 @@ a {
   align-items: flex-start;
   justify-content: space-between;
   padding: 28px 32px 10px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.theme-toggle:hover {
+  border-color: var(--comment);
+}
+
+.notify-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--comment);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.notify-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.notify-badge {
+  font-size: 12px;
+  color: var(--comment);
+  white-space: nowrap;
 }
 
 .wordmark {
@@ -257,69 +365,86 @@ main {
   line-height: 1.6;
 }
 
-.article-body {
+.article-body,
+.legal-body {
   font-size: 15px;
   line-height: 1.75;
   color: var(--fg);
   padding-bottom: 48px;
 }
 
-.article-body > *:first-child {
+.article-body > *:first-child,
+.legal-body > *:first-child {
   margin-top: 0;
 }
 
-.article-body p {
+.article-body p,
+.legal-body p {
   margin: 0 0 18px;
 }
 
 .article-body h2,
-.article-body h3 {
+.article-body h3,
+.legal-body h2,
+.legal-body h3 {
   margin: 30px 0 12px;
   color: var(--fg);
   font-weight: 600;
 }
 
-.article-body h2 {
+.article-body h2,
+.legal-body h2 {
   font-size: 19px;
 }
 
-.article-body h3 {
+.article-body h3,
+.legal-body h3 {
   font-size: 16px;
 }
 
-.article-body strong {
+.article-body strong,
+.legal-body strong {
   color: var(--fg);
 }
 
 .article-body ul,
-.article-body ol {
+.article-body ol,
+.legal-body ul,
+.legal-body ol {
   margin: 0 0 18px;
   padding-left: 22px;
 }
 
-.article-body li {
+.article-body li,
+.legal-body li {
   margin-bottom: 6px;
 }
 
-.article-body a {
+.article-body a,
+.legal-body a {
   color: var(--blue);
   text-decoration-color: rgba(122, 162, 247, 0.35);
   text-underline-offset: 3px;
 }
 
-.article-body a:hover {
+.article-body a:hover,
+.legal-body a:hover {
   text-decoration-color: var(--blue);
 }
 
-.article-body blockquote {
+.article-body blockquote,
+.legal-body blockquote {
   margin: 0 0 18px;
   padding-left: 16px;
   border-left: 2px solid var(--border);
   color: var(--comment);
 }
 
-/* Auto-ingested briefs end in a solitary "Read the full story" link —
-   style it as a button so it reads as a call to action, not body text. */
+/* Auto-ingested briefs end in a solitary "Read the full story" link — style
+   it as a button so it reads as a call to action, not body text. Scoped to
+   .article-body only (not .legal-body) — :only-child ignores text nodes, so
+   without this split, hand-written pages like Terms/Privacy would get the
+   button treatment on any inline link that's alone in the last paragraph. */
 .article-body p:last-child:has(> a:only-child) {
   margin-top: 4px;
 }
@@ -396,6 +521,22 @@ footer {
   color: var(--comment);
   display: flex;
   justify-content: space-between;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-links a {
+  color: var(--comment);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: var(--fg);
+  text-decoration: underline;
 }
 
 /* ---------- switcher ---------- */
@@ -485,7 +626,7 @@ footer {
   align-items: center;
   height: 40px;
   padding: 0 0 0 14px;
-  background: #1f2029;
+  background: var(--win-chrome-bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -525,7 +666,7 @@ footer {
 }
 
 .win-controls button:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--win-chrome-hover);
 }
 
 .win-controls button.win-close:hover {
@@ -549,7 +690,8 @@ footer {
 #site.theme-win .article-meta,
 #site.theme-win .article-title,
 #site.theme-win .article-dek,
-#site.theme-win .article-body {
+#site.theme-win .article-body,
+#site.theme-win .legal-body {
   font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -559,14 +701,14 @@ footer {
 
 #site.theme-win .switcher-btn {
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: var(--win-card-bg);
+  border: 1px solid var(--win-card-border);
 }
 
 #site.theme-win .article-card {
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--win-card-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--win-card-bg);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
@@ -597,7 +739,7 @@ footer {
   align-items: flex-end;
   height: 40px;
   padding: 8px 10px 0;
-  background: #101116;
+  background: var(--cros-chrome-bg);
   gap: 4px;
 }
 
@@ -605,7 +747,7 @@ footer {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #1a1b26;
+  background: var(--cros-tab-bg);
   border-radius: 10px 10px 0 0;
   padding: 7px 14px;
   font-size: 12px;
@@ -630,7 +772,7 @@ footer {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #23242f;
+  background: var(--cros-omnibox-bg);
   border-radius: 20px;
   padding: 6px 16px;
   font-size: 12px;
@@ -654,7 +796,8 @@ footer {
 #site.theme-google .article-meta,
 #site.theme-google .article-title,
 #site.theme-google .article-dek,
-#site.theme-google .article-body {
+#site.theme-google .article-body,
+#site.theme-google .legal-body {
   font-family: "Google Sans", "Roboto", system-ui, sans-serif;
 }
 
@@ -705,3 +848,77 @@ footer {
 /* The macOS-style address bar only fits the fyiMac terminal look —
    fyiWin and fyiGoogle render their own native titlebar instead, so
    the outer chrome is only ever rendered for the mac brand. */
+
+/* ---------- Netflix theme, used only when fyiNetflix is active ---------- */
+/* Signature red (#e50914, this brand's accent_color) instead of the shared
+   blue everything else uses — the logo mark stays red in both light and
+   dark mode, same as the real thing. */
+
+.netflix-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--netflix-chrome-bg);
+}
+
+.netflix-logo {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 20px;
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -1px;
+}
+
+.netflix-title {
+  font-size: 12px;
+  color: var(--fg);
+}
+
+#site.theme-netflix {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#site.theme-netflix .wordmark {
+  font-family: inherit;
+  font-weight: 700;
+}
+
+#site.theme-netflix .tagline,
+#site.theme-netflix .switcher-btn,
+#site.theme-netflix .brand-opt,
+#site.theme-netflix .article-meta,
+#site.theme-netflix .article-title,
+#site.theme-netflix .article-dek,
+#site.theme-netflix .article-body,
+#site.theme-netflix .legal-body,
+#site.theme-netflix .section-label,
+#site.theme-netflix footer {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#site.theme-netflix .switcher-btn {
+  border-radius: 4px;
+}
+
+#site.theme-netflix .article-card {
+  border: none;
+  border-radius: 4px;
+  background: var(--netflix-card-bg);
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+#site.theme-netflix .article-card:hover {
+  background: color-mix(in srgb, var(--accent) 12%, var(--netflix-card-bg));
+  box-shadow: 0 8px 24px rgba(229, 9, 20, 0.25);
+  transform: scale(1.015);
+}
+
+#site.theme-netflix .article-card h2 {
+  font-weight: 700;
+}
+
+#site.theme-netflix .article-card .category {
+  font-weight: 700;
+}

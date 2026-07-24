@@ -1,18 +1,25 @@
+import Link from "next/link";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { getCurrentBrand, getAllBrands } from "../lib/api";
 import DomainSwitcher from "../components/DomainSwitcher";
 import TopicsNav from "../components/TopicsNav";
+import ThemeToggle from "../components/ThemeToggle";
+import NewsNotifications from "../components/NewsNotifications";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [brand, brands] = await Promise.all([getCurrentBrand(), getAllBrands()]);
+  const [brand, brands, cookieStore] = await Promise.all([getCurrentBrand(), getAllBrands(), cookies()]);
   const suffix = brand.name.replace("fyi", "");
 
+  const themeCookie = cookieStore.get("theme")?.value;
+  const htmlThemeProps = themeCookie === "light" || themeCookie === "dark" ? { "data-theme": themeCookie } : {};
+
   return (
-    <html lang="en">
+    <html lang="en" {...htmlThemeProps}>
       <body style={{ "--accent": brand.accent_color } as React.CSSProperties}>
         <div className={`browser-frame theme-${brand.icon}`}>
           {brand.icon === "mac" && (
@@ -67,6 +74,13 @@ export default async function RootLayout({
             </div>
           )}
 
+          {brand.icon === "netflix" && (
+            <div className="netflix-titlebar">
+              <div className="netflix-logo">N</div>
+              <div className="netflix-title">{brand.name}</div>
+            </div>
+          )}
+
           <div id="site" className={`theme-${brand.icon}`}>
             {brand.icon === "mac" && (
               <div className="chrome-bar">
@@ -88,7 +102,11 @@ export default async function RootLayout({
                 </div>
                 <div className="tagline">{brand.tagline}</div>
               </div>
-              <DomainSwitcher brands={brands} currentSlug={brand.slug} />
+              <div className="header-actions">
+                <NewsNotifications brandSlug={brand.slug} brandName={brand.name} />
+                <ThemeToggle />
+                <DomainSwitcher brands={brands} currentSlug={brand.slug} />
+              </div>
             </div>
 
             {brand.topics.length > 0 && <TopicsNav topics={brand.topics} />}
@@ -96,8 +114,12 @@ export default async function RootLayout({
             <main>{children}</main>
 
             <footer>
-              <span>&copy; fyi-mac-win-google</span>
-              <span>{brand.domain}</span>
+              <span>&copy; fyi network</span>
+              <span className="footer-links">
+                <Link href="/terms">Terms</Link>
+                <Link href="/privacy">Privacy</Link>
+                <span>{brand.domain}</span>
+              </span>
             </footer>
           </div>
         </div>

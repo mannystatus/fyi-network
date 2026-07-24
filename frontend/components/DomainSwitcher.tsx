@@ -4,17 +4,18 @@ import { useState } from "react";
 import type { Brand } from "../lib/api";
 
 const ICONS: Record<Brand["icon"], string> = {
-  mac: "\uF8FF",   // apple glyph fallback (renders as-is if font lacks it; harmless)
+  mac: "",   // apple glyph fallback (renders as-is if font lacks it; harmless)
   win: "▦",
   google: "●",
+  netflix: "▶",
 };
 
-/**
- * Renders every brand in the network and lets the visitor jump to any of them.
- * Switching always lands on that brand's homepage rather than the same slug —
- * each brand has its own independent article set, so "the same URL on another
- * domain" usually wouldn't resolve to anything. This keeps the switch honest.
- */
+// Properties outside the fyi-network multi-tenant system (different app,
+// different infra) — listed for convenience in the same dropdown, but kept
+// separate from `brands` since they don't have a Brand row, theme, or feed
+// of their own. Always opens in a new tab since it's leaving this app.
+const EXTERNAL_LINKS = [{ name: "hackthedeal", url: "https://hackthedeal.com" }];
+
 export default function DomainSwitcher({
   brands,
   currentSlug,
@@ -42,7 +43,7 @@ export default function DomainSwitcher({
         aria-expanded={open}
       >
         <span className="switcher-dot" />
-        fyi-mac-win-google
+        fyi network
         <span className="chevron">{open ? "⌃" : "⌄"}</span>
       </button>
 
@@ -60,6 +61,18 @@ export default function DomainSwitcher({
                 </span>
                 {brand.name}
                 {brand.slug === currentSlug && <span className="current-tag">current</span>}
+              </a>
+            </li>
+          ))}
+          <li className="switcher-divider" role="separator" />
+          {EXTERNAL_LINKS.map((link) => (
+            <li key={link.url}>
+              <a href={link.url} className="brand-opt" target="_blank" rel="noopener noreferrer">
+                <span className="icon" aria-hidden>
+                  ↗
+                </span>
+                {link.name}
+                <span className="current-tag">external</span>
               </a>
             </li>
           ))}

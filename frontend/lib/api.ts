@@ -24,7 +24,7 @@ export type Brand = {
   domain: string;
   accent_color: string;
   tagline: string;
-  icon: "mac" | "win" | "google";
+  icon: "mac" | "win" | "google" | "netflix";
   topics: string[];
 };
 
