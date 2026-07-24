@@ -2,6 +2,14 @@ import { headers } from "next/headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+export class ApiError extends Error {
+  status: number;
+  constructor(status: number, path: string) {
+    super(`API error ${status} for ${path}`);
+    this.status = status;
+  }
+}
+
 /** Server-side fetch that tells the backend which brand this request is for. */
 async function apiFetch(path: string, revalidate = 60) {
   const h = await headers();
@@ -13,7 +21,7 @@ async function apiFetch(path: string, revalidate = 60) {
   });
 
   if (!res.ok) {
-    throw new Error(`API error ${res.status} for ${path}`);
+    throw new ApiError(res.status, path);
   }
   return res.json();
 }

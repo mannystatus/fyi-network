@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import { getArticle, getArticles } from "../../lib/api";
+import { ApiError, getArticle, getArticles } from "../../lib/api";
 import { categoryColor } from "../../lib/colors";
 import ShareButtons from "../../components/ShareButtons";
 import ArticleList from "../../components/ArticleList";
@@ -16,7 +17,13 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await getArticle(slug);
+  let article;
+  try {
+    article = await getArticle(slug);
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) notFound();
+    throw err;
+  }
 
   const related = article.category
     ? (await getArticles(article.category)).filter((a) => a.slug !== slug).slice(0, 4)
