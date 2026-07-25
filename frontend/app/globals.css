@@ -869,6 +869,29 @@ footer {
   color: #fff;
 }
 
+/* fyiMac uses fyiGoogle's font on purpose, per explicit request — not a
+   copy/paste mistake. Font only; fyiMac keeps its own card/color styling. */
+#site.theme-mac {
+  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
+}
+
+#site.theme-mac .wordmark {
+  font-family: inherit;
+}
+
+#site.theme-mac .tagline,
+#site.theme-mac .switcher-btn,
+#site.theme-mac .brand-opt,
+#site.theme-mac .article-meta,
+#site.theme-mac .article-title,
+#site.theme-mac .article-dek,
+#site.theme-mac .article-body,
+#site.theme-mac .legal-body,
+#site.theme-mac .section-label,
+#site.theme-mac footer {
+  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
+}
+
 #site.theme-win {
   font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
 }
@@ -977,9 +1000,7 @@ footer {
 }
 
 #site.theme-google {
-  /* Matches fyiMac's font (the shared body default) rather than Google's
-     own typeface, per explicit request — not an oversight. */
-  font-family: var(--font-mono);
+  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
 }
 
 #site.theme-google .wordmark {
@@ -995,7 +1016,7 @@ footer {
 #site.theme-google .article-dek,
 #site.theme-google .article-body,
 #site.theme-google .legal-body {
-  font-family: var(--font-mono);
+  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
 }
 
 #site.theme-google .site-header {
@@ -1039,7 +1060,7 @@ footer {
 
 #site.theme-google .section-label,
 #site.theme-google footer {
-  font-family: var(--font-mono);
+  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
 }
 
 /* The macOS-style address bar only fits the fyiMac terminal look —
