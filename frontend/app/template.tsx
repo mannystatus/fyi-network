@@ -4,6 +4,7 @@ import DomainSwitcher from "../components/DomainSwitcher";
 import TopicsNav from "../components/TopicsNav";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
+import SendTipForm from "../components/SendTipForm";
 import AdSlot from "../components/AdSlot";
 import ChromeGate from "../components/ChromeGate";
 import { AD_SLOTS } from "../lib/analytics";
@@ -155,9 +156,7 @@ function Chrome({
         <footer>
           <span>&copy; fyi -m-w-g-n</span>
           <span className="footer-links">
-            <a href={`mailto:tips@${brand.domain}?subject=${encodeURIComponent(`Tip for ${brand.name}`)}`}>
-              Send us a tip
-            </a>
+            <SendTipForm brandName={brand.name} />
             <Link href="/terms">Terms</Link>
             <Link href="/privacy">Privacy</Link>
             <span>{brand.domain}</span>

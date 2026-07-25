@@ -739,6 +739,109 @@ footer {
   text-decoration: underline;
 }
 
+.tip-widget {
+  position: relative;
+  display: inline-flex;
+}
+
+.tip-trigger {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--comment);
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.tip-trigger:hover {
+  color: var(--fg);
+  text-decoration: underline;
+}
+
+/* Opens upward, not downward like .notify-popover — this widget lives in
+   the footer, at the bottom of the page, so a downward popover would
+   overflow past the viewport. */
+.tip-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 280px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  z-index: 20;
+}
+
+.tip-popover-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.tip-message,
+.tip-email {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.tip-message {
+  resize: vertical;
+}
+
+.tip-message:focus,
+.tip-email:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.tip-submit {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.tip-submit:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.tip-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tip-sent {
+  margin: 0;
+  font-size: 13px;
+  color: var(--fg);
+  text-align: center;
+}
+
+.tip-error {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--red);
+}
+
 /* ---------- switcher ---------- */
 
 .switcher {
