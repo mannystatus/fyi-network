@@ -977,7 +977,9 @@ footer {
 }
 
 #site.theme-google {
-  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
+  /* Matches fyiMac's font (the shared body default) rather than Google's
+     own typeface, per explicit request — not an oversight. */
+  font-family: var(--font-mono);
 }
 
 #site.theme-google .wordmark {
@@ -993,7 +995,7 @@ footer {
 #site.theme-google .article-dek,
 #site.theme-google .article-body,
 #site.theme-google .legal-body {
-  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
+  font-family: var(--font-mono);
 }
 
 #site.theme-google .site-header {
@@ -1037,7 +1039,7 @@ footer {
 
 #site.theme-google .section-label,
 #site.theme-google footer {
-  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
+  font-family: var(--font-mono);
 }
 
 /* The macOS-style address bar only fits the fyiMac terminal look —
