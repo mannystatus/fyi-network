@@ -422,7 +422,12 @@ main {
 }
 
 .featured-badge {
-  display: inline-flex;
+  /* flex (not inline-flex) + fit-content so this is a block-level box
+     sized to its own content — otherwise it sits flush against the very
+     next inline element (the category pill) with zero gap, since
+     inline-flex boxes still flow on the same line as their siblings. */
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: 4px;
   padding: 3px 9px;
