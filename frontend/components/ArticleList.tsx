@@ -24,7 +24,8 @@ export default function ArticleList({
     <div>
       {articles.map((a, i) => (
         <Fragment key={a.slug}>
-          <Link href={`/${a.slug}`} className="article-card">
+          <Link href={`/${a.slug}`} className="article-card" data-featured={a.is_featured || undefined}>
+            {a.is_featured && <span className="featured-badge">★ Featured</span>}
             {a.category && (
               <span className="category" style={{ color: categoryColor(a.category) }}>
                 {a.category}

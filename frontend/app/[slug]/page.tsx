@@ -87,6 +87,7 @@ export default async function ArticlePage({
       </p>
 
       <div className="article-header">
+        {article.is_featured && <span className="featured-badge featured-badge-lg">★ Featured</span>}
         {article.category && (
           <span className="category" style={{ color: categoryColor(article.category) }}>
             {article.category}

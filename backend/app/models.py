@@ -37,5 +37,6 @@ class Article(Base):
     author = Column(String(128))
     published_at = Column(DateTime, default=dt.datetime.utcnow)
     is_published = Column(Boolean, default=True)
+    is_featured = Column(Boolean, default=False, nullable=False)
 
     brand = relationship("Brand", back_populates="articles")

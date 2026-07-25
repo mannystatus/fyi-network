@@ -416,6 +416,32 @@ main {
   transform: translateY(-1px);
 }
 
+.article-card[data-featured="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.featured-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  margin-bottom: 8px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.featured-badge-lg {
+  margin-bottom: 12px;
+  font-size: 11px;
+  padding: 4px 11px;
+}
+
 .category {
   display: inline-flex;
   align-items: center;

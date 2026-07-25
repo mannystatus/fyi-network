@@ -35,6 +35,10 @@ def create_article(payload: ArticleCreate, db: Session = Depends(get_db)):
     Gated by X-Admin-Key — see auth.require_admin. Per brand, a slug already
     in use is skipped rather than erroring, so retrying a partially-failed
     request is safe.
+
+    Always marked is_featured — anything published through this endpoint
+    is hand-authored (vs. ingest_news.py's automated RSS briefs), so it
+    gets the "Featured" banner on the site.
     """
     slug = slugify(payload.slug or payload.title)
     author = payload.author.strip() if payload.author and payload.author.strip() else DEFAULT_AUTHOR
@@ -70,6 +74,7 @@ def create_article(payload: ArticleCreate, db: Session = Depends(get_db)):
                 author=author,
                 published_at=published_at,
                 is_published=True,
+                is_featured=True,
             )
         )
         results.append(

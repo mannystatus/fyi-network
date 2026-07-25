@@ -30,6 +30,7 @@ class ArticleListItem(BaseModel):
     dek: str | None
     author: str | None
     published_at: dt.datetime
+    is_featured: bool
 
 
 class ArticleDetail(ArticleListItem):

@@ -30,7 +30,7 @@ import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
 from html import unescape
 
-from .database import Base, SessionLocal, engine
+from .database import Base, SessionLocal, engine, ensure_schema
 from .models import Article, Brand
 from .slugs import slugify
 
@@ -319,6 +319,7 @@ def main():
         parser.error("pass --brand <slug> or --all-brands")
 
     Base.metadata.create_all(bind=engine)
+    ensure_schema(engine)
     db = SessionLocal()
     try:
         if args.all_brands:

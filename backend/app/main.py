@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import Base, engine
+from .database import Base, engine, ensure_schema
 from .routers import brands, articles
 
 Base.metadata.create_all(bind=engine)
+ensure_schema(engine)
 
 app = FastAPI(title="fyi network API")
 

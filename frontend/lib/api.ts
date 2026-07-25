@@ -43,6 +43,7 @@ export type ArticleListItem = {
   dek: string | null;
   author: string | null;
   published_at: string;
+  is_featured: boolean;
 };
 
 export type ArticleDetail = ArticleListItem & { body_md: string };

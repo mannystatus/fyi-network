@@ -4,10 +4,11 @@ Populates the three fyi brands (and their topics). Article content isn't
 seeded here — it comes from `python -m app.ingest_news`, which pulls real,
 current news per topic. Run that right after this to populate the feed.
 """
-from .database import Base, engine, SessionLocal
+from .database import Base, engine, SessionLocal, ensure_schema
 from .models import Brand
 
 Base.metadata.create_all(bind=engine)
+ensure_schema(engine)
 db = SessionLocal()
 
 BRANDS = [
