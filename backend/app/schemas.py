@@ -1,5 +1,5 @@
 import datetime as dt
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class BrandOut(BaseModel):
@@ -67,3 +67,28 @@ class ArticleCreateResult(BaseModel):
     status: str  # "created" | "skipped_duplicate" | "brand_not_found"
     article_slug: str | None = None
     url: str | None = None
+
+
+class TipChallenge(BaseModel):
+    a: int
+    b: int
+    sig: str
+
+
+class TipCreate(BaseModel):
+    a: int
+    b: int
+    sig: str
+    answer: int
+    message: str = Field(max_length=5000)
+    email: str | None = None
+    honeypot: str | None = None  # must arrive empty — bots tend to fill every field
+    elapsed_ms: int
+    source: str
+
+    @field_validator("message")
+    @classmethod
+    def not_blank(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("must not be blank")
+        return v

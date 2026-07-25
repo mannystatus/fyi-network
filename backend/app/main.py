@@ -1,25 +1,26 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine, ensure_schema
-from .routers import brands, articles
+from .routers import brands, articles, tip
 
 Base.metadata.create_all(bind=engine)
 ensure_schema(engine)
 
 app = FastAPI(title="fyi network API")
 
-# In production, restrict this to your three real domains.
+# Bare domains 301/308-redirect to their www. subdomain (see middleware.ts),
+# which is what the browser's Origin header actually carries on a real page
+# load — both forms need to be listed, or client-side fetches (this form,
+# NewsNotifications' polling) get silently blocked by CORS in production
+# despite working fine against *.localhost in dev.
+_BRAND_DOMAINS = ["fyimac.com", "fyiwin.com", "fyigoogle.com", "fyinetflix.com", "fyiflynow.com"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://fyimac.com",
-        "https://fyiwin.com",
-        "https://fyigoogle.com",
-        "https://fyinetflix.com",
-        "http://fyimac.localhost:3000",
-        "http://fyiwin.localhost:3000",
-        "http://fyigoogle.localhost:3000",
-        "http://fyinetflix.localhost:3000",
+        *(f"https://{d}" for d in _BRAND_DOMAINS),
+        *(f"https://www.{d}" for d in _BRAND_DOMAINS),
+        *(f"http://{d.split('.')[0]}.localhost:3000" for d in _BRAND_DOMAINS),
         "http://localhost:3000",
     ],
     allow_methods=["*"],
@@ -28,6 +29,7 @@ app.add_middleware(
 
 app.include_router(brands.router)
 app.include_router(articles.router)
+app.include_router(tip.router)
 
 
 @app.get("/api/health")

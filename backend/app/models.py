@@ -54,3 +54,16 @@ class AdminAuthFailure(Base):
     id = Column(Integer, primary_key=True)
     ip = Column(String(64), nullable=False, index=True)
     occurred_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
+
+
+class TipSubmission(Base):
+    """
+    One row per accepted tip-form submission, keyed by client IP. Backs the
+    rate limiter in routers/tip.py — same DB-backed pattern as
+    AdminAuthFailure, for the same stateless-serverless reason.
+    """
+    __tablename__ = "tip_submissions"
+
+    id = Column(Integer, primary_key=True)
+    ip = Column(String(64), nullable=False, index=True)
+    occurred_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)

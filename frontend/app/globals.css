@@ -806,6 +806,31 @@ footer {
   border-color: var(--accent);
 }
 
+.tip-check-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: var(--comment);
+}
+
+.tip-check-input {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.tip-check-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 .tip-submit {
   display: block;
   width: 100%;
