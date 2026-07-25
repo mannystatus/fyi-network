@@ -46,10 +46,15 @@ keeps the switcher honest instead of producing dead links.
 cd backend
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-python -m app.seed        # creates fyi.db (SQLite) and seeds the 3 brands
+cp .env.example .env
+python -c "import secrets; print(secrets.token_urlsafe(32))"   # paste into .env as ADMIN_API_KEY
+python -m app.seed        # creates fyi.db (SQLite) and seeds the brands
 python -m app.ingest_news --all-brands   # populates the feed with real news
 uvicorn app.main:app --reload
 ```
+`.env` (gitignored) is loaded automatically via `python-dotenv`. `ADMIN_API_KEY`
+gates the write endpoint described below — without it, publishing new
+articles is refused.
 
 **Frontend:**
 ```bash
@@ -143,13 +148,50 @@ Actions so the feed keeps updating on its own. It needs a `DATABASE_URL`
 repo secret pointing at your deployed Postgres — until that's set, the
 workflow just writes into a throwaway SQLite file each run.
 
+## Publishing new articles
+
+`POST /api/articles` writes a hand-authored article straight into the
+database — the same mechanism `ingest_news.py` uses internally, minus the
+RSS pull. It's gated by a shared secret: send it in an `X-Admin-Key`
+header matching the backend's `ADMIN_API_KEY` env var, or you get a 401
+(and a 503 if the server has no key configured at all — the endpoint
+fails closed, not open).
+
+```json
+POST /api/articles
+X-Admin-Key: <ADMIN_API_KEY>
+
+{
+  "title": "Headline",
+  "body_md": "Markdown body...",
+  "dek": "Optional one-sentence subhead",
+  "category": "Optional — matches a brand's topic pill if it happens to fit one",
+  "author": "Optional — defaults to \"Manny Contreras\"",
+  "brand_slugs": ["fyimac", "fyigoogle", "fyiwin", "fyinetflix"]
+}
+```
+
+One request can syndicate the same piece across any subset of brands —
+it writes one `Article` row per brand slug, all sharing the same slug
+(derived from the title if you don't pass one). Re-posting the same
+title to a brand it's already on is a no-op (`skipped_duplicate`), so
+retries are safe.
+
+The frontend wraps this in a small form at **`/admin`** (works on any of
+the four domains, isn't linked from the site nav) — pick which sites to
+publish to, write the body in Markdown, hit Publish. The admin key is
+typed into a password field and cached in `localStorage`, not baked into
+the build, so it never ships in the public JS bundle.
+
+Note this only writes to whatever `DATABASE_URL` the backend is using —
+publishing "live" means running this against your deployed Postgres, not
+just the local SQLite file.
+
 ## Extending this
 
-- **Markdown rendering**: `body_md` is raw markdown right now — drop in
-  `react-markdown` (or `next-mdx-remote`) in `app/[slug]/page.tsx`.
-- **Admin/CMS**: there's no write API yet on purpose — the cleanest next
-  step is either a small internal admin UI hitting FastAPI directly, or
-  swapping `Article` storage for a headless CMS (Payload, Directus) that
-  writes into the same Postgres your FastAPI reads from.
+- **Admin/CMS**: the write API above covers hand-authored posts. For a
+  fuller CMS experience (drafts, scheduling, image uploads), swap
+  `Article` storage for a headless CMS (Payload, Directus) that writes
+  into the same Postgres your FastAPI reads from.
 - **RSS/sitemaps**: add a `/rss.xml` and `/sitemap.xml` route per brand
   in the frontend, fed by the same `getArticles()` call.

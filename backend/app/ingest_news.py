@@ -32,6 +32,7 @@ from html import unescape
 
 from .database import Base, SessionLocal, engine
 from .models import Article, Brand
+from .slugs import slugify
 
 BING_RSS_URL = "https://www.bing.com/news/search?q={query}&format=RSS&qft=sortbydate%3d%221%22"
 GOOGLE_RSS_URL = "https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
@@ -122,10 +123,6 @@ def is_relevant(topic: str, item: dict) -> bool:
     if not keywords:
         return True
     return any(k in haystack for k in keywords)
-
-
-def slugify(title: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:80].rstrip("-")
 
 
 # Some publishers' RSS descriptions splice unrelated newsletter/CTA copy
