@@ -33,11 +33,6 @@ export function middleware(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-brand-slug", slug);
-  // Lets the root layout tell "/" apart from every other route without each
-  // page having to know — needed so fyiFlyNow's bespoke homepage can skip
-  // the shared browser-frame chrome while its other pages (privacy, terms,
-  // articles) keep it.
-  requestHeaders.set("x-pathname", request.nextUrl.pathname);
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },

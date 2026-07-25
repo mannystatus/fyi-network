@@ -1,27 +1,43 @@
 import Link from "next/link";
-import { headers } from "next/headers";
 import { getCurrentBrand, getAllBrands } from "../lib/api";
 import DomainSwitcher from "../components/DomainSwitcher";
 import TopicsNav from "../components/TopicsNav";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
 import AdSlot from "../components/AdSlot";
+import ChromeGate from "../components/ChromeGate";
 import { AD_SLOTS } from "../lib/analytics";
 
-// Unlike layout.tsx, Next.js re-mounts template.tsx on every navigation —
-// including client-side transitions between sibling pages — which is what
-// this needs: fyiFlyNow's homepage is the only route that skips the shared
-// browser-frame chrome, and that decision depends on the *current* pathname,
-// which a persisted layout would only ever evaluate once (see layout.tsx).
 export default async function Template({ children }: { children: React.ReactNode }) {
-  const [brand, brands, h] = await Promise.all([getCurrentBrand(), getAllBrands(), headers()]);
+  const [brand, brands] = await Promise.all([getCurrentBrand(), getAllBrands()]);
   const suffix = brand.name.replace("fyi", "");
-  const isFlynowHome = brand.icon === "flynow" && h.get("x-pathname") === "/";
 
-  if (isFlynowHome) {
-    return <>{children}</>;
+  // Only fyiFlyNow's homepage ever needs to hide the shared chrome, so every
+  // other brand can skip the client-side route check entirely.
+  if (brand.icon !== "flynow") {
+    return <Chrome brand={brand} brands={brands} suffix={suffix}>{children}</Chrome>;
   }
 
+  return (
+    <ChromeGate bare={children}>
+      <Chrome brand={brand} brands={brands} suffix={suffix}>
+        {children}
+      </Chrome>
+    </ChromeGate>
+  );
+}
+
+function Chrome({
+  brand,
+  brands,
+  suffix,
+  children,
+}: {
+  brand: Awaited<ReturnType<typeof getCurrentBrand>>;
+  brands: Awaited<ReturnType<typeof getAllBrands>>;
+  suffix: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className={`browser-frame theme-${brand.icon}`}>
       {brand.icon === "mac" && (
