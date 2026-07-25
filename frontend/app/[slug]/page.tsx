@@ -10,6 +10,7 @@ import AdSlot from "../../components/AdSlot";
 import FlyNowCrossPromo from "../../components/FlyNowCrossPromo";
 import { AD_SLOTS } from "../../lib/analytics";
 import { extractFaq } from "../../lib/faq";
+import { extractFirstImageUrl } from "../../lib/ogImage";
 
 function readingTime(bodyMd: string): number {
   const words = bodyMd.trim().split(/\s+/).filter(Boolean).length;
@@ -30,13 +31,34 @@ export async function generateMetadata({
     throw err;
   }
 
+  const brand = await getCurrentBrand();
   const description = article.dek || undefined;
+  const url = `https://${brand.domain}/${slug}`;
+  // Prefer an image embedded in the article itself (e.g. a custom banner);
+  // fall back to the brand's generic share-preview image otherwise. Every
+  // article gets one or the other, so link unfurls (iMessage, WhatsApp, SMS,
+  // Slack, etc.) always have something to render.
+  const imageUrl = extractFirstImageUrl(article.body_md, brand.domain) || `https://${brand.domain}/og/${brand.slug}.png`;
+
   return {
     title: article.title,
     description,
     alternates: { canonical: `/${slug}` },
-    openGraph: { title: article.title, description, type: "article", publishedTime: article.published_at },
-    twitter: { title: article.title, description },
+    openGraph: {
+      title: article.title,
+      description,
+      type: "article",
+      url,
+      siteName: brand.name,
+      publishedTime: article.published_at,
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: article.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description,
+      images: [imageUrl],
+    },
   };
 }
 
@@ -72,7 +94,7 @@ export default async function ArticlePage({
       name: brand.name,
       logo: { "@type": "ImageObject", url: `https://${brand.domain}/icons/${brand.slug}-512.png` },
     },
-    image: [`https://${brand.domain}/og/${brand.slug}.png`],
+    image: [extractFirstImageUrl(article.body_md, brand.domain) || `https://${brand.domain}/og/${brand.slug}.png`],
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
   };
 
