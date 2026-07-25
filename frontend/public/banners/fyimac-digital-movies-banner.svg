@@ -1,0 +1,114 @@
+<svg viewBox="0 0 1600 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f2f4f7"/>
+    </linearGradient>
+    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bfe0ff"/>
+      <stop offset="55%" stop-color="#4da3ff"/>
+      <stop offset="100%" stop-color="#0a5fd6"/>
+    </linearGradient>
+    <linearGradient id="bezelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5b5e63"/>
+      <stop offset="50%" stop-color="#2b2d30"/>
+      <stop offset="100%" stop-color="#1a1b1d"/>
+    </linearGradient>
+    <linearGradient id="standGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8a8d92"/>
+      <stop offset="100%" stop-color="#4a4c50"/>
+    </linearGradient>
+    <linearGradient id="btnGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0071e3"/>
+      <stop offset="100%" stop-color="#34aadc"/>
+    </linearGradient>
+    <radialGradient id="rays" cx="78%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#e9edf3" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#e9edf3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="1600" height="800" fill="url(#bgGrad)"/>
+  <rect width="1600" height="800" fill="url(#rays)"/>
+
+  <!-- subtle radiating lines -->
+  <g stroke="#e3e7ee" stroke-width="3" opacity="0.7">
+    <line x1="1250" y1="0" x2="1600" y2="260"/>
+    <line x1="1350" y1="0" x2="1600" y2="180"/>
+    <line x1="1450" y1="0" x2="1600" y2="100"/>
+    <line x1="1250" y1="800" x2="1600" y2="560"/>
+    <line x1="1350" y1="800" x2="1600" y2="640"/>
+    <line x1="1450" y1="800" x2="1600" y2="720"/>
+    <line x1="1100" y1="0" x2="1600" y2="330"/>
+    <line x1="1100" y1="800" x2="1600" y2="470"/>
+  </g>
+
+  <!-- faint circuit motif behind monitor (tech nod, replacing film reel) -->
+  <g stroke="#dfe3ea" stroke-width="6" fill="none" opacity="0.8">
+    <path d="M1450 120 L1450 220 L1520 220 L1520 300"/>
+    <circle cx="1450" cy="120" r="8" fill="#dfe3ea"/>
+    <circle cx="1520" cy="300" r="8" fill="#dfe3ea"/>
+    <path d="M1520 620 L1470 620 L1470 700 L1400 700"/>
+    <circle cx="1520" cy="620" r="8" fill="#dfe3ea"/>
+    <circle cx="1400" cy="700" r="8" fill="#dfe3ea"/>
+  </g>
+
+  <!-- floating app-icon squares (replacing popcorn kernels) -->
+  <g>
+    <rect x="705" y="130" width="46" height="46" rx="12" fill="#ff9500" opacity="0.9"/>
+    <rect x="1460" y="145" width="34" height="34" rx="9" fill="#34c759" opacity="0.9"/>
+    <rect x="1500" y="560" width="40" height="40" rx="11" fill="#5856d6" opacity="0.9"/>
+    <rect x="655" y="640" width="30" height="30" rx="8" fill="#ff3b30" opacity="0.85"/>
+    <rect x="760" y="700" width="42" height="42" rx="11" fill="#ffcc00" opacity="0.9"/>
+    <rect x="1150" y="90" width="26" height="26" rx="7" fill="#0071e3" opacity="0.8"/>
+  </g>
+
+  <!-- headline -->
+  <text x="80" y="120" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="1.5" fill="#8a8f98">fyiMac.com</text>
+  <text x="76" y="240" font-family="Helvetica, Arial, sans-serif" font-size="82" font-weight="800" fill="#0071e3">Mac News,</text>
+  <text x="76" y="330" font-family="Helvetica, Arial, sans-serif" font-size="82" font-weight="800" fill="#0071e3">Tips &amp;</text>
+  <text x="76" y="420" font-family="Helvetica, Arial, sans-serif" font-size="82" font-weight="800" fill="#0071e3">Reviews</text>
+
+  <!-- CTA button -->
+  <rect x="80" y="500" width="230" height="72" rx="36" fill="url(#btnGrad)"/>
+  <text x="195" y="546" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="600" fill="#ffffff" text-anchor="middle">Read Now</text>
+
+  <!-- monitor -->
+  <rect x="870" y="170" width="620" height="380" rx="20" fill="url(#bezelGrad)"/>
+  <rect x="896" y="196" width="568" height="290" rx="6" fill="url(#screenGrad)"/>
+  <!-- camera dot -->
+  <circle cx="1180" cy="183" r="4" fill="#0a0a0a" opacity="0.6"/>
+  <!-- stand -->
+  <rect x="1150" y="550" width="60" height="70" fill="url(#standGrad)"/>
+  <rect x="1080" y="612" width="200" height="20" rx="8" fill="url(#standGrad)"/>
+
+  <!-- reading icon centered in screen (document + magnifier, replacing play button) -->
+  <g transform="translate(1180,340)">
+    <rect x="-55" y="-70" width="90" height="120" rx="8" fill="#ffffff" opacity="0.95"/>
+    <line x1="-38" y1="-45" x2="18" y2="-45" stroke="#4da3ff" stroke-width="6"/>
+    <line x1="-38" y1="-20" x2="18" y2="-20" stroke="#bcd9ff" stroke-width="6"/>
+    <line x1="-38" y1="5" x2="18" y2="5" stroke="#bcd9ff" stroke-width="6"/>
+    <line x1="-38" y1="30" x2="-5" y2="30" stroke="#bcd9ff" stroke-width="6"/>
+    <circle cx="45" cy="40" r="28" fill="none" stroke="#0a5fd6" stroke-width="8"/>
+    <line x1="65" y1="60" x2="90" y2="85" stroke="#0a5fd6" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <!-- app-icon stack (replacing popcorn bucket) at monitor base -->
+  <g transform="translate(830,470)">
+    <rect x="0" y="60" width="110" height="110" rx="24" fill="#ffcc00" transform="rotate(-8)"/>
+    <rect x="20" y="30" width="110" height="110" rx="24" fill="#ff3b30" transform="rotate(4)"/>
+    <rect x="10" y="0" width="110" height="110" rx="24" fill="#34c759"/>
+    <path d="M40 45 L80 45 M40 60 L80 60 M40 75 L65 75" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- rating stars -->
+  <g transform="translate(1030,650)" fill="#ff9500">
+    <path d="M18 0 L23 12 L36 13 L26 21 L29 34 L18 27 L7 34 L10 21 L0 13 L13 12 Z"/>
+    <path d="M58 0 L63 12 L76 13 L66 21 L69 34 L58 27 L47 34 L50 21 L40 13 L53 12 Z"/>
+    <path d="M98 0 L103 12 L116 13 L106 21 L109 34 L98 27 L87 34 L90 21 L80 13 L93 12 Z"/>
+    <path d="M138 0 L143 12 L156 13 L146 21 L149 34 L138 27 L127 34 L130 21 L120 13 L133 12 Z"/>
+    <path d="M178 0 L183 12 L196 13 L186 21 L189 34 L178 27 L167 34 L170 21 L160 13 L173 12 Z" fill="#e5e7eb"/>
+    <path d="M178 0 L183 12 L188 13 L178 27 Z" fill="#ff9500"/>
+  </g>
+</svg>
