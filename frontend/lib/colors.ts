@@ -14,6 +14,12 @@ const PALETTE: Record<string, string> = {
   Pixel: "#4ade80",
   Chrome: "#facc15",
   Android: "#a3e635",
+
+  // fyiFlyNow's topics — pinned to its navy/sky/coral/amber palette instead
+  // of the hash fallback, which was landing on off-brand purple/pink hues.
+  "Flight Deals": "#FFB627",
+  "Airline News": "#4FC3FF",
+  "Travel Tips": "#FF6B4A",
 };
 
 export function categoryColor(name: string | null | undefined): string {
