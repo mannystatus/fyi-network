@@ -9,6 +9,7 @@ import ArticleList from "../../components/ArticleList";
 import AdSlot from "../../components/AdSlot";
 import FlyNowCrossPromo from "../../components/FlyNowCrossPromo";
 import { AD_SLOTS } from "../../lib/analytics";
+import { extractFaq } from "../../lib/faq";
 
 function readingTime(bodyMd: string): number {
   const words = bodyMd.trim().split(/\s+/).filter(Boolean).length;
@@ -75,6 +76,22 @@ export default async function ArticlePage({
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
   };
 
+  // Mirrors the visible "Frequently Asked Questions" section in body_md, if
+  // the article has one — Google requires FAQPage structured data to match
+  // what's actually rendered on the page, not just live in the JSON-LD.
+  const faqItems = extractFaq(article.body_md);
+  const faqJsonLd = faqItems.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqItems.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: { "@type": "Answer", text: item.answer },
+        })),
+      }
+    : null;
+
   return (
     <article>
       <script
@@ -82,6 +99,13 @@ export default async function ArticlePage({
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       <p className="section-label">
         <Link href="/">&larr; Latest</Link>
       </p>
