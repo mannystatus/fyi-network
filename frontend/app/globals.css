@@ -1164,19 +1164,25 @@ footer {
   }
 }
 
-#site.theme-flynow {
-  /* Same navy palette as the homepage, and fixed regardless of the site's
-     light/dark toggle — the homepage itself is always dark (a split-flap
-     departure board doesn't have a "light mode"), so flipping these other
-     pages to light on toggle would jar against it. Retheming the shared
-     tokens here reskins every component built on them (cards, nav, forms,
-     ad slots, link hovers) without needing a rule per component. */
+/* Set on <body> (see app/layout.tsx), not just #site, because #site doesn't
+   even exist on fyiFlyNow's bespoke homepage — layout.tsx skips the shared
+   browser-frame chrome there entirely — and because CookieBanner renders as
+   a sibling of #site, not a descendant, so it was still picking up the
+   default light-mode tokens (a white banner over the navy page) even after
+   #site itself was themed. Body-level covers both. Fixed regardless of the
+   site's light/dark toggle — the homepage itself is always dark (a
+   split-flap departure board doesn't have a "light mode"), so flipping
+   these other pages to light on toggle would jar against it. */
+body.theme-flynow-body {
   --bg: #06122b;
   --bg-alt: #0a1a3d;
   --border: #1c3363;
   --fg: #eee;
   --comment: #7d8db3;
   --blue: var(--accent);
+}
+
+#site.theme-flynow {
   font-family: var(--font-flynow-body), "Space Grotesk", sans-serif;
 }
 

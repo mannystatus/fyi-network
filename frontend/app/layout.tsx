@@ -86,7 +86,9 @@ export default async function RootLayout({
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
       <body
-        className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable}`}
+        className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable} ${
+          brand.icon === "flynow" ? "theme-flynow-body" : ""
+        }`}
         style={{ "--accent": brand.accent_color } as React.CSSProperties}
       >
         <Script
