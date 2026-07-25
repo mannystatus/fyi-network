@@ -1165,6 +1165,18 @@ footer {
 }
 
 #site.theme-flynow {
+  /* Same navy palette as the homepage, and fixed regardless of the site's
+     light/dark toggle — the homepage itself is always dark (a split-flap
+     departure board doesn't have a "light mode"), so flipping these other
+     pages to light on toggle would jar against it. Retheming the shared
+     tokens here reskins every component built on them (cards, nav, forms,
+     ad slots, link hovers) without needing a rule per component. */
+  --bg: #06122b;
+  --bg-alt: #0a1a3d;
+  --border: #1c3363;
+  --fg: #eee;
+  --comment: #7d8db3;
+  --blue: var(--accent);
   font-family: var(--font-flynow-body), "Space Grotesk", sans-serif;
 }
 
@@ -1196,6 +1208,7 @@ footer {
 }
 
 #site.theme-flynow .article-card {
+  background: var(--bg-alt);
   border: 1px solid var(--border);
   border-radius: 10px;
   transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
