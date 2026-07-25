@@ -99,3 +99,22 @@ def get_article(
     if not article:
         raise HTTPException(status_code=404, detail="Article not found for this brand")
     return article
+
+
+@router.delete("/{slug}", dependencies=[Depends(require_admin)])
+def delete_article(
+    slug: str,
+    db: Session = Depends(get_db),
+    brand_slugs: list[str] = Query(..., description="Which brands to remove this slug from"),
+):
+    """Retracts an article — e.g. to undo a typo'd publish or a duplicate syndication."""
+    deleted = []
+    for brand_slug in brand_slugs:
+        brand = db.query(Brand).filter(Brand.slug == brand_slug.strip().lower()).first()
+        if not brand:
+            continue
+        n = db.query(Article).filter(Article.brand_id == brand.id, Article.slug == slug).delete()
+        if n:
+            deleted.append(brand_slug)
+    db.commit()
+    return {"deleted_from": deleted}
