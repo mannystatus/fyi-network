@@ -40,3 +40,17 @@ class Article(Base):
     is_featured = Column(Boolean, default=False, nullable=False)
 
     brand = relationship("Brand", back_populates="articles")
+
+
+class AdminAuthFailure(Base):
+    """
+    One row per failed X-Admin-Key attempt, keyed by client IP. Backs the
+    rate limiter in auth.py — a DB table (not an in-memory counter) because
+    this runs as stateless serverless functions, where in-memory state
+    doesn't survive between invocations or across instances.
+    """
+    __tablename__ = "admin_auth_failures"
+
+    id = Column(Integer, primary_key=True)
+    ip = Column(String(64), nullable=False, index=True)
+    occurred_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
