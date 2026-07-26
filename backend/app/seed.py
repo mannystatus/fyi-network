@@ -26,7 +26,7 @@ BRANDS = [
     ),
     dict(
         slug="fyigoogle", name="fyiGoogle", domain="fyigoogle.com",
-        accent_color="#4285f4", icon="google",  # Google's own brand blue
+        accent_color="#34a853", icon="google",  # Google's own brand green — was blue, too close to fyiWin's
         tagline="Google news. Decoded daily.",
         topics="Pixel,Chrome,Android,YouTube",
     ),
