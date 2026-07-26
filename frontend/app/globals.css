@@ -12,6 +12,27 @@
   /* overridden per-request in app/layout.tsx based on the resolved brand */
   --accent: #e8e8ed;
 
+  /* Topic-label colors (see lib/colors.ts). These pastel values read fine
+     on the dark card background above but wash out on light mode's white
+     one, so light mode overrides every one of these below with a darker,
+     more saturated version of the same hue rather than a different color. */
+  --cat-mac: #a78bfa;
+  --cat-iphone: #fb7185;
+  --cat-ipad: #38bdf8;
+  --cat-apple-watch: #34d399;
+  --cat-services: #fbbf24;
+  --cat-windows-11: #60a5fa;
+  --cat-hardware: #fb923c;
+  --cat-copilot: #c084fc;
+  --cat-pixel: #4ade80;
+  --cat-chrome: #facc15;
+  --cat-android: #a3e635;
+  --cat-flight-deals: #ffb627;
+  --cat-airline-news: #4fc3ff;
+  --cat-travel-tips: #ff6b4a;
+  --cat-fallback-s: 70%;
+  --cat-fallback-l: 65%;
+
   --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
 
   /* Per-theme "OS chrome" colors that are solid fills or white-alpha
@@ -55,6 +76,22 @@
     --cros-omnibox-bg: #eceef5;
     --netflix-chrome-bg: #ffffff;
     --netflix-card-bg: rgba(0, 0, 0, 0.035);
+
+    --cat-mac: #8055ff;
+    --cat-iphone: #ee0023;
+    --cat-ipad: #007eb6;
+    --cat-apple-watch: #17875e;
+    --cat-services: #9a6f00;
+    --cat-windows-11: #0070f9;
+    --cat-hardware: #c25700;
+    --cat-copilot: #a040ff;
+    --cat-pixel: #13893e;
+    --cat-chrome: #907300;
+    --cat-android: #56830a;
+    --cat-flight-deals: #a26b00;
+    --cat-airline-news: #007dbd;
+    --cat-travel-tips: #e52a00;
+    --cat-fallback-l: 38%;
   }
 }
 
@@ -74,6 +111,22 @@
   --cros-omnibox-bg: #eceef5;
   --netflix-chrome-bg: #ffffff;
   --netflix-card-bg: rgba(0, 0, 0, 0.035);
+
+  --cat-mac: #8055ff;
+  --cat-iphone: #ee0023;
+  --cat-ipad: #007eb6;
+  --cat-apple-watch: #17875e;
+  --cat-services: #9a6f00;
+  --cat-windows-11: #0070f9;
+  --cat-hardware: #c25700;
+  --cat-copilot: #a040ff;
+  --cat-pixel: #13893e;
+  --cat-chrome: #907300;
+  --cat-android: #56830a;
+  --cat-flight-deals: #a26b00;
+  --cat-airline-news: #007dbd;
+  --cat-travel-tips: #e52a00;
+  --cat-fallback-l: 38%;
 }
 
 html,
