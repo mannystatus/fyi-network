@@ -6,7 +6,7 @@ import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { getCurrentBrand } from "../lib/api";
 import CookieBanner from "../components/CookieBanner";
-import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID } from "../lib/analytics";
+import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID, SWG_PRODUCT_IDS } from "../lib/analytics";
 
 // Only fyiFlyNow's theme references these (via --font-flynow-*) — self-hosted
 // by next/font so there's no extra external request for the other brands.
@@ -71,6 +71,7 @@ export default async function RootLayout({
   const cookieConsented = cookieStore.get("cookie-consent")?.value === "accepted";
   const gtmId = GTM_IDS[brand.slug];
   const gaId = GA_IDS[brand.slug];
+  const swgProductId = SWG_PRODUCT_IDS[brand.slug];
 
   return (
     <html lang="en" {...htmlThemeProps}>
@@ -88,6 +89,26 @@ export default async function RootLayout({
           crossOrigin="anonymous"
           strategy="beforeInteractive"
         />
+
+        {swgProductId && (
+          <>
+            <Script
+              async
+              src="https://news.google.com/swg/js/v1/swg-basic.js"
+              strategy="beforeInteractive"
+            />
+            <Script id="swg-basic-init" strategy="beforeInteractive">
+              {`(self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
+                basicSubscriptions.init({
+                  type: "NewsArticle",
+                  isPartOfType: ["Product"],
+                  isPartOfProductId: "${swgProductId}",
+                  clientOptions: { theme: "light", lang: "en" },
+                });
+              });`}
+            </Script>
+          </>
+        )}
 
         {children}
 

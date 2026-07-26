@@ -12,6 +12,14 @@ export const GA_IDS: Record<string, string> = {
 // One AdSense account for the whole network — loaded sitewide, not per-brand.
 export const ADSENSE_CLIENT_ID = "ca-pub-6138840929831792";
 
+// Google News Publisher Center's Subscribe with Google Basic product IDs, one
+// per brand enrolled in News Showcase — see layout.tsx for the swg-basic.js
+// init this drives. A brand with no entry here skips the script entirely.
+export const SWG_PRODUCT_IDS: Record<string, string> = {
+  fyinetflix: "CAowzY_hCw:openaccess",
+  fyigoogle: "CAowzo_hCw:openaccess",
+};
+
 // Per-placement ad unit IDs, set once each unit is created in the AdSense
 // dashboard (Ads > By ad unit > Display ads) and its slot ID added as a
 // Vercel env var. A placement with no slot ID configured renders an empty
