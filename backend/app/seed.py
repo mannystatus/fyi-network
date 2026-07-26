@@ -34,7 +34,10 @@ BRANDS = [
         slug="fyinetflix", name="fyiNetflix", domain="fyinetflix.com",
         accent_color="#e50914", icon="netflix",
         tagline="Netflix news. Decoded daily.",
-        topics="New Releases,Netflix Originals,Renewals & Cancellations,Top 10,K-Drama",
+        # Staff Reviews is editorial-only — see MANUAL_ONLY_TOPICS in
+        # ingest_news.py, which skips it rather than searching the topic
+        # name as a literal news query.
+        topics="New Releases,Netflix Originals,Renewals & Cancellations,Top 10,K-Drama,Staff Reviews",
     ),
     dict(
         slug="fyiflynow", name="fyiFlyNow", domain="fyiflynow.com",

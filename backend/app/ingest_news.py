@@ -111,6 +111,12 @@ TRUSTED_SOURCES = {
     "K-Drama": ["soompi", "allkpop", "koreaboo", "korea herald", "koreajoongangdaily"],
 }
 
+# Editorial-only topics: no RSS query makes sense for these (there's no
+# newswire for "our own staff's opinion"), so ingestion skips them entirely
+# rather than searching the topic name literally and pulling in unrelated
+# junk attributed to random outlets. Populated only by hand via /admin.
+MANUAL_ONLY_TOPICS = {"Staff Reviews"}
+
 
 def is_relevant(topic: str, item: dict) -> bool:
     haystack = f"{item['title']} {item['description'] or ''}".lower()
@@ -285,6 +291,8 @@ def ingest_brand(db, brand: Brand, per_topic: int) -> int:
     seen_slugs = {row[0] for row in db.query(Article.slug).filter(Article.brand_id == brand.id).all()}
     added = 0
     for topic in topics:
+        if topic in MANUAL_ONLY_TOPICS:
+            continue
         try:
             items = fetch_headlines(topic)
         except Exception as exc:
