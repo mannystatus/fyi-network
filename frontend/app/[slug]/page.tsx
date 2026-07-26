@@ -8,9 +8,22 @@ import ShareButtons from "../../components/ShareButtons";
 import ArticleList from "../../components/ArticleList";
 import AdSlot from "../../components/AdSlot";
 import FlyNowCrossPromo from "../../components/FlyNowCrossPromo";
+import GoogleCrossPromo from "../../components/GoogleCrossPromo";
+import NetflixCrossPromo from "../../components/NetflixCrossPromo";
 import { AD_SLOTS } from "../../lib/analytics";
 import { extractFaq } from "../../lib/faq";
 import { extractFirstImageUrl } from "../../lib/ogImage";
+
+// Each brand cross-promotes exactly one sibling: fyiMac and fyiNetflix
+// both drive traffic to fyiFlyNow (the newest site), while fyiWin -> fyiGoogle
+// -> fyiNetflix forms a discovery chain through the rest. fyiFlyNow itself
+// promotes no one (it's already the thing being promoted).
+const CROSS_PROMO: Record<string, React.ComponentType> = {
+  fyimac: FlyNowCrossPromo,
+  fyiwin: GoogleCrossPromo,
+  fyigoogle: NetflixCrossPromo,
+  fyinetflix: FlyNowCrossPromo,
+};
 
 function readingTime(bodyMd: string): number {
   const words = bodyMd.trim().split(/\s+/).filter(Boolean).length;
@@ -161,7 +174,10 @@ export default async function ArticlePage({
 
       <AdSlot slot={AD_SLOTS.inArticle} />
 
-      {brand.slug !== "fyiflynow" && <FlyNowCrossPromo />}
+      {(() => {
+        const CrossPromo = CROSS_PROMO[brand.slug];
+        return CrossPromo ? <CrossPromo /> : null;
+      })()}
 
       {related.length > 0 && (
         <div className="related-section">

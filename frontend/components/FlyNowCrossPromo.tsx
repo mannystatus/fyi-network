@@ -1,9 +1,9 @@
-// fyiFlyNow cross-promo module — embedded on every other brand's article
-// pages (fyiMac, fyiWin, fyiGoogle, fyiNetflix), never on fyiFlyNow itself.
-// All styles are scoped under .fyi-flynow-promo so they don't leak into
-// the host page, and carry fyiFlyNow's own branding regardless of which
-// site it's rendered on — it's an ad for a different site, not themed
-// content, so it deliberately doesn't blend into the host.
+// fyiFlyNow cross-promo module — embedded on fyiMac's and fyiNetflix's
+// article pages (see CROSS_PROMO in app/[slug]/page.tsx). All styles are
+// scoped under .fyi-flynow-promo so they don't leak into the host page,
+// and carry fyiFlyNow's own branding regardless of which site it's
+// rendered on — it's an ad for a different site, not themed content, so
+// it deliberately doesn't blend into the host.
 export default function FlyNowCrossPromo() {
   return (
     <div className="fyi-flynow-promo">

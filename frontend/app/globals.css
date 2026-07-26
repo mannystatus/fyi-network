@@ -313,8 +313,14 @@ a {
 }
 
 .wordmark {
+  display: inline-block;
   font-size: 30px;
   color: var(--fg);
+  text-decoration: none;
+}
+
+.wordmark:hover {
+  opacity: 0.85;
 }
 
 .wordmark .suffix {

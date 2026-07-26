@@ -123,11 +123,11 @@ function Chrome({
 
         <div className="site-header">
           <div>
-            <div className="wordmark">
+            <Link href="/" className="wordmark" aria-label={`${brand.name} home`}>
               fyi
               <span className="suffix">{suffix}</span>
               {brand.icon === "mac" && <span className="cursor" />}
-            </div>
+            </Link>
             <div className="tagline">{brand.tagline}</div>
           </div>
           <div className="header-actions">
