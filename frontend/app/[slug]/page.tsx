@@ -161,7 +161,7 @@ export default async function ArticlePage({
 
       <AdSlot slot={AD_SLOTS.inArticle} />
 
-      {brand.slug === "fyimac" && <FlyNowCrossPromo />}
+      {brand.slug !== "fyiflynow" && <FlyNowCrossPromo />}
 
       {related.length > 0 && (
         <div className="related-section">
