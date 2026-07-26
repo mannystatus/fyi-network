@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getArticles, getCurrentBrand } from "../../../lib/api";
 import ArticleList from "../../../components/ArticleList";
+import Pagination from "../../../components/Pagination";
+
+const PAGE_SIZE = 20;
 
 export async function generateMetadata({
   params,
@@ -26,19 +29,31 @@ export async function generateMetadata({
 
 export default async function TopicPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ topic: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const { topic } = await params;
   const topicName = decodeURIComponent(topic);
-  const articles = await getArticles(topicName);
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const offset = (page - 1) * PAGE_SIZE;
+
+  const fetched = await getArticles(topicName, PAGE_SIZE + 1, offset);
+  const hasMore = fetched.length > PAGE_SIZE;
+  const articles = fetched.slice(0, PAGE_SIZE);
 
   return (
     <>
       <p className="section-label">
         <Link href="/">&larr; Latest</Link> &nbsp;/&nbsp; {topicName}
       </p>
-      <ArticleList articles={articles} emptyMessage={`No articles yet for ${topicName}.`} />
+      <ArticleList
+        articles={articles}
+        emptyMessage={page > 1 ? "Nothing here — go back to page 1." : `No articles yet for ${topicName}.`}
+      />
+      <Pagination page={page} hasMore={hasMore} basePath={`/topics/${encodeURIComponent(topicName)}`} />
     </>
   );
 }

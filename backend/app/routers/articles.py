@@ -19,12 +19,19 @@ def list_articles(
     db: Session = Depends(get_db),
     brand: Brand = Depends(resolve_brand),
     category: str | None = Query(default=None, description="Filter to one topic/category, e.g. ?category=Mac"),
+    q: str | None = Query(default=None, description="Search title/dek/body, e.g. ?q=iphone"),
     limit: int = 20,
+    offset: int = Query(default=0, ge=0, description="Skip this many, for pagination"),
 ):
     query = db.query(Article).filter(Article.brand_id == brand.id, Article.is_published.is_(True))
     if category:
         query = query.filter(Article.category.ilike(category))
-    return query.order_by(Article.published_at.desc()).limit(limit).all()
+    if q:
+        like = f"%{q}%"
+        query = query.filter(
+            Article.title.ilike(like) | Article.dek.ilike(like) | Article.body_md.ilike(like)
+        )
+    return query.order_by(Article.published_at.desc()).offset(offset).limit(limit).all()
 
 
 @router.post("", response_model=list[ArticleCreateResult], dependencies=[Depends(require_admin)])

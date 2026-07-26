@@ -4,6 +4,7 @@ import DomainSwitcher from "../components/DomainSwitcher";
 import TopicsNav from "../components/TopicsNav";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
+import SearchBox from "../components/SearchBox";
 import SendTipForm from "../components/SendTipForm";
 import AdSlot from "../components/AdSlot";
 import ChromeGate from "../components/ChromeGate";
@@ -41,15 +42,6 @@ function Chrome({
 }) {
   return (
     <div className={`browser-frame theme-${brand.icon}`}>
-      {brand.icon === "mac" && (
-        <div className="browser-chrome">
-          <span className="dot" style={{ background: "#f7768e" }} />
-          <span className="dot" style={{ background: "#e0af68" }} />
-          <span className="dot" style={{ background: "#9ece6a" }} />
-          <div className="urlbar">{brand.domain}</div>
-        </div>
-      )}
-
       {brand.icon === "win" && (
         <div className="win-titlebar">
           <div className="win-logo">
@@ -139,6 +131,7 @@ function Chrome({
             <div className="tagline">{brand.tagline}</div>
           </div>
           <div className="header-actions">
+            <SearchBox />
             <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
             <ThemeToggle />
             <DomainSwitcher brands={brands} currentSlug={brand.slug} />
