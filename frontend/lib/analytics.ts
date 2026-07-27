@@ -8,6 +8,7 @@ export const GTM_IDS: Record<string, string> = {
 export const GA_IDS: Record<string, string> = {
   fyimac: "G-PSQQ1FZD5V",
   fyilakers: "G-Q5YL25N886",
+  fyidodgers: "G-Z3M4PYWVW6",
 };
 
 // One AdSense account for the whole network — loaded sitewide, not per-brand.
