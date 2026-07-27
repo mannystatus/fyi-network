@@ -7,6 +7,7 @@ export const GTM_IDS: Record<string, string> = {
 // alongside) a GTM container.
 export const GA_IDS: Record<string, string> = {
   fyimac: "G-PSQQ1FZD5V",
+  fyilakers: "G-Q5YL25N886",
 };
 
 // One AdSense account for the whole network — loaded sitewide, not per-brand.
