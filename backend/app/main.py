@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine, ensure_schema
-from .routers import brands, articles, tip
+from .routers import brands, articles, tip, admin_seed
 
 Base.metadata.create_all(bind=engine)
 ensure_schema(engine)
@@ -13,7 +13,7 @@ app = FastAPI(title="fyi network API")
 # load — both forms need to be listed, or client-side fetches (this form,
 # NewsNotifications' polling) get silently blocked by CORS in production
 # despite working fine against *.localhost in dev.
-_BRAND_DOMAINS = ["fyimac.com", "fyiwin.com", "fyigoogle.com", "fyinetflix.com", "fyiflynow.com"]
+_BRAND_DOMAINS = ["fyimac.com", "fyiwin.com", "fyigoogle.com", "fyinetflix.com", "fyiflynow.com", "fyilakers.com"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -30,6 +30,7 @@ app.add_middleware(
 app.include_router(brands.router)
 app.include_router(articles.router)
 app.include_router(tip.router)
+app.include_router(admin_seed.router)
 
 
 @app.get("/api/health")
