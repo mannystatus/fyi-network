@@ -52,6 +52,21 @@ function logoGlyph(icon) {
       </g>
     `;
   }
+  if (icon === "lakers") {
+    // Basketball: gold ball with purple seam lines, on the same terminal-dark
+    // banner background every brand shares — purple/gold only shows up in
+    // the ball itself, echoing the logo kit's palette without needing a
+    // dedicated purple banner background.
+    const r = 90;
+    return `
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="#fdb927"/>
+      <line x1="${cx - r}" y1="${cy}" x2="${cx + r}" y2="${cy}" stroke="#4b1f73" stroke-width="5"/>
+      <line x1="${cx}" y1="${cy - r}" x2="${cx}" y2="${cy + r}" stroke="#4b1f73" stroke-width="5"/>
+      <path d="M ${cx} ${cy - r} Q ${cx - r * 0.9} ${cy} ${cx} ${cy + r}" stroke="#4b1f73" stroke-width="5" fill="none"/>
+      <path d="M ${cx} ${cy - r} Q ${cx + r * 0.9} ${cy} ${cx} ${cy + r}" stroke="#4b1f73" stroke-width="5" fill="none"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" stroke="#4b1f73" stroke-width="5" fill="none"/>
+    `;
+  }
   // netflix — same bold serif "N" the live site renders in .netflix-logo
   return `<text x="${cx}" y="${cy + 60}" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="800" font-size="200" fill="#e50914" letter-spacing="-6">N</text>`;
 }
@@ -87,6 +102,7 @@ const BRANDS = [
   { slug: "fyigoogle", suffix: "Google", icon: "google", tagline: "Google news. Decoded daily." },
   { slug: "fyinetflix", suffix: "Netflix", icon: "netflix", tagline: "Netflix news. Decoded daily." },
   { slug: "fyiflynow", suffix: "FlyNow", icon: "flynow", tagline: "Flight deals. Decoded daily." },
+  { slug: "fyilakers", suffix: "Lakers", icon: "lakers", tagline: "Lakers news. Decoded daily." },
 ];
 
 mkdirSync(OUT_DIR, { recursive: true });

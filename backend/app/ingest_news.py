@@ -64,6 +64,11 @@ QUERY_OVERRIDES = {
     "Flight Deals": "flight deals OR cheap flights OR airfare sale",
     "Airline News": "airline news",
     "Travel Tips": "travel tips flying OR airport tips",
+    "Team News": "Los Angeles Lakers news",
+    "Trade Rumors": "Los Angeles Lakers trade rumors",
+    "Injury Report": "Los Angeles Lakers injury report",
+    "Game Recaps": "Los Angeles Lakers game recap",
+    "Draft & Free Agency": "Los Angeles Lakers draft OR free agency",
 }
 
 # Bing News search occasionally returns loosely-related filler when a topic
@@ -94,6 +99,14 @@ FILTER_KEYWORDS = {
     "Flight Deals": ["flight", "flights", "airfare", "fare"],
     "Airline News": ["airline", "airlines"],
     "Travel Tips": ["travel", "flight", "airport", "flying", "trip"],
+    # "Team News" and "Game Recaps" are generic enough to pull in unrelated
+    # results (recaps of other games, other teams' "news") without requiring
+    # the team name itself, same reasoning as Netflix's topics above.
+    "Team News": ["lakers"],
+    "Trade Rumors": ["lakers"],
+    "Injury Report": ["lakers"],
+    "Game Recaps": ["lakers"],
+    "Draft & Free Agency": ["lakers"],
 }
 
 # A product keyword can show up in a story that has nothing to do with the

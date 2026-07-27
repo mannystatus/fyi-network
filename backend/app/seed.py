@@ -45,6 +45,12 @@ BRANDS = [
         tagline="Flight deals. Decoded daily.",
         topics="Flight Deals,Airline News,Travel Tips",
     ),
+    dict(
+        slug="fyilakers", name="fyiLakers", domain="fyilakers.com",
+        accent_color="#4b1f73", icon="lakers",  # the exact purple from the provided logo kit
+        tagline="Lakers news. Decoded daily.",
+        topics="Team News,Trade Rumors,Injury Report,Game Recaps,Draft & Free Agency",
+    ),
 ]
 
 brand_rows = {}

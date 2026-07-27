@@ -54,6 +54,15 @@
      real "light mode" version of the physical object it's imitating. */
   --flynow-chrome-bg: #06122b;
   --flynow-line: #1c3363;
+
+  /* Also fixed regardless of light/dark toggle, same reasoning as flynow
+     above — a purple-and-gold scoreboard bar reads as itself in both modes,
+     tying every page back to the brand even when the rest of the chrome
+     (article-card, background) does flip with the toggle. Exact values
+     from the provided logo kit, not the league's own (slightly different)
+     official purple/gold. */
+  --lakers-chrome-bg: #4b1f73;
+  --lakers-gold: #fdb927;
 }
 
 /* Light mode: explicit user choice (data-theme, set by ThemeToggle + the
@@ -1493,6 +1502,128 @@ body.theme-flynow-body {
 }
 
 #site.theme-flynow .article-card .category {
+  font-weight: 700;
+}
+
+/* ---------- fyiLakers theme, used only when fyiLakers is active ---------- */
+/* Purple/gold from the provided logo kit (accent_color #4b1f73, plus the
+   --lakers-gold token above as a secondary trim color) instead of the
+   shared blue everything else uses. Condensed Oswald echoes the
+   "fyi LAKERS" logo lockup's headline lettering for the wordmark and
+   article titles; body copy stays a plain system sans for readability. */
+
+.lakers-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--lakers-chrome-bg);
+  border-bottom: 2px solid var(--lakers-gold);
+}
+
+.lakers-jersey {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lakers-badge {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--lakers-chrome-bg);
+  background: var(--lakers-gold);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.lakers-name {
+  font-family: var(--font-lakers-display), Oswald, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+
+.lakers-score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #d9c7ee;
+}
+
+.lakers-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lakers-gold);
+  animation: lakers-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes lakers-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+#site.theme-lakers {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#site.theme-lakers .wordmark {
+  font-family: var(--font-lakers-display), Oswald, sans-serif;
+  font-weight: 600;
+}
+
+#site.theme-lakers .wordmark .suffix {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+#site.theme-lakers .article-title {
+  font-family: var(--font-lakers-display), Oswald, sans-serif;
+  font-weight: 600;
+}
+
+#site.theme-lakers .site-header {
+  padding: 24px 32px 14px;
+}
+
+#site.theme-lakers .switcher-btn {
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-alt));
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+}
+
+#site.theme-lakers .article-card {
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--lakers-gold);
+  border-radius: 10px;
+  background: var(--bg-alt);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+#site.theme-lakers .article-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--lakers-gold) 25%, transparent);
+  transform: translateY(-1px);
+}
+
+#site.theme-lakers .article-card h2 {
+  font-family: var(--font-lakers-display), Oswald, sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+#site.theme-lakers .article-card .category {
   font-weight: 700;
 }
 

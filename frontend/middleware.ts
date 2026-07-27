@@ -15,6 +15,8 @@ const DOMAIN_TO_SLUG: Record<string, string> = {
   "www.fyinetflix.com": "fyinetflix",
   "fyiflynow.com": "fyiflynow",
   "www.fyiflynow.com": "fyiflynow",
+  "fyilakers.com": "fyilakers",
+  "www.fyilakers.com": "fyilakers",
 
   // local dev: run `npm run dev` and visit these directly —
   // *.localhost resolves to 127.0.0.1 in every modern browser, no /etc/hosts needed.
@@ -23,6 +25,7 @@ const DOMAIN_TO_SLUG: Record<string, string> = {
   "fyigoogle.localhost:3000": "fyigoogle",
   "fyinetflix.localhost:3000": "fyinetflix",
   "fyiflynow.localhost:3000": "fyiflynow",
+  "fyilakers.localhost:3000": "fyilakers",
 };
 
 const DEFAULT_SLUG = "fyimac"; // fallback for bare localhost:3000 during dev

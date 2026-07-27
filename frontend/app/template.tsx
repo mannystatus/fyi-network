@@ -85,6 +85,19 @@ function Chrome({
         </div>
       )}
 
+      {brand.icon === "lakers" && (
+        <div className="lakers-titlebar">
+          <div className="lakers-jersey">
+            <span className="lakers-badge">LAL</span>
+            <span className="lakers-name">LAKERS</span>
+          </div>
+          <div className="lakers-score">
+            <span className="lakers-dot" />
+            {brand.domain}
+          </div>
+        </div>
+      )}
+
       {brand.icon === "flynow" && (
         <div className="flynow-titlebar">
           <div className="flynow-flaps">

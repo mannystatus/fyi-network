@@ -1,7 +1,7 @@
 import Script from "next/script";
 import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
-import { Archivo_Black, Space_Grotesk, Inter } from "next/font/google";
+import { Archivo_Black, Space_Grotesk, Inter, Oswald } from "next/font/google";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { getCurrentBrand } from "../lib/api";
@@ -13,6 +13,10 @@ import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID, SWG_PRODUCT_IDS } from "../lib/anal
 const flynowDisplay = Archivo_Black({ weight: "400", subsets: ["latin"], variable: "--font-flynow-display" });
 const flynowBody = Space_Grotesk({ weight: "500", subsets: ["latin"], variable: "--font-flynow-body" });
 const flynowSans = Inter({ weight: ["300", "400", "500", "600"], subsets: ["latin"], variable: "--font-flynow-sans" });
+
+// Only fyiLakers references this (via --font-lakers-display) — condensed
+// bold caps to match the "fyi LAKERS" logo lockup's headline lettering.
+const lakersDisplay = Oswald({ weight: ["500", "600", "700"], subsets: ["latin"], variable: "--font-lakers-display" });
 
 // A plain <meta> tag has no JS dependency, unlike next/script's adsbygoogle
 // loader (which Next only ever injects client-side, even with
@@ -78,7 +82,7 @@ export default async function RootLayout({
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
       <body
-        className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable} ${
+        className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable} ${lakersDisplay.variable} ${
           brand.icon === "flynow" ? "theme-flynow-body" : ""
         }`}
         style={{ "--accent": brand.accent_color } as React.CSSProperties}
