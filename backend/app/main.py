@@ -13,7 +13,7 @@ app = FastAPI(title="fyi network API")
 # load — both forms need to be listed, or client-side fetches (this form,
 # NewsNotifications' polling) get silently blocked by CORS in production
 # despite working fine against *.localhost in dev.
-_BRAND_DOMAINS = ["fyimac.com", "fyiwin.com", "fyigoogle.com", "fyinetflix.com", "fyiflynow.com", "fyilakers.com"]
+_BRAND_DOMAINS = ["fyimac.com", "fyiwin.com", "fyigoogle.com", "fyinetflix.com", "fyiflynow.com", "fyilakers.com", "fyidodgers.com"]
 
 app.add_middleware(
     CORSMiddleware,

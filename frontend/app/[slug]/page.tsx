@@ -11,6 +11,7 @@ import FlyNowCrossPromo from "../../components/FlyNowCrossPromo";
 import GoogleCrossPromo from "../../components/GoogleCrossPromo";
 import NetflixCrossPromo from "../../components/NetflixCrossPromo";
 import LakersCrossPromo from "../../components/LakersCrossPromo";
+import DodgersCrossPromo from "../../components/DodgersCrossPromo";
 import { AD_SLOTS } from "../../lib/analytics";
 import { extractFaq } from "../../lib/faq";
 import { extractFirstImageUrl } from "../../lib/ogImage";
@@ -18,14 +19,15 @@ import { extractFirstImageUrl } from "../../lib/ogImage";
 // Each brand cross-promotes exactly one sibling: fyiMac and fyiNetflix
 // both drive traffic to fyiFlyNow, while fyiWin -> fyiGoogle -> fyiNetflix
 // forms a discovery chain through the rest, ending at fyiFlyNow -> fyiLakers
-// (the newest site). fyiLakers itself promotes no one (it's already the
-// thing being promoted).
+// -> fyiDodgers (the newest site). fyiDodgers itself promotes no one (it's
+// already the thing being promoted).
 const CROSS_PROMO: Record<string, React.ComponentType> = {
   fyimac: FlyNowCrossPromo,
   fyiwin: GoogleCrossPromo,
   fyigoogle: NetflixCrossPromo,
   fyinetflix: FlyNowCrossPromo,
   fyiflynow: LakersCrossPromo,
+  fyilakers: DodgersCrossPromo,
 };
 
 function readingTime(bodyMd: string): number {

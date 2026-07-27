@@ -63,6 +63,10 @@
      official purple/gold. */
   --lakers-chrome-bg: #4b1f73;
   --lakers-gold: #fdb927;
+
+  /* Same fixed-regardless-of-toggle reasoning as the lakers tokens above.
+     Single color from the logo kit — no secondary accent this time. */
+  --dodgers-chrome-bg: #005a9c;
 }
 
 /* Light mode: explicit user choice (data-theme, set by ThemeToggle + the
@@ -1540,7 +1544,7 @@ body.theme-flynow-body {
 }
 
 .lakers-name {
-  font-family: var(--font-lakers-display), Oswald, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sports-display), Oswald, "Helvetica Neue", Arial, sans-serif;
   font-weight: 600;
   font-size: 13px;
   letter-spacing: 0.06em;
@@ -1579,7 +1583,7 @@ body.theme-flynow-body {
 }
 
 #site.theme-lakers .wordmark {
-  font-family: var(--font-lakers-display), Oswald, sans-serif;
+  font-family: var(--font-sports-display), Oswald, sans-serif;
   font-weight: 600;
 }
 
@@ -1589,7 +1593,7 @@ body.theme-flynow-body {
 }
 
 #site.theme-lakers .article-title {
-  font-family: var(--font-lakers-display), Oswald, sans-serif;
+  font-family: var(--font-sports-display), Oswald, sans-serif;
   font-weight: 600;
 }
 
@@ -1618,12 +1622,134 @@ body.theme-flynow-body {
 }
 
 #site.theme-lakers .article-card h2 {
-  font-family: var(--font-lakers-display), Oswald, sans-serif;
+  font-family: var(--font-sports-display), Oswald, sans-serif;
   font-weight: 600;
   font-size: 17px;
 }
 
 #site.theme-lakers .article-card .category {
+  font-weight: 700;
+}
+
+/* ---------- fyiDodgers theme, used only when fyiDodgers is active ---------- */
+/* Dodger blue from the provided logo kit (accent_color #005a9c) — a simpler
+   two-tone kit than fyiLakers, no secondary accent color, so contrast comes
+   from white instead of a second named token. Same condensed Oswald as
+   fyiLakers for the wordmark/article titles (see --font-sports-display in
+   layout.tsx — one shared font load for every sports-team brand). */
+
+.dodgers-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--dodgers-chrome-bg);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+}
+
+.dodgers-jersey {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dodgers-badge {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--dodgers-chrome-bg);
+  background: #fff;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.dodgers-name {
+  font-family: var(--font-sports-display), Oswald, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+
+.dodgers-score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #cfe3f2;
+}
+
+.dodgers-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  animation: dodgers-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes dodgers-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+#site.theme-dodgers {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#site.theme-dodgers .wordmark {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  font-weight: 600;
+}
+
+#site.theme-dodgers .wordmark .suffix {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+#site.theme-dodgers .article-title {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  font-weight: 600;
+}
+
+#site.theme-dodgers .site-header {
+  padding: 24px 32px 14px;
+}
+
+#site.theme-dodgers .switcher-btn {
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-alt));
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+}
+
+#site.theme-dodgers .article-card {
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: 10px;
+  background: var(--bg-alt);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+#site.theme-dodgers .article-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 25%, transparent);
+  transform: translateY(-1px);
+}
+
+#site.theme-dodgers .article-card h2 {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+#site.theme-dodgers .article-card .category {
   font-weight: 700;
 }
 

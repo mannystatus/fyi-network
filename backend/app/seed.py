@@ -51,6 +51,12 @@ BRANDS = [
         tagline="Lakers news. Decoded daily.",
         topics="Team News,Trade Rumors,Injury Report,Game Recaps,Draft & Free Agency",
     ),
+    dict(
+        slug="fyidodgers", name="fyiDodgers", domain="fyidodgers.com",
+        accent_color="#005a9c", icon="dodgers",  # Dodger blue, exact hex from the provided logo kit
+        tagline="Dodgers news. Decoded daily.",
+        topics="Team News,Trade Rumors,Injury Report,Game Recaps,Prospects & Free Agency",
+    ),
 ]
 
 brand_rows = {}

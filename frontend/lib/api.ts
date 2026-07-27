@@ -32,7 +32,7 @@ export type Brand = {
   domain: string;
   accent_color: string;
   tagline: string;
-  icon: "mac" | "win" | "google" | "netflix" | "flynow" | "lakers";
+  icon: "mac" | "win" | "google" | "netflix" | "flynow" | "lakers" | "dodgers";
   topics: string[];
 };
 

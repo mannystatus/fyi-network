@@ -67,6 +67,18 @@ function logoGlyph(icon) {
       <circle cx="${cx}" cy="${cy}" r="${r}" stroke="#4b1f73" stroke-width="5" fill="none"/>
     `;
   }
+  if (icon === "dodgers") {
+    // Baseball: white ball with red stitch-seam curves, on the same
+    // terminal-dark banner background every brand shares. Red seams
+    // regardless of team color is deliberate — a baseball's laces aren't
+    // Dodger blue any more than fyiFlyNow's paper airplane is team-colored.
+    const r = 90;
+    return `
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="#fdfdfd" stroke="#d8d8d8" stroke-width="2"/>
+      <path d="M ${cx - r * 0.55} ${cy - r * 0.86} Q ${cx + r * 0.35} ${cy} ${cx - r * 0.55} ${cy + r * 0.86}" stroke="#c8102e" stroke-width="4" fill="none"/>
+      <path d="M ${cx + r * 0.55} ${cy - r * 0.86} Q ${cx - r * 0.35} ${cy} ${cx + r * 0.55} ${cy + r * 0.86}" stroke="#c8102e" stroke-width="4" fill="none"/>
+    `;
+  }
   // netflix — same bold serif "N" the live site renders in .netflix-logo
   return `<text x="${cx}" y="${cy + 60}" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="800" font-size="200" fill="#e50914" letter-spacing="-6">N</text>`;
 }
@@ -103,6 +115,7 @@ const BRANDS = [
   { slug: "fyinetflix", suffix: "Netflix", icon: "netflix", tagline: "Netflix news. Decoded daily." },
   { slug: "fyiflynow", suffix: "FlyNow", icon: "flynow", tagline: "Flight deals. Decoded daily." },
   { slug: "fyilakers", suffix: "Lakers", icon: "lakers", tagline: "Lakers news. Decoded daily." },
+  { slug: "fyidodgers", suffix: "Dodgers", icon: "dodgers", tagline: "Dodgers news. Decoded daily." },
 ];
 
 mkdirSync(OUT_DIR, { recursive: true });

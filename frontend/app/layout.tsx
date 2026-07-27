@@ -14,9 +14,11 @@ const flynowDisplay = Archivo_Black({ weight: "400", subsets: ["latin"], variabl
 const flynowBody = Space_Grotesk({ weight: "500", subsets: ["latin"], variable: "--font-flynow-body" });
 const flynowSans = Inter({ weight: ["300", "400", "500", "600"], subsets: ["latin"], variable: "--font-flynow-sans" });
 
-// Only fyiLakers references this (via --font-lakers-display) — condensed
-// bold caps to match the "fyi LAKERS" logo lockup's headline lettering.
-const lakersDisplay = Oswald({ weight: ["500", "600", "700"], subsets: ["latin"], variable: "--font-lakers-display" });
+// Shared by every sports-team brand (fyiLakers, fyiDodgers, ...) via
+// --font-sports-display — condensed bold caps matching each one's
+// "fyi <TEAM>" logo lockup lettering. One shared font load rather than a
+// per-brand Oswald instance, since it's the same typeface for all of them.
+const sportsDisplay = Oswald({ weight: ["500", "600", "700"], subsets: ["latin"], variable: "--font-sports-display" });
 
 // A plain <meta> tag has no JS dependency, unlike next/script's adsbygoogle
 // loader (which Next only ever injects client-side, even with
@@ -82,7 +84,7 @@ export default async function RootLayout({
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
       <body
-        className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable} ${lakersDisplay.variable} ${
+        className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable} ${sportsDisplay.variable} ${
           brand.icon === "flynow" ? "theme-flynow-body" : ""
         }`}
         style={{ "--accent": brand.accent_color } as React.CSSProperties}

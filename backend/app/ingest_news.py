@@ -42,6 +42,15 @@ USER_AGENT = "Mozilla/5.0 (compatible; fyi-network-ingest/1.0)"
 # on its own (e.g. "Hardware" alone pulls in unrelated results). Falls back
 # to the topic name verbatim if it isn't listed here, so adding a topic to
 # a brand's `topics` column is enough to start ingesting it.
+#
+# Sports brands share generic topic vocabulary ("Team News", "Trade Rumors",
+# ...) across brands on purpose — it reads better as a nav pill on an
+# already-team-branded site than "Lakers Team News" would. That means a
+# bare topic-string key would collide between brands (Dodgers' "Team News"
+# would inherit the Lakers query). Entries that need to differ per brand are
+# keyed (brand_slug, topic) instead; see _brand_lookup below, which checks
+# that first and falls back to the plain-topic key for every brand that
+# doesn't have this collision (Mac, Windows, etc. — one query fits all).
 QUERY_OVERRIDES = {
     "Mac": "Apple Mac OR MacBook",
     "iPhone": "Apple iPhone",
@@ -64,12 +73,25 @@ QUERY_OVERRIDES = {
     "Flight Deals": "flight deals OR cheap flights OR airfare sale",
     "Airline News": "airline news",
     "Travel Tips": "travel tips flying OR airport tips",
-    "Team News": "Los Angeles Lakers news",
-    "Trade Rumors": "Los Angeles Lakers trade rumors",
-    "Injury Report": "Los Angeles Lakers injury report",
-    "Game Recaps": "Los Angeles Lakers game recap",
-    "Draft & Free Agency": "Los Angeles Lakers draft OR free agency",
+    ("fyilakers", "Team News"): "Los Angeles Lakers news",
+    ("fyilakers", "Trade Rumors"): "Los Angeles Lakers trade rumors",
+    ("fyilakers", "Injury Report"): "Los Angeles Lakers injury report",
+    ("fyilakers", "Game Recaps"): "Los Angeles Lakers game recap",
+    ("fyilakers", "Draft & Free Agency"): "Los Angeles Lakers draft OR free agency",
+    ("fyidodgers", "Team News"): "Los Angeles Dodgers news",
+    ("fyidodgers", "Trade Rumors"): "Los Angeles Dodgers trade rumors",
+    ("fyidodgers", "Injury Report"): "Los Angeles Dodgers injury report",
+    ("fyidodgers", "Game Recaps"): "Los Angeles Dodgers game recap",
+    ("fyidodgers", "Prospects & Free Agency"): "Los Angeles Dodgers prospects OR free agency",
 }
+
+
+def _brand_lookup(mapping: dict, brand_slug: str, topic: str):
+    """(brand_slug, topic) takes priority over a plain-topic key, for the
+    handful of topic names shared across brands (see QUERY_OVERRIDES)."""
+    if (brand_slug, topic) in mapping:
+        return mapping[(brand_slug, topic)]
+    return mapping.get(topic)
 
 # Bing News search occasionally returns loosely-related filler when a topic
 # has thin same-day coverage (e.g. a real-estate story with zero mention of
@@ -101,12 +123,18 @@ FILTER_KEYWORDS = {
     "Travel Tips": ["travel", "flight", "airport", "flying", "trip"],
     # "Team News" and "Game Recaps" are generic enough to pull in unrelated
     # results (recaps of other games, other teams' "news") without requiring
-    # the team name itself, same reasoning as Netflix's topics above.
-    "Team News": ["lakers"],
-    "Trade Rumors": ["lakers"],
-    "Injury Report": ["lakers"],
-    "Game Recaps": ["lakers"],
-    "Draft & Free Agency": ["lakers"],
+    # the team name itself, same reasoning as Netflix's topics above. Keyed
+    # per-brand — see QUERY_OVERRIDES comment above on why.
+    ("fyilakers", "Team News"): ["lakers"],
+    ("fyilakers", "Trade Rumors"): ["lakers"],
+    ("fyilakers", "Injury Report"): ["lakers"],
+    ("fyilakers", "Game Recaps"): ["lakers"],
+    ("fyilakers", "Draft & Free Agency"): ["lakers"],
+    ("fyidodgers", "Team News"): ["dodgers"],
+    ("fyidodgers", "Trade Rumors"): ["dodgers"],
+    ("fyidodgers", "Injury Report"): ["dodgers"],
+    ("fyidodgers", "Game Recaps"): ["dodgers"],
+    ("fyidodgers", "Prospects & Free Agency"): ["dodgers"],
 }
 
 # A product keyword can show up in a story that has nothing to do with the
@@ -131,14 +159,14 @@ TRUSTED_SOURCES = {
 MANUAL_ONLY_TOPICS = {"Staff Reviews"}
 
 
-def is_relevant(topic: str, item: dict) -> bool:
+def is_relevant(brand_slug: str, topic: str, item: dict) -> bool:
     haystack = f"{item['title']} {item['description'] or ''}".lower()
     if any(k in haystack for k in EXCLUDE_KEYWORDS):
         return False
     trusted = TRUSTED_SOURCES.get(topic)
     if trusted and item["source"] and any(s in item["source"].lower() for s in trusted):
         return True
-    keywords = FILTER_KEYWORDS.get(topic)
+    keywords = _brand_lookup(FILTER_KEYWORDS, brand_slug, topic)
     if not keywords:
         return True
     return any(k in haystack for k in keywords)
@@ -181,8 +209,8 @@ def _get(url: str) -> bytes:
         return resp.read()
 
 
-def fetch_bing(topic: str) -> list[dict]:
-    query = QUERY_OVERRIDES.get(topic, topic)
+def fetch_bing(brand_slug: str, topic: str) -> list[dict]:
+    query = _brand_lookup(QUERY_OVERRIDES, brand_slug, topic) or topic
     url = BING_RSS_URL.format(query=urllib.parse.quote(query))
     root = ET.fromstring(_get(url))
 
@@ -218,8 +246,8 @@ def fetch_bing(topic: str) -> list[dict]:
     return items
 
 
-def fetch_google_fallback(topic: str, when: str = "3d") -> list[dict]:
-    query = QUERY_OVERRIDES.get(topic, topic)
+def fetch_google_fallback(brand_slug: str, topic: str, when: str = "3d") -> list[dict]:
+    query = _brand_lookup(QUERY_OVERRIDES, brand_slug, topic) or topic
     url = GOOGLE_RSS_URL.format(query=urllib.parse.quote(f"{query} when:{when}"))
     root = ET.fromstring(_get(url))
 
@@ -247,14 +275,14 @@ def fetch_google_fallback(topic: str, when: str = "3d") -> list[dict]:
     return items
 
 
-def fetch_headlines(topic: str) -> list[dict]:
+def fetch_headlines(brand_slug: str, topic: str) -> list[dict]:
     try:
-        items = fetch_bing(topic)
+        items = fetch_bing(brand_slug, topic)
         if items:
             return items
     except Exception as exc:
         print(f"    (bing fetch failed for {topic!r}: {exc} — falling back to Google News)", file=sys.stderr)
-    return fetch_google_fallback(topic)
+    return fetch_google_fallback(brand_slug, topic)
 
 
 def first_sentence(text: str, limit: int = 160) -> str:
@@ -307,7 +335,7 @@ def ingest_brand(db, brand: Brand, per_topic: int) -> int:
         if topic in MANUAL_ONLY_TOPICS:
             continue
         try:
-            items = fetch_headlines(topic)
+            items = fetch_headlines(brand.slug, topic)
         except Exception as exc:
             print(f"  [{brand.slug}/{topic}] fetch failed: {exc}", file=sys.stderr)
             continue
@@ -316,7 +344,7 @@ def ingest_brand(db, brand: Brand, per_topic: int) -> int:
         for item in items:
             if new_for_topic >= per_topic:
                 break
-            if not is_relevant(topic, item):
+            if not is_relevant(brand.slug, topic, item):
                 continue
             slug = slugify(item["title"])
             if slug in seen_slugs:
