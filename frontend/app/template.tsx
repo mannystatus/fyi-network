@@ -164,6 +164,11 @@ function Chrome({
           </div>
         </div>
 
+        {brand.image_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={brand.image_url} alt="" className="brand-banner" />
+        )}
+
         {brand.topics.length > 0 && <TopicsNav topics={brand.topics} />}
 
         <div className="ad-slot-wrap">

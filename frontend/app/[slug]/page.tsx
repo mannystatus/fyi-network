@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { ApiError, getArticle, getArticles, getCurrentBrand } from "../../lib/api";
 import { categoryColor } from "../../lib/colors";
 import ShareButtons from "../../components/ShareButtons";
@@ -52,11 +53,15 @@ export async function generateMetadata({
   const brand = await getCurrentBrand();
   const description = article.dek || undefined;
   const url = `https://${brand.domain}/${slug}`;
-  // Prefer an image embedded in the article itself (e.g. a custom banner);
-  // fall back to the brand's generic share-preview image otherwise. Every
-  // article gets one or the other, so link unfurls (iMessage, WhatsApp, SMS,
-  // Slack, etc.) always have something to render.
-  const imageUrl = extractFirstImageUrl(article.body_md, brand.domain) || `https://${brand.domain}/og/${brand.slug}.png`;
+  // Prefer the article's own header image (set from /admin), then an image
+  // embedded in the body (e.g. a custom banner pasted into markdown), then
+  // fall back to the brand's generic share-preview image. Every article
+  // gets one of the three, so link unfurls (iMessage, WhatsApp, SMS, Slack,
+  // etc.) always have something to render.
+  const imageUrl =
+    article.image_url ||
+    extractFirstImageUrl(article.body_md, brand.domain) ||
+    `https://${brand.domain}/og/${brand.slug}.png`;
 
   return {
     title: article.title,
@@ -112,7 +117,11 @@ export default async function ArticlePage({
       name: brand.name,
       logo: { "@type": "ImageObject", url: `https://${brand.domain}/icons/${brand.slug}-512.png` },
     },
-    image: [extractFirstImageUrl(article.body_md, brand.domain) || `https://${brand.domain}/og/${brand.slug}.png`],
+    image: [
+      article.image_url ||
+        extractFirstImageUrl(article.body_md, brand.domain) ||
+        `https://${brand.domain}/og/${brand.slug}.png`,
+    ],
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
   };
 
@@ -151,6 +160,10 @@ export default async function ArticlePage({
       </p>
 
       <div className="article-header">
+        {article.image_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={article.image_url} alt="" className="article-banner" />
+        )}
         {article.is_featured && <span className="featured-badge featured-badge-lg">★ Featured</span>}
         {article.category && (
           <span className="category" style={{ color: categoryColor(article.category) }}>
@@ -174,7 +187,7 @@ export default async function ArticlePage({
       </div>
 
       <div className="article-body">
-        <ReactMarkdown>{article.body_md}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.body_md}</ReactMarkdown>
       </div>
 
       <AdSlot slot={AD_SLOTS.inArticle} />

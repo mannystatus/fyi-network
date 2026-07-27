@@ -34,6 +34,7 @@ export type Brand = {
   tagline: string;
   icon: "mac" | "win" | "google" | "netflix" | "flynow" | "lakers" | "dodgers";
   topics: string[];
+  image_url: string | null;
 };
 
 export type ArticleListItem = {
@@ -46,7 +47,7 @@ export type ArticleListItem = {
   is_featured: boolean;
 };
 
-export type ArticleDetail = ArticleListItem & { body_md: string };
+export type ArticleDetail = ArticleListItem & { body_md: string; image_url: string | null };
 
 export const getCurrentBrand = (): Promise<Brand> => apiFetch("/api/brands/current");
 export const getAllBrands = (): Promise<Brand[]> => apiFetch("/api/brands");

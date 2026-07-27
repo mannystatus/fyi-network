@@ -12,6 +12,7 @@ class BrandOut(BaseModel):
     tagline: str
     icon: str
     topics: list[str]
+    image_url: str | None = None
 
     @field_validator("topics", mode="before")
     @classmethod
@@ -19,6 +20,10 @@ class BrandOut(BaseModel):
         if isinstance(v, str):
             return [t.strip() for t in v.split(",") if t.strip()]
         return v
+
+
+class BrandUpdate(BaseModel):
+    image_url: str | None = None
 
 
 class ArticleListItem(BaseModel):
@@ -35,6 +40,7 @@ class ArticleListItem(BaseModel):
 
 class ArticleDetail(ArticleListItem):
     body_md: str
+    image_url: str | None = None
 
 
 class ArticleCreate(BaseModel):
@@ -44,6 +50,7 @@ class ArticleCreate(BaseModel):
     category: str | None = None
     author: str | None = None
     slug: str | None = None
+    image_url: str | None = None
     brand_slugs: list[str]
 
     @field_validator("title", "body_md")

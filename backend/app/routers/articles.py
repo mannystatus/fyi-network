@@ -82,6 +82,7 @@ def create_article(payload: ArticleCreate, db: Session = Depends(get_db)):
                 published_at=published_at,
                 is_published=True,
                 is_featured=True,
+                image_url=payload.image_url,
             )
         )
         results.append(

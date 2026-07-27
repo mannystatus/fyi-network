@@ -32,9 +32,17 @@ def get_db():
 # separate manual migration step.
 def ensure_schema(bind) -> None:
     inspector = inspect(bind)
-    if "articles" not in inspector.get_table_names():
-        return
-    existing = {c["name"] for c in inspector.get_columns("articles")}
+    table_names = inspector.get_table_names()
+
     with bind.begin() as conn:
-        if "is_featured" not in existing:
-            conn.execute(text("ALTER TABLE articles ADD COLUMN is_featured BOOLEAN DEFAULT FALSE NOT NULL"))
+        if "articles" in table_names:
+            existing = {c["name"] for c in inspector.get_columns("articles")}
+            if "is_featured" not in existing:
+                conn.execute(text("ALTER TABLE articles ADD COLUMN is_featured BOOLEAN DEFAULT FALSE NOT NULL"))
+            if "image_url" not in existing:
+                conn.execute(text("ALTER TABLE articles ADD COLUMN image_url VARCHAR(1024)"))
+
+        if "brands" in table_names:
+            existing = {c["name"] for c in inspector.get_columns("brands")}
+            if "image_url" not in existing:
+                conn.execute(text("ALTER TABLE brands ADD COLUMN image_url VARCHAR(1024)"))

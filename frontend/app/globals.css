@@ -204,6 +204,15 @@ a {
   gap: 10px;
 }
 
+.brand-banner {
+  display: block;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 10px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
 .theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -599,6 +608,15 @@ main {
   margin-bottom: 10px;
 }
 
+.article-banner {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
 .article-title {
   margin: 8px 0 12px;
   font-size: 28px;
@@ -686,6 +704,29 @@ main {
   margin: 0 0 18px;
   padding-left: 16px;
   border-left: 2px solid var(--border);
+  color: var(--comment);
+}
+
+.article-body table {
+  width: 100%;
+  margin: 0 0 18px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.article-body th,
+.article-body td {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.article-body th {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.article-body td {
   color: var(--comment);
 }
 

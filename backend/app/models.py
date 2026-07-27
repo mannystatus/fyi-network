@@ -20,6 +20,7 @@ class Brand(Base):
     tagline = Column(String(256), nullable=False)
     icon = Column(String(32), nullable=False)                    # "mac" | "win" | "google"
     topics = Column(String(512), nullable=False, default="")     # comma-separated, e.g. "Mac,iPhone,iPad"
+    image_url = Column(String(1024), nullable=True)              # site header banner, set from /admin
 
     articles = relationship("Article", back_populates="brand")
 
@@ -38,6 +39,7 @@ class Article(Base):
     published_at = Column(DateTime, default=dt.datetime.utcnow)
     is_published = Column(Boolean, default=True)
     is_featured = Column(Boolean, default=False, nullable=False)
+    image_url = Column(String(1024), nullable=True)  # header image shown atop the article
 
     brand = relationship("Brand", back_populates="articles")
 
