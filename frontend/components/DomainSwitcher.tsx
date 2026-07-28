@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Brand } from "../lib/api";
 import { canonicalOrigin } from "../lib/url";
+import { EXTERNAL_SITES } from "../lib/externalSites";
 
 const ICONS: Record<Brand["icon"], string> = {
   mac: "",   // apple glyph fallback (renders as-is if font lacks it; harmless)
@@ -13,12 +14,6 @@ const ICONS: Record<Brand["icon"], string> = {
   lakers: "🏀",
   dodgers: "⚾",
 };
-
-// Properties outside the fyi-network multi-tenant system (different app,
-// different infra) — listed for convenience in the same dropdown, but kept
-// separate from `brands` since they don't have a Brand row, theme, or feed
-// of their own. Always opens in a new tab since it's leaving this app.
-const EXTERNAL_LINKS = [{ name: "hackthedeal", url: "https://hackthedeal.com" }];
 
 export default function DomainSwitcher({
   brands,
@@ -69,7 +64,8 @@ export default function DomainSwitcher({
             </li>
           ))}
           <li className="switcher-divider" role="separator" />
-          {EXTERNAL_LINKS.map((link) => (
+          {/* Opens in a new tab since it's leaving this app. */}
+          {EXTERNAL_SITES.map((link) => (
             <li key={link.url}>
               <a href={link.url} className="brand-opt" target="_blank" rel="noopener noreferrer">
                 <span className="icon" aria-hidden>

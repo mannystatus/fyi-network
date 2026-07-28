@@ -181,6 +181,7 @@ function Chrome({
           <span>&copy; fyi -m-w-g-n</span>
           <span className="footer-links">
             <SendTipForm brandName={brand.name} />
+            <Link href="/advertise">Advertise</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/privacy">Privacy</Link>
             <span>{brand.domain}</span>
