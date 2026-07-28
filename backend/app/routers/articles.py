@@ -20,10 +20,16 @@ def list_articles(
     brand: Brand = Depends(resolve_brand),
     category: str | None = Query(default=None, description="Filter to one topic/category, e.g. ?category=Mac"),
     q: str | None = Query(default=None, description="Search title/dek/body, e.g. ?q=iphone"),
+    featured_only: bool = Query(
+        default=False,
+        description="Only hand-authored fyi staff articles (is_featured) — excludes automated RSS-ingested briefs.",
+    ),
     limit: int = 20,
     offset: int = Query(default=0, ge=0, description="Skip this many, for pagination"),
 ):
     query = db.query(Article).filter(Article.brand_id == brand.id, Article.is_published.is_(True))
+    if featured_only:
+        query = query.filter(Article.is_featured.is_(True))
     if category:
         query = query.filter(Article.category.ilike(category))
     if q:

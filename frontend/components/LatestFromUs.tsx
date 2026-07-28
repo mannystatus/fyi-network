@@ -11,7 +11,7 @@ export default async function LatestFromUs({
   excludeSlug?: string;
   variant?: "footer" | "top";
 }) {
-  const fetched = await getArticles(undefined, excludeSlug ? COUNT + 1 : COUNT);
+  const fetched = await getArticles(undefined, excludeSlug ? COUNT + 1 : COUNT, undefined, undefined, true);
   const articles = fetched.filter((a) => a.slug !== excludeSlug).slice(0, COUNT);
 
   if (articles.length === 0) return null;

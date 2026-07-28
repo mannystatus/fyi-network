@@ -55,13 +55,15 @@ export const getArticles = (
   category?: string,
   limit?: number,
   offset?: number,
-  q?: string
+  q?: string,
+  featuredOnly?: boolean
 ): Promise<ArticleListItem[]> => {
   const params = new URLSearchParams();
   if (category) params.set("category", category);
   if (limit) params.set("limit", String(limit));
   if (offset) params.set("offset", String(offset));
   if (q) params.set("q", q);
+  if (featuredOnly) params.set("featured_only", "true");
   const qs = params.toString();
   return apiFetch(qs ? `/api/articles?${qs}` : "/api/articles");
 };
