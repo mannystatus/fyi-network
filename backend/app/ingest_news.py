@@ -22,6 +22,7 @@ so ingestion still produces something rather than failing outright.
 """
 import argparse
 import datetime as dt
+import hashlib
 import re
 import sys
 import urllib.parse
@@ -158,6 +159,32 @@ TRUSTED_SOURCES = {
 # junk attributed to random outlets. Populated only by hand via /admin.
 MANUAL_ONLY_TOPICS = {"Staff Reviews"}
 
+# A short, original sentence prepended to every ingested article's body —
+# the syndicated description itself already exists verbatim on the
+# publisher's own site (and often other aggregators too), so a page with
+# nothing but that snippet reads as pure duplicate content to Google, which
+# crawls it but declines to index it. This line is the one piece of text
+# that's genuinely ours. Picked deterministically per article (hash of its
+# slug, not random) so re-running ingestion — which already dedupes by slug
+# — never changes an already-chosen framing for a given headline.
+FRAMING_TEMPLATES = [
+    "{brand} is tracking this {topic} development:",
+    "Here's what's new in {topic} right now, as seen by {brand}:",
+    "{brand}'s {topic} watch: a new headline just crossed the wire.",
+    "In {topic} news, here's the latest {brand} is following:",
+    "One more {topic} story worth a look, via {brand}:",
+]
+
+
+def pick_framing(slug: str, brand_name: str, topic: str) -> str:
+    # Python's builtin hash() is randomized per-process for strings (security
+    # feature, see PYTHONHASHSEED) — unusable here since this needs to pick
+    # the *same* template for the same slug across separate runs. md5 isn't
+    # for security here, just a stable, well-distributed digest.
+    digest = hashlib.md5(slug.encode()).hexdigest()
+    template = FRAMING_TEMPLATES[int(digest, 16) % len(FRAMING_TEMPLATES)]
+    return template.format(brand=brand_name, topic=topic)
+
 
 def is_relevant(brand_slug: str, topic: str, item: dict) -> bool:
     haystack = f"{item['title']} {item['description'] or ''}".lower()
@@ -292,27 +319,29 @@ def first_sentence(text: str, limit: int = 160) -> str:
     return text if len(text) <= limit else text[: limit - 1].rsplit(" ", 1)[0] + "…"
 
 
-def make_article(brand_id: int, topic: str, item: dict) -> Article:
+def make_article(brand: Brand, topic: str, item: dict) -> Article:
     source = item["source"] or "a news source"
     description = item["description"]
+    slug = slugify(item["title"])
+    framing = pick_framing(slug, brand.name, topic)
 
     if description:
         # Separate paragraphs (not one line wrapping both in italics) so the
         # "read the full story" link stays its own <p><a>-only child> — that's
         # what the CSS keys off of to style it as a button, not inline text.
-        body_md = f"{description}\n\n*Reported by {source}.*\n\n[Read the full story →]({item['link']})"
+        body_md = f"{framing}\n\n{description}\n\n*Reported by {source}.*\n\n[Read the full story →]({item['link']})"
         dek = first_sentence(description)
     else:
         body_md = (
-            f"{source} is reporting on this story. This brief was surfaced automatically "
-            f"from real {topic} coverage — follow the link below for the full report.\n\n"
-            f"[Read the full story at {source} →]({item['link']})"
+            f"{framing} {source} is reporting on this story. This brief was surfaced "
+            f"automatically from real {topic} coverage — follow the link below for the full "
+            f"report.\n\n[Read the full story at {source} →]({item['link']})"
         )
         dek = f"Spotted in {topic} news via {source}."
 
     return Article(
-        brand_id=brand_id,
-        slug=slugify(item["title"]),
+        brand_id=brand.id,
+        slug=slug,
         category=topic,
         title=item["title"],
         dek=dek,
@@ -349,7 +378,7 @@ def ingest_brand(db, brand: Brand, per_topic: int) -> int:
             slug = slugify(item["title"])
             if slug in seen_slugs:
                 continue
-            db.add(make_article(brand.id, topic, item))
+            db.add(make_article(brand, topic, item))
             seen_slugs.add(slug)
             new_for_topic += 1
             added += 1
