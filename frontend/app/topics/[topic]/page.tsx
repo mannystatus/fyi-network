@@ -40,7 +40,7 @@ export default async function TopicPage({
   const page = Math.max(1, Number(pageParam) || 1);
   const offset = (page - 1) * PAGE_SIZE;
 
-  const fetched = await getArticles(topicName, PAGE_SIZE + 1, offset);
+  const [fetched, brand] = await Promise.all([getArticles(topicName, PAGE_SIZE + 1, offset), getCurrentBrand()]);
   const hasMore = fetched.length > PAGE_SIZE;
   const articles = fetched.slice(0, PAGE_SIZE);
 
@@ -51,6 +51,7 @@ export default async function TopicPage({
       </p>
       <ArticleList
         articles={articles}
+        brandName={brand.name}
         emptyMessage={page > 1 ? "Nothing here — go back to page 1." : `No articles yet for ${topicName}.`}
       />
       <Pagination page={page} hasMore={hasMore} basePath={`/topics/${encodeURIComponent(topicName)}`} />

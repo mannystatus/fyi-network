@@ -39,6 +39,7 @@ export default async function HomePage({
       <p className="section-label">Latest</p>
       <ArticleList
         articles={articles}
+        brandName={brand.name}
         emptyMessage={
           page > 1
             ? "Nothing here — go back to page 1."

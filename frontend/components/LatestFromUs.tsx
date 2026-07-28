@@ -1,4 +1,4 @@
-import { getArticles } from "../lib/api";
+import { getArticles, getCurrentBrand } from "../lib/api";
 import ArticleList from "./ArticleList";
 
 const COUNT = 5;
@@ -11,7 +11,10 @@ export default async function LatestFromUs({
   excludeSlug?: string;
   variant?: "footer" | "top";
 }) {
-  const fetched = await getArticles(undefined, excludeSlug ? COUNT + 1 : COUNT, undefined, undefined, true);
+  const [fetched, brand] = await Promise.all([
+    getArticles(undefined, excludeSlug ? COUNT + 1 : COUNT, undefined, undefined, true),
+    getCurrentBrand(),
+  ]);
   const articles = fetched.filter((a) => a.slug !== excludeSlug).slice(0, COUNT);
 
   if (articles.length === 0) return null;
@@ -19,7 +22,7 @@ export default async function LatestFromUs({
   return (
     <div className={`latest-from-us latest-from-us--${variant}`}>
       <p className="section-label">Latest from us</p>
-      <ArticleList articles={articles} emptyMessage="" />
+      <ArticleList articles={articles} emptyMessage="" brandName={brand.name} />
     </div>
   );
 }

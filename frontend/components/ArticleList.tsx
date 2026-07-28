@@ -12,9 +12,12 @@ const IN_FEED_INTERVAL = 6;
 export default function ArticleList({
   articles,
   emptyMessage,
+  brandName,
 }: {
   articles: ArticleListItem[];
   emptyMessage: string;
+  /** When set, our own hand-published articles show this instead of their author on the card. */
+  brandName?: string;
 }) {
   if (articles.length === 0) {
     return <p style={{ color: "var(--comment)" }}>{emptyMessage}</p>;
@@ -22,32 +25,35 @@ export default function ArticleList({
 
   return (
     <div>
-      {articles.map((a, i) => (
-        <Fragment key={a.slug}>
-          <Link href={`/${a.slug}`} className="article-card" data-featured={a.is_featured || undefined}>
-            {a.is_featured && <span className="featured-badge">★ Featured</span>}
-            {a.category && (
-              <span className="category" style={{ color: categoryColor(a.category) }}>
-                {a.category}
-              </span>
+      {articles.map((a, i) => {
+        const byline = a.is_featured && brandName ? brandName : a.author;
+        return (
+          <Fragment key={a.slug}>
+            <Link href={`/${a.slug}`} className="article-card" data-featured={a.is_featured || undefined}>
+              {a.is_featured && <span className="featured-badge">★ Featured</span>}
+              {a.category && (
+                <span className="category" style={{ color: categoryColor(a.category) }}>
+                  {a.category}
+                </span>
+              )}
+              <h2>{a.title}</h2>
+              {a.dek && <p>{a.dek}</p>}
+              <div className="article-meta">
+                {byline}
+                {byline && " · "}
+                {new Date(a.published_at).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </div>
+            </Link>
+            {i > 0 && (i + 1) % IN_FEED_INTERVAL === 0 && (
+              <AdSlot slot={AD_SLOTS.inFeed} layoutKey={AD_SLOTS.inFeedLayoutKey} />
             )}
-            <h2>{a.title}</h2>
-            {a.dek && <p>{a.dek}</p>}
-            <div className="article-meta">
-              {a.author}
-              {a.author && " · "}
-              {new Date(a.published_at).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </div>
-          </Link>
-          {i > 0 && (i + 1) % IN_FEED_INTERVAL === 0 && (
-            <AdSlot slot={AD_SLOTS.inFeed} layoutKey={AD_SLOTS.inFeedLayoutKey} />
-          )}
-        </Fragment>
-      ))}
+          </Fragment>
+        );
+      })}
     </div>
   );
 }

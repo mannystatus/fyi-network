@@ -202,7 +202,7 @@ export default async function ArticlePage({
       {related.length > 0 && (
         <div className="related-section">
           <p className="section-label">More in {article.category}</p>
-          <ArticleList articles={related} emptyMessage="" />
+          <ArticleList articles={related} brandName={brand.name} emptyMessage="" />
         </div>
       )}
 
