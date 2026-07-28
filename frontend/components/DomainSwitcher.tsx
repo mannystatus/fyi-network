@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Brand } from "../lib/api";
+import { canonicalOrigin } from "../lib/url";
 
 const ICONS: Record<Brand["icon"], string> = {
   mac: "",   // apple glyph fallback (renders as-is if font lacks it; harmless)
@@ -29,12 +30,12 @@ export default function DomainSwitcher({
   const [open, setOpen] = useState(false);
 
   function targetUrlFor(brand: Brand): string {
-    if (typeof window === "undefined") return `https://${brand.domain}`;
+    if (typeof window === "undefined") return canonicalOrigin(brand.domain);
     const isDev = window.location.hostname.endsWith("localhost");
     if (isDev) {
       return `${window.location.protocol}//${brand.slug}.localhost:${window.location.port}/`;
     }
-    return `https://${brand.domain}/`;
+    return `${canonicalOrigin(brand.domain)}/`;
   }
 
   return (

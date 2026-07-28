@@ -7,6 +7,7 @@ import "./globals.css";
 import { getCurrentBrand } from "../lib/api";
 import CookieBanner from "../components/CookieBanner";
 import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID, SWG_PRODUCT_IDS } from "../lib/analytics";
+import { canonicalOrigin } from "../lib/url";
 
 // Only fyiFlyNow's theme references these (via --font-flynow-*) — self-hosted
 // by next/font so there's no extra external request for the other brands.
@@ -32,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const bannerUrl = `/og/${brandSlug}.png`;
 
   return {
-    metadataBase: new URL(`https://${brand.domain}`),
+    metadataBase: new URL(canonicalOrigin(brand.domain)),
     title: { default: brand.name, template: `%s | ${brand.name}` },
     description: brand.tagline,
     other: { "google-adsense-account": ADSENSE_CLIENT_ID },
@@ -43,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: brand.name,
       description: brand.tagline,
-      url: `https://${brand.domain}`,
+      url: canonicalOrigin(brand.domain),
       siteName: brand.name,
       images: [{ url: bannerUrl, width: 1200, height: 630, alt: `${brand.name} banner` }],
       locale: "en_US",

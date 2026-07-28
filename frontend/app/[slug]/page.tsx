@@ -16,6 +16,7 @@ import DodgersCrossPromo from "../../components/DodgersCrossPromo";
 import { AD_SLOTS } from "../../lib/analytics";
 import { extractFaq } from "../../lib/faq";
 import { extractFirstImageUrl } from "../../lib/ogImage";
+import { canonicalDomain, canonicalOrigin } from "../../lib/url";
 
 // Each brand cross-promotes exactly one sibling: fyiMac and fyiNetflix
 // both drive traffic to fyiFlyNow, while fyiWin -> fyiGoogle -> fyiNetflix
@@ -52,7 +53,7 @@ export async function generateMetadata({
 
   const brand = await getCurrentBrand();
   const description = article.dek || undefined;
-  const url = `https://${brand.domain}/${slug}`;
+  const url = `${canonicalOrigin(brand.domain)}/${slug}`;
   // Prefer the article's own header image (set from /admin), then an image
   // embedded in the body (e.g. a custom banner pasted into markdown), then
   // fall back to the brand's generic share-preview image. Every article
@@ -60,8 +61,8 @@ export async function generateMetadata({
   // etc.) always have something to render.
   const imageUrl =
     article.image_url ||
-    extractFirstImageUrl(article.body_md, brand.domain) ||
-    `https://${brand.domain}/og/${brand.slug}.png`;
+    extractFirstImageUrl(article.body_md, canonicalDomain(brand.domain)) ||
+    `${canonicalOrigin(brand.domain)}/og/${brand.slug}.png`;
 
   return {
     title: article.title,
@@ -104,7 +105,7 @@ export default async function ArticlePage({
     getCurrentBrand(),
   ]);
 
-  const url = `https://${brand.domain}/${slug}`;
+  const url = `${canonicalOrigin(brand.domain)}/${slug}`;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
@@ -115,12 +116,12 @@ export default async function ArticlePage({
     publisher: {
       "@type": "Organization",
       name: brand.name,
-      logo: { "@type": "ImageObject", url: `https://${brand.domain}/icons/${brand.slug}-512.png` },
+      logo: { "@type": "ImageObject", url: `${canonicalOrigin(brand.domain)}/icons/${brand.slug}-512.png` },
     },
     image: [
       article.image_url ||
-        extractFirstImageUrl(article.body_md, brand.domain) ||
-        `https://${brand.domain}/og/${brand.slug}.png`,
+        extractFirstImageUrl(article.body_md, canonicalDomain(brand.domain)) ||
+        `${canonicalOrigin(brand.domain)}/og/${brand.slug}.png`,
     ],
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
   };

@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getCurrentBrand, getArticles } from "../lib/api";
+import { canonicalOrigin } from "../lib/url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const brand = await getCurrentBrand();
   const articles = await getArticles(undefined, 5000);
-  const base = `https://${brand.domain}`;
+  const base = canonicalOrigin(brand.domain);
 
   const staticEntries: MetadataRoute.Sitemap = [
     { url: base, changeFrequency: "hourly", priority: 1 },
