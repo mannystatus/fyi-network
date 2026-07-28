@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getArticles, getCurrentBrand } from "../../lib/api";
 import ArticleList from "../../components/ArticleList";
+import LatestFromUs from "../../components/LatestFromUs";
 import Pagination from "../../components/Pagination";
 
 const PAGE_SIZE = 20;
@@ -37,6 +38,7 @@ export default async function SearchPage({
           <Link href="/">&larr; Latest</Link> &nbsp;/&nbsp; Search
         </p>
         <p style={{ color: "var(--comment)" }}>Type something in the search box above to find an article.</p>
+        <LatestFromUs />
       </>
     );
   }
@@ -52,6 +54,7 @@ export default async function SearchPage({
       </p>
       <ArticleList articles={articles} emptyMessage={`No articles found for "${query}".`} />
       <Pagination page={page} hasMore={hasMore} basePath="/search" query={query} />
+      <LatestFromUs />
     </>
   );
 }

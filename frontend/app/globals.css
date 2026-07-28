@@ -802,6 +802,12 @@ main {
   padding-top: 8px;
 }
 
+.latest-from-us {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
 footer {
   max-width: 700px;
   width: 100%;

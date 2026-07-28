@@ -7,6 +7,7 @@ import { ApiError, getArticle, getArticles, getCurrentBrand } from "../../lib/ap
 import { categoryColor } from "../../lib/colors";
 import ShareButtons from "../../components/ShareButtons";
 import ArticleList from "../../components/ArticleList";
+import LatestFromUs from "../../components/LatestFromUs";
 import AdSlot from "../../components/AdSlot";
 import FlyNowCrossPromo from "../../components/FlyNowCrossPromo";
 import GoogleCrossPromo from "../../components/GoogleCrossPromo";
@@ -204,6 +205,8 @@ export default async function ArticlePage({
           <ArticleList articles={related} emptyMessage="" />
         </div>
       )}
+
+      <LatestFromUs excludeSlug={slug} />
     </article>
   );
 }

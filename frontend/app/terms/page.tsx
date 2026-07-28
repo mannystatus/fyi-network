@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCurrentBrand } from "../../lib/api";
+import LatestFromUs from "../../components/LatestFromUs";
 
 export default async function TermsPage() {
   const brand = await getCurrentBrand();
@@ -73,6 +74,8 @@ export default async function TermsPage() {
           data, or contact the site operator directly.
         </p>
       </div>
+
+      <LatestFromUs />
     </article>
   );
 }
