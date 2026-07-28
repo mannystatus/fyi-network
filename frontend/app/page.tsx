@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getArticles, getAllBrands, getCurrentBrand } from "../lib/api";
 import ArticleList from "../components/ArticleList";
 import FlyNowHomepage from "../components/FlyNowHomepage";
+import LatestFromUs from "../components/LatestFromUs";
 import Pagination from "../components/Pagination";
 
 export const metadata: Metadata = {
@@ -34,6 +35,7 @@ export default async function HomePage({
 
   return (
     <>
+      {page === 1 && <LatestFromUs variant="top" />}
       <p className="section-label">Latest</p>
       <ArticleList
         articles={articles}

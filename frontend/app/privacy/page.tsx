@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getCurrentBrand } from "../../lib/api";
-import LatestFromUs from "../../components/LatestFromUs";
 
 export default async function PrivacyPage() {
   const brand = await getCurrentBrand();
@@ -110,8 +109,6 @@ export default async function PrivacyPage() {
           See the <Link href="/terms">Terms of Use</Link> for the rest of the legal terms governing this site.
         </p>
       </div>
-
-      <LatestFromUs />
     </article>
   );
 }

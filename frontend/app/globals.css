@@ -802,10 +802,16 @@ main {
   padding-top: 8px;
 }
 
-.latest-from-us {
+.latest-from-us--footer {
   margin-top: 32px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
+}
+
+.latest-from-us--top {
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
 }
 
 footer {
