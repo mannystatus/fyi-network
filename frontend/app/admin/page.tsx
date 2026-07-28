@@ -22,6 +22,21 @@ type CreateResult = {
   url: string | null;
 };
 
+type Scope = {
+  is_superadmin: boolean;
+  brand_slugs: string[];
+  label: string | null;
+};
+
+type AdminKeyRow = {
+  id: number;
+  label: string;
+  key_prefix: string;
+  brand_slugs: string[];
+  is_revoked: boolean;
+  created_at: string;
+};
+
 function slugPreview(title: string): string {
   return title
     .toLowerCase()
@@ -52,9 +67,35 @@ async function uploadImage(file: File, adminKey: string): Promise<string> {
   return data.url;
 }
 
+// Shared by every authenticated call below (article publish/delete, brand
+// banner PATCH, and all the key-management endpoints) — one place for the
+// 401/503 messages instead of repeating them at each call site. A 403
+// (e.g. a scoped key posting to a brand outside its scope) falls through
+// to the generic branch, which already surfaces the backend's own
+// human-readable `detail` message.
+async function adminFetch(path: string, adminKey: string, init: RequestInit = {}): Promise<Response> {
+  const res = await fetch(`${API_URL}${path}`, {
+    ...init,
+    headers: { ...(init.headers as Record<string, string> | undefined), "X-Admin-Key": adminKey },
+  });
+
+  if (res.status === 401) throw new Error("Invalid admin key.");
+  if (res.status === 503) throw new Error("The backend has no ADMIN_API_KEY configured — set one in backend/.env and restart it.");
+  if (!res.ok) {
+    const detail = await res.json().catch(() => null);
+    throw new Error(detail?.detail ? String(detail.detail) : `Request failed (${res.status})`);
+  }
+  return res;
+}
+
 export default function AdminPage() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [brandsError, setBrandsError] = useState<string | null>(null);
+
+  const [adminKey, setAdminKey] = useState("");
+  const [scope, setScope] = useState<Scope | null>(null);
+  const [scopeChecking, setScopeChecking] = useState(false);
+  const [scopeError, setScopeError] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
   const [dek, setDek] = useState("");
@@ -62,7 +103,6 @@ export default function AdminPage() {
   const [bodyMd, setBodyMd] = useState("");
   const [author, setAuthor] = useState(DEFAULT_AUTHOR);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [adminKey, setAdminKey] = useState("");
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -71,6 +111,7 @@ export default function AdminPage() {
 
   const [bodyImageUploading, setBodyImageUploading] = useState(false);
   const [bodyImageError, setBodyImageError] = useState<string | null>(null);
+  const [bodyDropActive, setBodyDropActive] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
   const [results, setResults] = useState<CreateResult[] | null>(null);
@@ -81,9 +122,21 @@ export default function AdminPage() {
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [bannerSaved, setBannerSaved] = useState(false);
 
+  const [keys, setKeys] = useState<AdminKeyRow[]>([]);
+  const [keysError, setKeysError] = useState<string | null>(null);
+  const [newKeyLabel, setNewKeyLabel] = useState("");
+  const [newKeyBrandSlugs, setNewKeyBrandSlugs] = useState<Set<string>>(new Set());
+  const [creatingKey, setCreatingKey] = useState(false);
+  const [createKeyError, setCreateKeyError] = useState<string | null>(null);
+  const [justCreatedKey, setJustCreatedKey] = useState<{ label: string; key: string } | null>(null);
+  const [revokingId, setRevokingId] = useState<number | null>(null);
+
   useEffect(() => {
     const saved = window.localStorage.getItem(ADMIN_KEY_STORAGE);
-    if (saved) setAdminKey(saved);
+    if (saved) {
+      setAdminKey(saved);
+      verifyKey(saved);
+    }
 
     fetch(`${API_URL}/api/brands`)
       .then((res) => {
@@ -95,7 +148,42 @@ export default function AdminPage() {
         if (data.length > 0) setBannerBrandSlug(data[0].slug);
       })
       .catch(() => setBrandsError("Couldn't load the brand list from the API — is the backend running?"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function fetchKeys(key: string) {
+    setKeysError(null);
+    try {
+      const res = await adminFetch("/api/admin/keys", key);
+      setKeys(await res.json());
+    } catch (err) {
+      setKeysError(err instanceof Error ? err.message : "Couldn't load keys.");
+    }
+  }
+
+  async function verifyKey(keyOverride?: string) {
+    const key = (keyOverride ?? adminKey).trim();
+    if (!key) return;
+    setScopeChecking(true);
+    setScopeError(null);
+    try {
+      const res = await adminFetch("/api/admin/whoami", key);
+      const data: Scope = await res.json();
+      setScope(data);
+      window.localStorage.setItem(ADMIN_KEY_STORAGE, key);
+      // Only set it the first time — don't clobber something they've
+      // already typed if they re-verify later in the same session.
+      if (!data.is_superadmin && data.label && author === DEFAULT_AUTHOR) {
+        setAuthor(data.label);
+      }
+      if (data.is_superadmin) fetchKeys(key);
+    } catch (err) {
+      setScope(null);
+      setScopeError(err instanceof Error ? err.message : "Couldn't verify key.");
+    } finally {
+      setScopeChecking(false);
+    }
+  }
 
   async function handleArticleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -112,14 +200,19 @@ export default function AdminPage() {
     }
   }
 
-  async function handleBodyImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Shared by the file-input button, drag-and-drop, and clipboard paste —
+  // all three just need to get a File in front of this. Alt text is asked
+  // up front via a blocking prompt rather than a separate inline field:
+  // simplest thing that gets real alt text into the markdown without having
+  // to track and re-edit a specific `![...]()` substring inside bodyMd
+  // later if the caption changed.
+  async function insertBodyImage(file: File) {
+    const alt = window.prompt("Alt text for this image (optional, for accessibility/SEO):", "") ?? "";
     setBodyImageError(null);
     setBodyImageUploading(true);
     try {
       const url = await uploadImage(file, adminKey);
-      const markdown = `![](${url})`;
+      const markdown = `![${alt}](${url})`;
       const el = bodyRef.current;
       const start = el?.selectionStart ?? bodyMd.length;
       const end = el?.selectionEnd ?? bodyMd.length;
@@ -137,8 +230,39 @@ export default function AdminPage() {
       setBodyImageError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
       setBodyImageUploading(false);
-      e.target.value = "";
     }
+  }
+
+  function handleBodyImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file) insertBodyImage(file);
+  }
+
+  function handleBodyDragOver(e: React.DragEvent<HTMLTextAreaElement>) {
+    if (!e.dataTransfer.types.includes("Files")) return;
+    e.preventDefault();
+    setBodyDropActive(true);
+  }
+
+  function handleBodyDrop(e: React.DragEvent<HTMLTextAreaElement>) {
+    const file = Array.from(e.dataTransfer.files).find((f) => f.type.startsWith("image/"));
+    setBodyDropActive(false);
+    if (!file) return;
+    // A plain <textarea>'s content isn't real DOM text nodes, so there's no
+    // reliable cross-browser way to resolve the drop's (x, y) to a caret
+    // offset — this inserts at the textarea's current cursor position
+    // instead of exactly where the file was visually dropped.
+    e.preventDefault();
+    insertBodyImage(file);
+  }
+
+  function handleBodyPaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const item = Array.from(e.clipboardData.items).find((i) => i.type.startsWith("image/"));
+    const file = item?.getAsFile();
+    if (!file) return; // not an image paste — let normal text paste happen
+    e.preventDefault();
+    insertBodyImage(file);
   }
 
   async function handleBannerFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -149,20 +273,13 @@ export default function AdminPage() {
     setBannerUploading(true);
     try {
       const url = await uploadImage(file, adminKey);
-      const res = await fetch(`${API_URL}/api/brands/${bannerBrandSlug}`, {
+      const res = await adminFetch(`/api/brands/${bannerBrandSlug}`, adminKey, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Admin-Key": adminKey,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image_url: url }),
       });
-      if (res.status === 401) throw new Error("Invalid admin key.");
-      if (!res.ok) throw new Error(`Save failed (${res.status})`);
-
       const updated: Brand = await res.json();
       setBrands((prev) => prev.map((b) => (b.slug === updated.slug ? updated : b)));
-      window.localStorage.setItem(ADMIN_KEY_STORAGE, adminKey);
       setBannerSaved(true);
     } catch (err) {
       setBannerError(err instanceof Error ? err.message : "Upload failed.");
@@ -178,6 +295,52 @@ export default function AdminPage() {
       else next.add(slug);
       return next;
     });
+  }
+
+  function toggleNewKeyBrand(slug: string) {
+    setNewKeyBrandSlugs((prev) => {
+      const next = new Set(prev);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
+  }
+
+  async function handleCreateKey() {
+    if (!newKeyLabel.trim() || newKeyBrandSlugs.size === 0) {
+      setCreateKeyError("Label and at least one site are required.");
+      return;
+    }
+    setCreatingKey(true);
+    setCreateKeyError(null);
+    try {
+      const res = await adminFetch("/api/admin/keys", adminKey, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ label: newKeyLabel.trim(), brand_slugs: Array.from(newKeyBrandSlugs) }),
+      });
+      const created: AdminKeyRow & { key: string } = await res.json();
+      setJustCreatedKey({ label: created.label, key: created.key });
+      setNewKeyLabel("");
+      setNewKeyBrandSlugs(new Set());
+      fetchKeys(adminKey);
+    } catch (err) {
+      setCreateKeyError(err instanceof Error ? err.message : "Couldn't create key.");
+    } finally {
+      setCreatingKey(false);
+    }
+  }
+
+  async function handleRevokeKey(id: number) {
+    setRevokingId(id);
+    try {
+      await adminFetch(`/api/admin/keys/${id}/revoke`, adminKey, { method: "POST" });
+      fetchKeys(adminKey);
+    } catch (err) {
+      setKeysError(err instanceof Error ? err.message : "Couldn't revoke key.");
+    } finally {
+      setRevokingId(null);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -196,12 +359,9 @@ export default function AdminPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch(`${API_URL}/api/articles`, {
+      const res = await adminFetch("/api/articles", adminKey, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Admin-Key": adminKey,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
           dek: dek.trim() || null,
@@ -213,30 +373,17 @@ export default function AdminPage() {
         }),
       });
 
-      if (res.status === 401) {
-        setError("Invalid admin key.");
-        return;
-      }
-      if (res.status === 503) {
-        setError("The backend has no ADMIN_API_KEY configured — set one in backend/.env and restart it.");
-        return;
-      }
-      if (!res.ok) {
-        const detail = await res.json().catch(() => null);
-        setError(detail?.detail ? JSON.stringify(detail.detail) : `Request failed (${res.status})`);
-        return;
-      }
-
       const data: CreateResult[] = await res.json();
       setResults(data);
       setImageUrl(null);
-      window.localStorage.setItem(ADMIN_KEY_STORAGE, adminKey);
-    } catch {
-      setError("Couldn't reach the API — is the backend running?");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't reach the API — is the backend running?");
     } finally {
       setSubmitting(false);
     }
   }
+
+  const publishableBrands = scope?.is_superadmin ? brands : brands.filter((b) => scope?.brand_slugs.includes(b.slug));
 
   return (
     <article>
@@ -252,198 +399,305 @@ export default function AdminPage() {
         </p>
       </div>
 
-      {brandsError && <p className="admin-error">{brandsError}</p>}
-
-      <div className="article-header">
-        <h2 className="article-title" style={{ fontSize: 20 }}>Site-wide banner</h2>
-        <p className="article-dek">
-          Shown at the top of every page on the site you pick below — separate from any individual article&rsquo;s
-          image. Uses the admin key further down.
-        </p>
-      </div>
-
       <div className="admin-field">
-        <label htmlFor="banner-brand">Site</label>
-        <select
-          id="banner-brand"
-          value={bannerBrandSlug}
+        <label htmlFor="admin-key">Admin key</label>
+        <input
+          id="admin-key"
+          type="password"
+          value={adminKey}
           onChange={(e) => {
-            setBannerBrandSlug(e.target.value);
-            setBannerSaved(false);
-            setBannerError(null);
+            setAdminKey(e.target.value);
+            setScope(null);
           }}
-        >
-          {brands.map((b) => (
-            <option key={b.slug} value={b.slug}>
-              {b.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {bannerBrandSlug && brands.find((b) => b.slug === bannerBrandSlug)?.image_url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={brands.find((b) => b.slug === bannerBrandSlug)?.image_url ?? undefined}
-          alt="Current site-wide banner"
-          style={{ maxWidth: 320, display: "block", marginBottom: 8, borderRadius: 8 }}
+          placeholder="X-Admin-Key"
+          autoComplete="off"
         />
-      )}
-
-      <div className="admin-field">
-        <label htmlFor="banner-file">Upload new header image</label>
-        <input id="banner-file" type="file" accept="image/*" onChange={handleBannerFileChange} disabled={bannerUploading} />
-        {bannerUploading && <span style={{ fontSize: 12, color: "var(--comment)" }}>Uploading…</span>}
-        {bannerSaved && <span style={{ fontSize: 12, color: "var(--comment)" }}>Saved.</span>}
-        {bannerError && <p className="admin-error">{bannerError}</p>}
+        <button type="button" onClick={() => verifyKey()} disabled={scopeChecking || !adminKey.trim()}>
+          {scopeChecking ? "Checking…" : "Verify"}
+        </button>
+        {scopeError && <p className="admin-error">{scopeError}</p>}
+        {scope && (
+          <span style={{ fontSize: 12, color: "var(--comment)", display: "block", marginTop: 4 }}>
+            {scope.is_superadmin
+              ? "Superadmin — full access to every site."
+              : `Scoped to: ${scope.brand_slugs.join(", ") || "(none)"}`}
+          </span>
+        )}
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="admin-field">
-          <label htmlFor="admin-key">Admin key</label>
-          <input
-            id="admin-key"
-            type="password"
-            value={adminKey}
-            onChange={(e) => setAdminKey(e.target.value)}
-            placeholder="X-Admin-Key"
-            autoComplete="off"
-          />
-        </div>
+      {!scope ? (
+        <p style={{ color: "var(--comment)" }}>Enter your admin key and click Verify to continue.</p>
+      ) : (
+        <>
+          {brandsError && <p className="admin-error">{brandsError}</p>}
 
-        <div className="admin-field">
-          <label htmlFor="admin-title">Title</label>
-          <input
-            id="admin-title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Headline"
-          />
-          {title.trim() && (
-            <span style={{ fontSize: 12, color: "var(--comment)" }}>URL: /{slugPreview(title)}</span>
-          )}
-        </div>
+          {scope.is_superadmin && (
+            <>
+              <div className="article-header">
+                <h2 className="article-title" style={{ fontSize: 20 }}>Site-wide banner</h2>
+                <p className="article-dek">
+                  Shown at the top of every page on the site you pick below — separate from any individual
+                  article&rsquo;s image.
+                </p>
+              </div>
 
-        <div className="admin-field">
-          <label htmlFor="admin-dek">Dek (short subhead, optional)</label>
-          <input
-            id="admin-dek"
-            type="text"
-            value={dek}
-            onChange={(e) => setDek(e.target.value)}
-            placeholder="One sentence shown under the headline and in article cards"
-          />
-        </div>
+              <div className="admin-field">
+                <label htmlFor="banner-brand">Site</label>
+                <select
+                  id="banner-brand"
+                  value={bannerBrandSlug}
+                  onChange={(e) => {
+                    setBannerBrandSlug(e.target.value);
+                    setBannerSaved(false);
+                    setBannerError(null);
+                  }}
+                >
+                  {brands.map((b) => (
+                    <option key={b.slug} value={b.slug}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-        <div className="admin-field">
-          <label htmlFor="admin-category">Category (optional)</label>
-          <input
-            id="admin-category"
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            placeholder="e.g. Services, Digital Ownership — matches a site's topic pill if it fits one"
-          />
-        </div>
-
-        <div className="admin-field">
-          <label htmlFor="admin-author">Author</label>
-          <input id="admin-author" type="text" value={author} onChange={(e) => setAuthor(e.target.value)} />
-        </div>
-
-        <div className="admin-field">
-          <label htmlFor="admin-body">Body (Markdown)</label>
-          <textarea
-            ref={bodyRef}
-            id="admin-body"
-            value={bodyMd}
-            onChange={(e) => setBodyMd(e.target.value)}
-            rows={18}
-            placeholder={
-              "## A section heading\n\nBody text, **bold**, *italic*, [links](https://example.com), lists, and " +
-              "GFM tables:\n\n| Col A | Col B |\n| --- | --- |\n| row | row |"
-            }
-          />
-          <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 8 }}>
-            <label htmlFor="admin-body-image" style={{ fontSize: 12, color: "var(--comment)" }}>
-              Insert image into body:
-            </label>
-            <input
-              id="admin-body-image"
-              type="file"
-              accept="image/*"
-              onChange={handleBodyImageChange}
-              disabled={bodyImageUploading}
-            />
-            {bodyImageUploading && <span style={{ fontSize: 12, color: "var(--comment)" }}>Uploading…</span>}
-          </div>
-          {bodyImageError && <p className="admin-error">{bodyImageError}</p>}
-        </div>
-
-        <div className="admin-field">
-          <label htmlFor="admin-image">This article&rsquo;s image (optional)</label>
-          <span style={{ fontSize: 12, color: "var(--comment)", display: "block", marginBottom: 4 }}>
-            Shown at the top of this one article only — not the site-wide banner set above.
-          </span>
-          <input id="admin-image" type="file" accept="image/*" onChange={handleArticleImageChange} disabled={imageUploading} />
-          {imageUploading && <span style={{ fontSize: 12, color: "var(--comment)" }}>Uploading…</span>}
-          {imageError && <p className="admin-error">{imageError}</p>}
-          {imageUrl && !imageUploading && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={imageUrl} alt="Article image preview" style={{ maxWidth: 320, display: "block", marginTop: 8, borderRadius: 8 }} />
-          )}
-        </div>
-
-        <div className="admin-field">
-          <label>Publish to</label>
-          <div className="admin-brand-list">
-            {brands.map((b) => (
-              <label key={b.slug} className="admin-brand-chip">
-                <input
-                  type="checkbox"
-                  checked={selected.has(b.slug)}
-                  onChange={() => toggleBrand(b.slug)}
+              {bannerBrandSlug && brands.find((b) => b.slug === bannerBrandSlug)?.image_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={brands.find((b) => b.slug === bannerBrandSlug)?.image_url ?? undefined}
+                  alt="Current site-wide banner"
+                  style={{ maxWidth: 320, display: "block", marginBottom: 8, borderRadius: 8 }}
                 />
-                {b.name}
-              </label>
-            ))}
-          </div>
-        </div>
+              )}
 
-        {error && <p className="admin-error">{error}</p>}
+              <div className="admin-field">
+                <label htmlFor="banner-file">Upload new header image</label>
+                <input
+                  id="banner-file"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBannerFileChange}
+                  disabled={bannerUploading}
+                />
+                {bannerUploading && <span style={{ fontSize: 12, color: "var(--comment)" }}>Uploading…</span>}
+                {bannerSaved && <span style={{ fontSize: 12, color: "var(--comment)" }}>Saved.</span>}
+                {bannerError && <p className="admin-error">{bannerError}</p>}
+              </div>
+            </>
+          )}
 
-        <button type="submit" className="admin-submit" disabled={submitting}>
-          {submitting ? "Publishing…" : "Publish"}
-        </button>
-      </form>
+          <form onSubmit={handleSubmit}>
+            <div className="admin-field">
+              <label htmlFor="admin-title">Title</label>
+              <input
+                id="admin-title"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Headline"
+              />
+              {title.trim() && (
+                <span style={{ fontSize: 12, color: "var(--comment)" }}>URL: /{slugPreview(title)}</span>
+              )}
+            </div>
 
-      {results && (
-        <div className="admin-results">
-          <strong>Done.</strong>
-          <ul>
-            {results.map((r) => (
-              <li key={r.brand_slug}>
-                <strong>{r.brand_slug}</strong>
-                {": "}
-                {r.status === "created" && r.url && (
-                  <a href={r.url} target="_blank" rel="noreferrer">
-                    published — {r.url}
-                  </a>
-                )}
-                {r.status === "skipped_duplicate" && (
-                  <>
-                    already existed at this slug —{" "}
-                    <a href={r.url ?? "#"} target="_blank" rel="noreferrer">
-                      {r.url}
-                    </a>
-                  </>
-                )}
-                {r.status === "brand_not_found" && "unknown brand slug"}
-              </li>
-            ))}
-          </ul>
-        </div>
+            <div className="admin-field">
+              <label htmlFor="admin-dek">Dek (short subhead, optional)</label>
+              <input
+                id="admin-dek"
+                type="text"
+                value={dek}
+                onChange={(e) => setDek(e.target.value)}
+                placeholder="One sentence shown under the headline and in article cards"
+              />
+            </div>
+
+            <div className="admin-field">
+              <label htmlFor="admin-category">Category (optional)</label>
+              <input
+                id="admin-category"
+                type="text"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                placeholder="e.g. Services, Digital Ownership — matches a site's topic pill if it fits one"
+              />
+            </div>
+
+            <div className="admin-field">
+              <label htmlFor="admin-author">Author</label>
+              <input id="admin-author" type="text" value={author} onChange={(e) => setAuthor(e.target.value)} />
+            </div>
+
+            <div className="admin-field">
+              <label htmlFor="admin-body">Body (Markdown)</label>
+              <textarea
+                ref={bodyRef}
+                id="admin-body"
+                value={bodyMd}
+                onChange={(e) => setBodyMd(e.target.value)}
+                onDragOver={handleBodyDragOver}
+                onDragLeave={() => setBodyDropActive(false)}
+                onDrop={handleBodyDrop}
+                onPaste={handleBodyPaste}
+                rows={18}
+                style={bodyDropActive ? { outline: "2px dashed var(--blue)", outlineOffset: -2 } : undefined}
+                placeholder={
+                  "## A section heading\n\nBody text, **bold**, *italic*, [links](https://example.com), lists, and " +
+                  "GFM tables:\n\n| Col A | Col B |\n| --- | --- |\n| row | row |"
+                }
+              />
+              <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 8 }}>
+                <label htmlFor="admin-body-image" style={{ fontSize: 12, color: "var(--comment)" }}>
+                  Insert image into body (or drag a file / paste one directly into the text above):
+                </label>
+                <input
+                  id="admin-body-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBodyImageChange}
+                  disabled={bodyImageUploading}
+                />
+                {bodyImageUploading && <span style={{ fontSize: 12, color: "var(--comment)" }}>Uploading…</span>}
+              </div>
+              {bodyImageError && <p className="admin-error">{bodyImageError}</p>}
+            </div>
+
+            <div className="admin-field">
+              <label htmlFor="admin-image">This article&rsquo;s image (optional)</label>
+              <span style={{ fontSize: 12, color: "var(--comment)", display: "block", marginBottom: 4 }}>
+                Shown at the top of this one article only — not the site-wide banner set above.
+              </span>
+              <input id="admin-image" type="file" accept="image/*" onChange={handleArticleImageChange} disabled={imageUploading} />
+              {imageUploading && <span style={{ fontSize: 12, color: "var(--comment)" }}>Uploading…</span>}
+              {imageError && <p className="admin-error">{imageError}</p>}
+              {imageUrl && !imageUploading && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={imageUrl} alt="Article image preview" style={{ maxWidth: 320, display: "block", marginTop: 8, borderRadius: 8 }} />
+              )}
+            </div>
+
+            <div className="admin-field">
+              <label>Publish to</label>
+              <div className="admin-brand-list">
+                {publishableBrands.map((b) => (
+                  <label key={b.slug} className="admin-brand-chip">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(b.slug)}
+                      onChange={() => toggleBrand(b.slug)}
+                    />
+                    {b.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {error && <p className="admin-error">{error}</p>}
+
+            <button type="submit" className="admin-submit" disabled={submitting}>
+              {submitting ? "Publishing…" : "Publish"}
+            </button>
+          </form>
+
+          {results && (
+            <div className="admin-results">
+              <strong>Done.</strong>
+              <ul>
+                {results.map((r) => (
+                  <li key={r.brand_slug}>
+                    <strong>{r.brand_slug}</strong>
+                    {": "}
+                    {r.status === "created" && r.url && (
+                      <a href={r.url} target="_blank" rel="noreferrer">
+                        published — {r.url}
+                      </a>
+                    )}
+                    {r.status === "skipped_duplicate" && (
+                      <>
+                        already existed at this slug —{" "}
+                        <a href={r.url ?? "#"} target="_blank" rel="noreferrer">
+                          {r.url}
+                        </a>
+                      </>
+                    )}
+                    {r.status === "brand_not_found" && "unknown brand slug"}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {scope.is_superadmin && (
+            <>
+              <div className="article-header">
+                <h2 className="article-title" style={{ fontSize: 20 }}>Contributor keys</h2>
+                <p className="article-dek">
+                  Issue a key scoped to specific sites — e.g. a Lakers-only writer who can&rsquo;t touch the rest of
+                  the network. Shown once at creation; copy it immediately.
+                </p>
+              </div>
+
+              <div className="admin-field">
+                <label htmlFor="new-key-label">Label</label>
+                <input
+                  id="new-key-label"
+                  type="text"
+                  value={newKeyLabel}
+                  onChange={(e) => setNewKeyLabel(e.target.value)}
+                  placeholder="e.g. Lakers writer"
+                />
+              </div>
+
+              <div className="admin-field">
+                <label>Allowed sites</label>
+                <div className="admin-brand-list">
+                  {brands.map((b) => (
+                    <label key={b.slug} className="admin-brand-chip">
+                      <input
+                        type="checkbox"
+                        checked={newKeyBrandSlugs.has(b.slug)}
+                        onChange={() => toggleNewKeyBrand(b.slug)}
+                      />
+                      {b.name}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {createKeyError && <p className="admin-error">{createKeyError}</p>}
+              <button type="button" onClick={handleCreateKey} disabled={creatingKey}>
+                {creatingKey ? "Creating…" : "Create key"}
+              </button>
+
+              {justCreatedKey && (
+                <div className="admin-results">
+                  <strong>{justCreatedKey.label}</strong> — copy this now, it won&rsquo;t be shown again:
+                  <pre style={{ userSelect: "all", overflowX: "auto", padding: 8, marginTop: 6 }}>
+                    {justCreatedKey.key}
+                  </pre>
+                </div>
+              )}
+
+              <div className="admin-field">
+                <label>Existing keys</label>
+                {keysError && <p className="admin-error">{keysError}</p>}
+                <ul>
+                  {keys.map((k) => (
+                    <li key={k.id}>
+                      <strong>{k.label}</strong> ({k.key_prefix}…) — {k.brand_slugs.join(", ")}
+                      {k.is_revoked ? (
+                        <span style={{ color: "var(--comment)" }}> — revoked</span>
+                      ) : (
+                        <button type="button" onClick={() => handleRevokeKey(k.id)} disabled={revokingId === k.id}>
+                          {revokingId === k.id ? "Revoking…" : "Revoke"}
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+        </>
       )}
     </article>
   );

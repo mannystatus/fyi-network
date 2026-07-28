@@ -4,7 +4,7 @@ from ..database import get_db
 from ..models import Brand
 from ..schemas import BrandOut, BrandUpdate
 from ..deps import resolve_brand
-from ..auth import require_admin
+from ..auth import AdminScope, require_admin
 
 router = APIRouter(prefix="/api/brands", tags=["brands"])
 
@@ -21,9 +21,11 @@ def current_brand(brand: Brand = Depends(resolve_brand)):
     return brand
 
 
-@router.patch("/{slug}", response_model=BrandOut, dependencies=[Depends(require_admin)])
-def update_brand(slug: str, payload: BrandUpdate, db: Session = Depends(get_db)):
+@router.patch("/{slug}", response_model=BrandOut)
+def update_brand(slug: str, payload: BrandUpdate, db: Session = Depends(get_db), scope: AdminScope = Depends(require_admin)):
     """Admin-gated — currently just sets the site header banner from /admin."""
+    scope.check_brand(slug.strip().lower())
+
     brand = db.query(Brand).filter(Brand.slug == slug.strip().lower()).first()
     if not brand:
         raise HTTPException(status_code=404, detail="Brand not found")

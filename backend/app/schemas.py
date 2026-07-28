@@ -76,6 +76,56 @@ class ArticleCreateResult(BaseModel):
     url: str | None = None
 
 
+class AdminScopeOut(BaseModel):
+    """Response for GET /api/admin/whoami — what the caller's own key can do."""
+
+    is_superadmin: bool
+    brand_slugs: list[str]
+    label: str | None = None
+
+
+class AdminKeyOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    label: str
+    key_prefix: str
+    brand_slugs: list[str]
+    is_revoked: bool
+    created_at: dt.datetime
+
+    @field_validator("brand_slugs", mode="before")
+    @classmethod
+    def split_brand_slugs(cls, v):
+        if isinstance(v, str):
+            return [t.strip() for t in v.split(",") if t.strip()]
+        return v
+
+
+class AdminKeyCreate(BaseModel):
+    label: str
+    brand_slugs: list[str]
+
+    @field_validator("label")
+    @classmethod
+    def not_blank(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("must not be blank")
+        return v.strip()
+
+    @field_validator("brand_slugs")
+    @classmethod
+    def normalize_brand_slugs(cls, v: list[str]) -> list[str]:
+        cleaned = [s.strip().lower() for s in v if s.strip()]
+        if not cleaned:
+            raise ValueError("at least one brand_slug is required")
+        return cleaned
+
+
+class AdminKeyCreateResult(AdminKeyOut):
+    key: str  # the raw secret — only ever present in this one response
+
+
 class TipChallenge(BaseModel):
     a: int
     b: int

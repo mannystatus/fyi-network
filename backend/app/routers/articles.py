@@ -6,7 +6,7 @@ from ..database import get_db
 from ..models import Article, Brand
 from ..schemas import ArticleListItem, ArticleDetail, ArticleCreate, ArticleCreateResult
 from ..deps import resolve_brand
-from ..auth import require_admin
+from ..auth import AdminScope, require_admin
 from ..slugs import slugify
 
 router = APIRouter(prefix="/api/articles", tags=["articles"])
@@ -34,8 +34,8 @@ def list_articles(
     return query.order_by(Article.published_at.desc()).offset(offset).limit(limit).all()
 
 
-@router.post("", response_model=list[ArticleCreateResult], dependencies=[Depends(require_admin)])
-def create_article(payload: ArticleCreate, db: Session = Depends(get_db)):
+@router.post("", response_model=list[ArticleCreateResult])
+def create_article(payload: ArticleCreate, db: Session = Depends(get_db), scope: AdminScope = Depends(require_admin)):
     """
     Publishes one article across one or more brands at once (e.g. write it
     once, syndicate it to fyimac + fyigoogle + fyiwin + fyinetflix).
@@ -43,12 +43,22 @@ def create_article(payload: ArticleCreate, db: Session = Depends(get_db)):
     in use is skipped rather than erroring, so retrying a partially-failed
     request is safe.
 
+    A scoped contributor key must be allowed on *every* requested brand or
+    the whole request is rejected up front (fail closed) — no partial
+    publish to the brands it does have access to.
+
     Always marked is_featured — anything published through this endpoint
     is hand-authored (vs. ingest_news.py's automated RSS briefs), so it
     gets the "Featured" banner on the site.
     """
+    for brand_slug in payload.brand_slugs:
+        scope.check_brand(brand_slug)
+
     slug = slugify(payload.slug or payload.title)
-    author = payload.author.strip() if payload.author and payload.author.strip() else DEFAULT_AUTHOR
+    if payload.author and payload.author.strip():
+        author = payload.author.strip()
+    else:
+        author = scope.label if scope.label else DEFAULT_AUTHOR
     published_at = dt.datetime.utcnow()
 
     results: list[ArticleCreateResult] = []
@@ -114,13 +124,17 @@ def get_article(
     return article
 
 
-@router.delete("/{slug}", dependencies=[Depends(require_admin)])
+@router.delete("/{slug}")
 def delete_article(
     slug: str,
     db: Session = Depends(get_db),
     brand_slugs: list[str] = Query(..., description="Which brands to remove this slug from"),
+    scope: AdminScope = Depends(require_admin),
 ):
     """Retracts an article — e.g. to undo a typo'd publish or a duplicate syndication."""
+    for brand_slug in brand_slugs:
+        scope.check_brand(brand_slug.strip().lower())
+
     deleted = []
     for brand_slug in brand_slugs:
         brand = db.query(Brand).filter(Brand.slug == brand_slug.strip().lower()).first()

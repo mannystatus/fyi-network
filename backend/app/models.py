@@ -58,6 +58,29 @@ class AdminAuthFailure(Base):
     occurred_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
 
 
+class AdminKey(Base):
+    """
+    A brand-scoped contributor key — issued from /admin by whoever holds
+    the superadmin ADMIN_API_KEY env var, to let other people publish to
+    specific sites (e.g. fyilakers.com + fyidodgers.com) without handing
+    out the one shared secret that controls the whole network. See
+    auth.py's require_admin, which checks this table for anything that
+    isn't an exact match on ADMIN_API_KEY.
+
+    Only the hash is stored — the raw key is shown exactly once, at
+    creation time, same as any other API-key-style credential.
+    """
+    __tablename__ = "admin_keys"
+
+    id = Column(Integer, primary_key=True)
+    label = Column(String(128), nullable=False)              # "Lakers writer" — shown in the admin UI, defaults the Author field
+    key_hash = Column(String(64), nullable=False, unique=True, index=True)
+    key_prefix = Column(String(8), nullable=False)            # first chars of the raw key, so the list is distinguishable without re-exposing secrets
+    brand_slugs = Column(String(512), nullable=False)         # comma-separated, same convention as Brand.topics — always non-empty; unlike Brand.topics, empty here would mean "no access", never "full access"
+    is_revoked = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
+
+
 class TipSubmission(Base):
     """
     One row per accepted tip-form submission, keyed by client IP. Backs the
