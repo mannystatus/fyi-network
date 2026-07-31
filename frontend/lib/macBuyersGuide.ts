@@ -8,22 +8,20 @@
 // `releasedOn`, so the page stays accurate as time passes instead of
 // needing a manual refresh — re-verify these entries whenever Apple ships
 // something new.
-import { amazonSearchUrl, rakutenDeepUrl, type GuideConfig, type GuideProduct } from "./buyersGuide";
+import { amazonSearchUrl, type GuideConfig, type GuideProduct } from "./buyersGuide";
 
 // Real Amazon Associates tag, shared across the fyi network's buyers guides.
 const AMAZON_ASSOCIATES_TAG = "wisedealsxyz-20";
-// Apple's official affiliate program runs through Rakuten Advertising
-// (not Amazon) — every product also gets an apple.com link through it,
-// alongside its Amazon link, so both revenue paths are covered.
-// RAKUTEN_AFFILIATE_ID is the account's real SID.
-const RAKUTEN_AFFILIATE_ID = "4725656";
-// TODO(launch): verify Apple's current Rakuten "mid" (merchant id) before
-// this page goes live — this value hasn't been confirmed against the live
-// Rakuten Advertising network.
-const RAKUTEN_APPLE_MERCHANT_ID = "11831";
 
+// Rakuten (id=4725656, mid=11831) is on hold — Rakuten rejected that mid
+// with "Invalid Publisher Code, Offer, or Publisher - Advertiser
+// Partnership Status", meaning either the mid is wrong or the account
+// isn't yet approved for Apple's program specifically. Apple links go
+// straight to apple.com, unaffiliated, until that's sorted out. To restore:
+// import rakutenDeepUrl from "./buyersGuide" and wrap the URL below in
+// rakutenDeepUrl("4725656", "<verified mid>", `https://www.apple.com${path}`).
 const amazon = (query: string) => amazonSearchUrl(AMAZON_ASSOCIATES_TAG, query);
-const apple = (path: string) => rakutenDeepUrl(RAKUTEN_AFFILIATE_ID, RAKUTEN_APPLE_MERCHANT_ID, `https://www.apple.com${path}`);
+const apple = (path: string) => `https://www.apple.com${path}`;
 
 const PRODUCTS: GuideProduct[] = [
   // ---- Mac ----
