@@ -2,22 +2,29 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getCurrentBrand } from "../../lib/api";
-import { APPLE_PRODUCTS, CATEGORY_ORDER, daysSince, formatAge, getVerdict } from "../../lib/macBuyersGuide";
+import { daysSince, formatAge, getVerdict } from "../../lib/buyersGuide";
+import { BUYERS_GUIDES } from "../../lib/buyersGuideRegistry";
 import AdSlot from "../../components/AdSlot";
 import { AD_SLOTS } from "../../lib/analytics";
 
-export const metadata: Metadata = {
-  title: "Apple Buyers Guide — Should You Buy One Right Now?",
-  description:
-    "Which Macs, iPhones, iPads, Vision Pro, and Apple smart home devices are worth buying today, and which to hold off on, based on how far each model is into Apple's typical refresh cycle.",
-  alternates: { canonical: "/buyers-guide" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getCurrentBrand();
+  const guide = BUYERS_GUIDES[brand.slug];
+  if (!guide) return {};
 
-// fyiMac-only — every other brand 404s here rather than showing Mac
-// shopping advice on, say, fyiWin.
+  return {
+    title: `${guide.storeName} Buyers Guide — Should You Buy One Right Now?`,
+    description: guide.dek,
+    alternates: { canonical: "/buyers-guide" },
+  };
+}
+
+// Brands without a guide in the registry 404 rather than showing, say,
+// Mac shopping advice on fyiWin.
 export default async function BuyersGuidePage() {
   const brand = await getCurrentBrand();
-  if (brand.slug !== "fyimac") notFound();
+  const guide = BUYERS_GUIDES[brand.slug];
+  if (!guide) notFound();
 
   return (
     <article>
@@ -27,23 +34,14 @@ export default async function BuyersGuidePage() {
 
       <div className="article-header">
         <p className="advertise-eyebrow">Buying Advice</p>
-        <h1 className="article-title">Should you buy that Apple product right now?</h1>
-        <p className="article-dek advertise-lead">
-          Apple refreshes every product line on a fairly predictable cycle. Buy right after an update and you get
-          the newest hardware for a full cycle; buy right before one and you're stuck with old hardware the moment
-          it ships. Below is where every current Mac, iPhone, iPad, Vision Pro, and smart home device sits in its
-          cycle, updated automatically as time passes.
-        </p>
+        <h1 className="article-title">{guide.heading}</h1>
+        <p className="article-dek advertise-lead">{guide.dek}</p>
       </div>
 
-      <div className="buyers-guide-disclosure">
-        Disclosure: fyiMac is an Amazon Associate and a Rakuten Advertising affiliate. We may earn a commission on
-        qualifying purchases made through the links below, at no extra cost to you. That has no bearing on the buy
-        / wait guidance above each product.
-      </div>
+      <div className="buyers-guide-disclosure">{guide.disclosureNote}</div>
 
-      {CATEGORY_ORDER.map((category) => {
-        const products = APPLE_PRODUCTS.filter((p) => p.category === category);
+      {guide.categoryOrder.map((category) => {
+        const products = guide.products.filter((p) => p.category === category);
         if (products.length === 0) return null;
         return (
           <section key={category} className="buyers-guide-section">
@@ -82,12 +80,12 @@ export default async function BuyersGuidePage() {
                         </a>
                       )}
                       <a
-                        href={product.appleUrl}
+                        href={product.storeUrl}
                         target="_blank"
                         rel="sponsored noopener noreferrer"
                         className="buyers-guide-cta buyers-guide-cta-secondary"
                       >
-                        {product.discontinued ? "Check refurbished stock" : "Buy"} from Apple &rarr;
+                        {product.discontinued ? "Check refurbished stock" : "Buy"} from {guide.storeName} &rarr;
                       </a>
                     </div>
                   </div>

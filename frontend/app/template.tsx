@@ -10,6 +10,7 @@ import CookieSettingsLink from "../components/CookieSettingsLink";
 import AdSlot from "../components/AdSlot";
 import ChromeGate from "../components/ChromeGate";
 import { AD_SLOTS } from "../lib/analytics";
+import { BUYERS_GUIDES } from "../lib/buyersGuideRegistry";
 
 export default async function Template({ children }: { children: React.ReactNode }) {
   const [brand, brands] = await Promise.all([getCurrentBrand(), getAllBrands()]);
@@ -172,10 +173,10 @@ function Chrome({
 
         {brand.topics.length > 0 && <TopicsNav topics={brand.topics} />}
 
-        {brand.icon === "mac" && (
+        {BUYERS_GUIDES[brand.slug] && (
           <div className="buyers-guide-banner">
             <Link href="/buyers-guide" className="buyers-guide-banner-link">
-              📘 Should you buy that Apple product right now? — Buyers Guide
+              📘 {BUYERS_GUIDES[brand.slug].heading} — Buyers Guide
             </Link>
           </div>
         )}
@@ -190,7 +191,7 @@ function Chrome({
           <span>&copy; fyi -m-w-g-n</span>
           <span className="footer-links">
             <SendTipForm brandName={brand.name} />
-            {brand.icon === "mac" && <Link href="/buyers-guide">Buyers Guide</Link>}
+            {BUYERS_GUIDES[brand.slug] && <Link href="/buyers-guide">Buyers Guide</Link>}
             <Link href="/advertise">Advertise</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/privacy">Privacy</Link>
