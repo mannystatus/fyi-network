@@ -2,12 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ADSENSE_CLIENT_ID } from "../lib/analytics";
 
 declare global {
   interface Window {
     gtag: (...args: unknown[]) => void;
-    adsbygoogle: unknown[];
   }
 }
 
@@ -33,15 +31,18 @@ export default function CookieBanner({ initialConsent }: { initialConsent: Conse
   function choose(consent: Consent) {
     document.cookie = `cookie-consent=${consent}; path=/; max-age=31536000; samesite=lax`;
     const granted = consent === "accepted";
+    // GA/GTM support live consent updates via gtag, but AdSense's
+    // restricted-data-processing flag doesn't: pushing it again here throws
+    // "All 'ins' elements ... already have ads in them" once AdSlot has
+    // already filled a unit on this page (adsbygoogle can't retarget an
+    // already-served ad anyway). It's set once, before any ins fills, by
+    // the beforeInteractive script in layout.tsx computed from this same
+    // cookie — the new value takes effect starting next page load.
     window.gtag?.("consent", "update", {
       ad_storage: granted ? "granted" : "denied",
       ad_user_data: granted ? "granted" : "denied",
       ad_personalization: granted ? "granted" : "denied",
       analytics_storage: granted ? "granted" : "denied",
-    });
-    (window.adsbygoogle = window.adsbygoogle || []).push({
-      google_ad_client: ADSENSE_CLIENT_ID,
-      google_restrict_data_processing: !granted,
     });
     setDismissed(true);
   }
