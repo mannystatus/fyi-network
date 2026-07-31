@@ -19,6 +19,8 @@ const PALETTE: Record<string, string> = {
   "Windows 11": "var(--cat-windows-11)",
   Hardware: "var(--cat-hardware)",
   Copilot: "var(--cat-copilot)",
+  Xbox: "var(--cat-xbox)",
+  "PC Gaming": "var(--cat-pc-gaming)",
   Pixel: "var(--cat-pixel)",
   Chrome: "var(--cat-chrome)",
   Android: "var(--cat-android)",

@@ -24,6 +24,8 @@
   --cat-windows-11: #60a5fa;
   --cat-hardware: #fb923c;
   --cat-copilot: #c084fc;
+  --cat-xbox: #4ade80;
+  --cat-pc-gaming: #f472b6;
   --cat-pixel: #4ade80;
   --cat-chrome: #facc15;
   --cat-android: #a3e635;
@@ -98,6 +100,8 @@
     --cat-windows-11: #0070f9;
     --cat-hardware: #c25700;
     --cat-copilot: #a040ff;
+    --cat-xbox: #13893e;
+    --cat-pc-gaming: #be185d;
     --cat-pixel: #13893e;
     --cat-chrome: #907300;
     --cat-android: #56830a;
@@ -133,6 +137,8 @@
   --cat-windows-11: #0070f9;
   --cat-hardware: #c25700;
   --cat-copilot: #a040ff;
+  --cat-xbox: #13893e;
+  --cat-pc-gaming: #be185d;
   --cat-pixel: #13893e;
   --cat-chrome: #907300;
   --cat-android: #56830a;

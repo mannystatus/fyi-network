@@ -62,6 +62,8 @@ QUERY_OVERRIDES = {
     "Windows 11": "Windows 11",
     "Hardware": "Windows PC laptop hardware",
     "Copilot": "Microsoft Copilot AI",
+    "Xbox": "Xbox OR \"Xbox Series X\" OR \"Xbox Game Pass\" OR Xbox deals",
+    "PC Gaming": "PC gaming OR Steam deals OR Steam sale OR PC game release",
     "Pixel": "Google Pixel",
     "Chrome": "Google Chrome browser",
     "Android": "Android OS",
@@ -108,6 +110,14 @@ FILTER_KEYWORDS = {
     "Windows 11": ["windows"],
     "Hardware": ["laptop", "pc", "processor", "chip", "hardware", "desktop"],
     "Copilot": ["copilot"],
+    "Xbox": ["xbox"],
+    # "PC Gaming" alone is too broad (bare "pc" pulls in any PC hardware
+    # story) — require a term that's actually about gaming on it. Bare
+    # "steam" was tried first and let through "gaining steam"/"picking up
+    # steam" idioms in unrelated stories (a Reds trade-prospect piece, of
+    # all things) — every variant below is specific enough that it doesn't
+    # occur in that idiom.
+    "PC Gaming": ["pc gaming", "steam deck", "steam sale", "steam game", "on steam", "gaming pc", "gaming laptop"],
     "Pixel": ["pixel"],
     "Chrome": ["chrome"],
     "Android": ["android"],

@@ -22,7 +22,7 @@ BRANDS = [
         slug="fyiwin", name="fyiWin", domain="fyiwin.com",
         accent_color="#0078d4", icon="win",  # Microsoft's Fluent/Windows 11 accent blue
         tagline="Windows news. Decoded daily.",
-        topics="Windows 11,Hardware,Copilot",
+        topics="Windows 11,Hardware,Copilot,Xbox,PC Gaming",
     ),
     dict(
         slug="fyigoogle", name="fyiGoogle", domain="fyigoogle.com",
