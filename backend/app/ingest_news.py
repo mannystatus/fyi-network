@@ -144,6 +144,31 @@ FILTER_KEYWORDS = {
 # the item regardless of whether a FILTER_KEYWORDS term also matched.
 EXCLUDE_KEYWORDS = ["ransom", "kidnap", "murder", "homicide", "manhunt", "crime podcast", "missing person"]
 
+# Bing (and the Google fallback) return results in whatever language the
+# query term is trending in worldwide — a global product name like "Google
+# Pixel" pulls in German, Hindi, etc. coverage just as easily as English,
+# and that foreign text still contains the plain-ASCII product keyword
+# (e.g. "Google-Pixel-Nutzer"), so FILTER_KEYWORDS alone lets it through.
+# Two independent signals catch it: any character from a non-Latin script
+# rejects outright (unambiguous — no legitimate English headline uses
+# Devanagari, Cyrillic, CJK, etc.); a cluster of German stopwords/umlauts
+# catches German specifically, which is written in Latin script so the
+# script check alone would miss it. A single incidental hit (e.g. "das" as
+# a rare English fragment) isn't enough on its own.
+_NON_LATIN_SCRIPT = re.compile(
+    "[Ѐ-ӿ֐-׿؀-ۿऀ-ॿ぀-ヿ一-鿿가-힣]"
+)
+_GERMAN_MARKERS = re.compile(
+    r"[äöüßÄÖÜ]|\b(und|der|die|das|ist|nicht|für|auf|mit|wird|sein|eine|einen|kann|sollten|dieser)\b",
+    re.IGNORECASE,
+)
+
+
+def is_english(text: str) -> bool:
+    if _NON_LATIN_SCRIPT.search(text):
+        return False
+    return len(_GERMAN_MARKERS.findall(text)) < 2
+
 # Dedicated trade press for a topic covers it accurately without necessarily
 # repeating the topic's own name in every headline (a Soompi casting brief
 # says "confirmed for new drama", not "Korean drama confirmed") — the
@@ -187,7 +212,10 @@ def pick_framing(slug: str, brand_name: str, topic: str) -> str:
 
 
 def is_relevant(brand_slug: str, topic: str, item: dict) -> bool:
-    haystack = f"{item['title']} {item['description'] or ''}".lower()
+    raw_text = f"{item['title']} {item['description'] or ''}"
+    if not is_english(raw_text):
+        return False
+    haystack = raw_text.lower()
     if any(k in haystack for k in EXCLUDE_KEYWORDS):
         return False
     trusted = TRUSTED_SOURCES.get(topic)
