@@ -1061,31 +1061,54 @@ footer {
   justify-content: space-between;
 }
 
+/* Non-blocking floating card, bottom-anchored — matches the banner used on
+   hackthedeal.com rather than a full-width bar, so visitors can keep
+   scrolling/reading behind it instead of being gated by it. */
 .cookie-banner {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  pointer-events: none;
+}
+
+.cookie-box {
+  pointer-events: auto;
+  max-width: 560px;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
   gap: 16px;
-  padding: 14px 24px;
+  padding: 18px 20px;
   background: var(--bg-alt);
-  border-top: 1px solid var(--border);
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
-.cookie-banner p {
-  margin: 0;
-  max-width: 640px;
-  font-size: 13px;
+.cookie-text {
+  flex: 1 1 320px;
+}
+
+.cookie-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 800;
   color: var(--fg);
 }
 
-.cookie-banner a {
+.cookie-box p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+.cookie-box a {
   color: var(--accent);
   text-decoration: underline;
 }
@@ -1099,8 +1122,8 @@ footer {
 .cookie-accept,
 .cookie-reject {
   flex-shrink: 0;
-  padding: 8px 20px;
-  border-radius: 20px;
+  padding: 10px 24px;
+  border-radius: 8px;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
@@ -1127,28 +1150,41 @@ footer {
   background: var(--bg);
 }
 
+/* Persistent reopen control for the banner above — fixed corner button,
+   same treatment as hackthedeal.com's, so consent can be withdrawn/changed
+   as easily as it was given. Lives in the footer DOM-wise (see template.tsx)
+   but renders fixed, independent of scroll position. */
+.cookie-settings-btn {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 49;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  color: var(--comment);
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cookie-settings-btn:hover {
+  color: var(--fg);
+}
+
 .footer-links {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.footer-links a,
-.footer-links .footer-link-button {
+.footer-links a {
   color: var(--comment);
   text-decoration: none;
 }
 
-.footer-link-button {
-  border: none;
-  background: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-}
-
-.footer-links a:hover,
-.footer-links .footer-link-button:hover {
+.footer-links a:hover {
   color: var(--fg);
   text-decoration: underline;
 }

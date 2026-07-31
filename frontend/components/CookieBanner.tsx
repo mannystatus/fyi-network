@@ -48,18 +48,23 @@ export default function CookieBanner({ initialConsent }: { initialConsent: Conse
 
   return (
     <div className="cookie-banner" role="dialog" aria-label="Cookie notice">
-      <p>
-        This site uses a couple of first-party cookies to remember your theme and which network site you&apos;re
-        on. With your consent, it also works with Google Analytics and Google AdSense, which may use cookies for
-        analytics and to show personalized ads. See the <Link href="/privacy">Privacy Policy</Link> for details.
-      </p>
-      <div className="cookie-actions">
-        <button type="button" className="cookie-reject" onClick={() => choose("rejected")}>
-          Reject
-        </button>
-        <button type="button" className="cookie-accept" onClick={() => choose("accepted")}>
-          Accept
-        </button>
+      <div className="cookie-box">
+        <div className="cookie-text">
+          <p className="cookie-title">🍪 We use cookies</p>
+          <p>
+            This site uses a couple of first-party cookies to remember your theme and which network site
+            you&apos;re on, and works with Google Analytics and AdSense, which may use cookies for analytics and
+            to show personalized ads. See our <Link href="/privacy">Privacy Policy</Link> for details.
+          </p>
+        </div>
+        <div className="cookie-actions">
+          <button type="button" className="cookie-reject" onClick={() => choose("rejected")}>
+            Reject
+          </button>
+          <button type="button" className="cookie-accept" onClick={() => choose("accepted")}>
+            Accept
+          </button>
+        </div>
       </div>
     </div>
   );
