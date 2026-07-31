@@ -1090,21 +1090,41 @@ footer {
   text-decoration: underline;
 }
 
-.cookie-accept {
+.cookie-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.cookie-accept,
+.cookie-reject {
   flex-shrink: 0;
   padding: 8px 20px;
-  border: none;
   border-radius: 20px;
-  background: var(--accent);
-  color: #fff;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
   font-family: inherit;
 }
 
+.cookie-accept {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+}
+
 .cookie-accept:hover {
   filter: brightness(1.1);
+}
+
+.cookie-reject {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+}
+
+.cookie-reject:hover {
+  background: var(--bg);
 }
 
 .footer-links {
@@ -1113,12 +1133,22 @@ footer {
   gap: 16px;
 }
 
-.footer-links a {
+.footer-links a,
+.footer-links .footer-link-button {
   color: var(--comment);
   text-decoration: none;
 }
 
-.footer-links a:hover {
+.footer-link-button {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.footer-links a:hover,
+.footer-links .footer-link-button:hover {
   color: var(--fg);
   text-decoration: underline;
 }

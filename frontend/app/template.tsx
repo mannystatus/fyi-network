@@ -6,6 +6,7 @@ import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
 import SearchBox from "../components/SearchBox";
 import SendTipForm from "../components/SendTipForm";
+import CookieSettingsLink from "../components/CookieSettingsLink";
 import AdSlot from "../components/AdSlot";
 import ChromeGate from "../components/ChromeGate";
 import { AD_SLOTS } from "../lib/analytics";
@@ -184,6 +185,7 @@ function Chrome({
             <Link href="/advertise">Advertise</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/privacy">Privacy</Link>
+            <CookieSettingsLink />
             <span>{brand.domain}</span>
           </span>
         </footer>

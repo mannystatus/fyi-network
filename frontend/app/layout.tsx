@@ -75,13 +75,34 @@ export default async function RootLayout({
 
   const themeCookie = cookieStore.get("theme")?.value;
   const htmlThemeProps = themeCookie === "light" || themeCookie === "dark" ? { "data-theme": themeCookie } : {};
-  const cookieConsented = cookieStore.get("cookie-consent")?.value === "accepted";
+  const consentCookie = cookieStore.get("cookie-consent")?.value;
+  const consent: "accepted" | "rejected" | null =
+    consentCookie === "accepted" || consentCookie === "rejected" ? consentCookie : null;
+  const adsGranted = consent === "accepted";
   const gtmId = GTM_IDS[brand.slug];
   const gaId = GA_IDS[brand.slug];
   const swgProductId = SWG_PRODUCT_IDS[brand.slug];
 
   return (
     <html lang="en" {...htmlThemeProps}>
+      {/* Google Consent Mode v2 default, set before GTM/GA/AdSense so they
+          never fire with granted storage ahead of an explicit user choice —
+          required for EEA/UK traffic under Google's EU User Consent Policy.
+          Mirrors the cookie set by CookieBanner's accept/reject handlers, so
+          a returning visitor's choice applies from the very first paint
+          instead of defaulting to denied again on every page load. */}
+      <Script id="consent-default" strategy="beforeInteractive">
+        {`window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('consent', 'default', {
+            ad_storage: '${adsGranted ? "granted" : "denied"}',
+            ad_user_data: '${adsGranted ? "granted" : "denied"}',
+            ad_personalization: '${adsGranted ? "granted" : "denied"}',
+            analytics_storage: '${adsGranted ? "granted" : "denied"}'
+          });
+          window.adsbygoogle = window.adsbygoogle || [];
+          window.adsbygoogle.push({ google_ad_client: '${ADSENSE_CLIENT_ID}', google_restrict_data_processing: ${!adsGranted} });`}
+      </Script>
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
       <body
@@ -119,7 +140,7 @@ export default async function RootLayout({
 
         {children}
 
-        <CookieBanner initiallyDismissed={cookieConsented} />
+        <CookieBanner initialConsent={consent} />
       </body>
     </html>
   );
