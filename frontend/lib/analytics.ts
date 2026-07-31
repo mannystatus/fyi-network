@@ -9,6 +9,7 @@ export const GA_IDS: Record<string, string> = {
   fyimac: "G-PSQQ1FZD5V",
   fyilakers: "G-11R2VT4MX2",
   fyidodgers: "G-Z3M4PYWVW6",
+  fyiwin: "G-H1KWGNYG72",
 };
 
 // One AdSense account for the whole network — loaded sitewide, not per-brand.
