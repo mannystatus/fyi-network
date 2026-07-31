@@ -172,6 +172,14 @@ function Chrome({
 
         {brand.topics.length > 0 && <TopicsNav topics={brand.topics} />}
 
+        {brand.icon === "mac" && (
+          <div className="buyers-guide-banner">
+            <Link href="/buyers-guide" className="buyers-guide-banner-link">
+              📘 Should you buy that Apple product right now? — Buyers Guide
+            </Link>
+          </div>
+        )}
+
         <div className="ad-slot-wrap">
           <AdSlot slot={AD_SLOTS.header} />
         </div>
@@ -182,6 +190,7 @@ function Chrome({
           <span>&copy; fyi -m-w-g-n</span>
           <span className="footer-links">
             <SendTipForm brandName={brand.name} />
+            {brand.icon === "mac" && <Link href="/buyers-guide">Buyers Guide</Link>}
             <Link href="/advertise">Advertise</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/privacy">Privacy</Link>

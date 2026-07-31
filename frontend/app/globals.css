@@ -1049,6 +1049,163 @@ main {
   color: var(--fg);
 }
 
+.buyers-guide-banner {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto 8px;
+  padding: 0 32px;
+  text-align: center;
+}
+
+.buyers-guide-banner-link {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 20px;
+  padding: 5px 14px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.buyers-guide-banner-link:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.buyers-guide-disclosure {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-alt);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--comment);
+}
+
+.buyers-guide-section {
+  margin-top: 36px;
+}
+
+.buyers-guide-section:first-of-type {
+  margin-top: 28px;
+}
+
+.buyers-guide-section-title {
+  margin: 0 0 12px;
+}
+
+.buyers-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .buyers-guide-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.buyers-guide-card {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-alt);
+}
+
+.buyers-guide-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.buyers-guide-card-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--fg);
+}
+
+.buyers-guide-badge {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 4px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.buyers-guide-badge-buy {
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 18%, transparent);
+}
+
+.buyers-guide-badge-caution {
+  color: var(--yellow);
+  background: color-mix(in srgb, var(--yellow) 18%, transparent);
+}
+
+.buyers-guide-badge-dont-buy {
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 18%, transparent);
+}
+
+.buyers-guide-meta {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--comment);
+}
+
+.buyers-guide-note {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--fg);
+  flex-grow: 1;
+}
+
+.buyers-guide-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.buyers-guide-cta {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12.5px;
+  text-decoration: none;
+}
+
+.buyers-guide-cta:hover {
+  filter: brightness(1.1);
+}
+
+.buyers-guide-cta-secondary {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--border);
+}
+
+.buyers-guide-cta-secondary:hover {
+  filter: none;
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
 footer {
   max-width: 700px;
   width: 100%;
