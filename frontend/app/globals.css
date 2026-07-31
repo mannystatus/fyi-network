@@ -1088,6 +1088,10 @@ footer {
   border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  /* System-UI stack, same as hackthedeal.com's — deliberately not the
+     site's --font-mono terminal branding, since a legal/consent notice
+     reads better in a standard sans-serif than a monospace display font. */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .cookie-text {
@@ -1166,7 +1170,7 @@ footer {
   padding: 6px 10px;
   border-radius: 999px;
   cursor: pointer;
-  font-family: inherit;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .cookie-settings-btn:hover {
