@@ -2165,6 +2165,72 @@ body.theme-flynow-body {
   font-weight: 700;
 }
 
+/* Homepage-only widget, see components/LakersScoreboard.tsx — mirrors
+   .dodgers-scoreboard below, swapped to the lakers-gold accent instead of
+   the dodgers-chrome-bg blue. */
+.lakers-scoreboard {
+  margin-bottom: 28px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-alt);
+}
+
+.lakers-scoreboard .section-label {
+  margin-bottom: 8px;
+}
+
+.lakers-scoreboard .section-label:not(:first-child) {
+  margin-top: 14px;
+}
+
+.lakers-scoreboard-upcoming {
+  display: flex;
+  flex-direction: column;
+}
+
+.lakers-game-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.lakers-game-row:last-child {
+  border-bottom: none;
+}
+
+.lakers-game-row--live {
+  padding: 10px 12px;
+  margin: -2px -2px 4px;
+  border-bottom: none;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--lakers-gold) 15%, transparent);
+  font-weight: 700;
+}
+
+.lakers-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lakers-gold);
+  animation: lakers-pulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.lakers-game-matchup {
+  color: var(--fg);
+}
+
+.lakers-game-meta {
+  margin-left: auto;
+  color: var(--comment);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 /* ---------- fyiDodgers theme, used only when fyiDodgers is active ---------- */
 /* Dodger blue from the provided logo kit (accent_color #005a9c) — a simpler
    two-tone kit than fyiLakers, no secondary accent color, so contrast comes
@@ -2285,6 +2351,72 @@ body.theme-flynow-body {
 
 #site.theme-dodgers .article-card .category {
   font-weight: 700;
+}
+
+/* Homepage-only widget, see components/DodgersScoreboard.tsx — live score
+   (if a game's in progress) plus the next few games from the same
+   3-day-ahead schedule fetch that feeds the titlebar's compact line. */
+.dodgers-scoreboard {
+  margin-bottom: 28px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-alt);
+}
+
+.dodgers-scoreboard .section-label {
+  margin-bottom: 8px;
+}
+
+.dodgers-scoreboard .section-label:not(:first-child) {
+  margin-top: 14px;
+}
+
+.dodgers-scoreboard-upcoming {
+  display: flex;
+  flex-direction: column;
+}
+
+.dodgers-game-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.dodgers-game-row:last-child {
+  border-bottom: none;
+}
+
+.dodgers-game-row--live {
+  padding: 10px 12px;
+  margin: -2px -2px 4px;
+  border-bottom: none;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--dodgers-chrome-bg) 12%, transparent);
+  font-weight: 700;
+}
+
+.dodgers-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dodgers-chrome-bg);
+  animation: dodgers-pulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.dodgers-game-matchup {
+  color: var(--fg);
+}
+
+.dodgers-game-meta {
+  margin-left: auto;
+  color: var(--comment);
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 /* /admin — internal article-publishing form, deliberately brand-neutral */

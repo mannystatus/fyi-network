@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { getArticles, getAllBrands, getCurrentBrand } from "../lib/api";
 import ArticleList from "../components/ArticleList";
+import DodgersScoreboard from "../components/DodgersScoreboard";
 import FlyNowHomepage from "../components/FlyNowHomepage";
+import LakersScoreboard from "../components/LakersScoreboard";
 import LatestFromUs from "../components/LatestFromUs";
 import Pagination from "../components/Pagination";
 
@@ -35,6 +37,8 @@ export default async function HomePage({
 
   return (
     <>
+      {page === 1 && brand.icon === "dodgers" && <DodgersScoreboard />}
+      {page === 1 && brand.icon === "lakers" && <LakersScoreboard />}
       {page === 1 && <LatestFromUs variant="top" />}
       <p className="section-label">Latest</p>
       <ArticleList

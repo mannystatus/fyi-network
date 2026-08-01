@@ -11,6 +11,8 @@ import AdSlot from "../components/AdSlot";
 import ChromeGate from "../components/ChromeGate";
 import { AD_SLOTS } from "../lib/analytics";
 import { BUYERS_GUIDES } from "../lib/buyersGuideRegistry";
+import { getDodgersGames, getTitlebarText as getDodgersTitlebarText } from "../lib/dodgers";
+import { getLakersGames, getTitlebarText as getLakersTitlebarText } from "../lib/lakers";
 
 export default async function Template({ children }: { children: React.ReactNode }) {
   const [brand, brands] = await Promise.all([getCurrentBrand(), getAllBrands()]);
@@ -31,7 +33,7 @@ export default async function Template({ children }: { children: React.ReactNode
   );
 }
 
-function Chrome({
+async function Chrome({
   brand,
   brands,
   suffix,
@@ -42,6 +44,12 @@ function Chrome({
   suffix: string;
   children: React.ReactNode;
 }) {
+  // Only fetched for their own brand — every other brand skips these
+  // entirely, since Chrome renders on every page of every brand in the
+  // network.
+  const dodgersGames = brand.icon === "dodgers" ? await getDodgersGames() : [];
+  const lakersGames = brand.icon === "lakers" ? await getLakersGames() : [];
+
   return (
     <div className={`browser-frame theme-${brand.icon}`}>
       {brand.icon === "win" && (
@@ -95,7 +103,7 @@ function Chrome({
           </div>
           <div className="lakers-score">
             <span className="lakers-dot" />
-            {brand.domain}
+            {getLakersTitlebarText(lakersGames, brand.domain)}
           </div>
         </div>
       )}
@@ -108,7 +116,7 @@ function Chrome({
           </div>
           <div className="dodgers-score">
             <span className="dodgers-dot" />
-            {brand.domain}
+            {getDodgersTitlebarText(dodgersGames, brand.domain)}
           </div>
         </div>
       )}
