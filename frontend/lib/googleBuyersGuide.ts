@@ -14,10 +14,13 @@ import { amazonSearchUrl, awinDeepUrl, type GuideConfig, type GuideProduct } fro
 const AMAZON_ASSOCIATES_TAG = "wisedealsxyz-20";
 // Unlike Apple (which runs its affiliate program through Rakuten), Google
 // doesn't have a single confirmed affiliate network for store.google.com.
-// Awin is used here as the fallback network per the original brief, but
-// BOTH ids below are unverified placeholders — confirm store.google.com is
-// actually listed as an Awin advertiser (and get real ids) before launch.
-const AWIN_AFFILIATE_ID = "000000";
+// Awin is used here as the fallback network per the original brief.
+// AWIN_AFFILIATE_ID is our real Awin publisher id (account-level, same
+// across every advertiser). AWIN_GOOGLE_ADVERTISER_ID is still a placeholder:
+// confirm store.google.com is actually an Awin advertiser and get accepted
+// into its program to get a real advertiser/mid — until then this link
+// won't track or pay out. Replace 00000 once approved.
+const AWIN_AFFILIATE_ID = "2991473";
 const AWIN_GOOGLE_ADVERTISER_ID = "00000";
 
 const amazon = (query: string) => amazonSearchUrl(AMAZON_ASSOCIATES_TAG, query);
