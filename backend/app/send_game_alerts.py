@@ -32,7 +32,11 @@ from .models import PushSubscription, SentGameAlert
 
 VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY", "")
 VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "")
-VAPID_CLAIM_EMAIL = os.getenv("VAPID_CLAIM_EMAIL", "tech@fyi-network.com")
+# `or`, not getenv's default param — GitHub Actions sets this env var to an
+# empty string (not unset) whenever the referenced secret doesn't exist, so
+# os.getenv(key, default) would silently return "" instead of the default
+# (bit us during testing: the mailto: claim ended up empty).
+VAPID_CLAIM_EMAIL = os.getenv("VAPID_CLAIM_EMAIL") or "tech@fyi-network.com"
 
 STARTING_SOON_WINDOW_MIN = 60
 UA = "Mozilla/5.0 (compatible; fyi-network-game-alerts/1.0)"
