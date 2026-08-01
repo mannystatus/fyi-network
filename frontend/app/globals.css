@@ -2252,6 +2252,19 @@ body.theme-flynow-body {
   color: var(--comment);
 }
 
+.lakers-schedule-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.lakers-schedule-link:hover {
+  text-decoration: underline;
+}
+
 /* ---------- fyiDodgers theme, used only when fyiDodgers is active ---------- */
 /* Dodger blue from the provided logo kit (accent_color #005a9c) — a simpler
    two-tone kit than fyiLakers, no secondary accent color, so contrast comes
@@ -2461,6 +2474,19 @@ body.theme-flynow-body {
   font-size: 10px;
   line-height: 1.5;
   color: var(--comment);
+}
+
+.dodgers-schedule-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.dodgers-schedule-link:hover {
+  text-decoration: underline;
 }
 
 /* /admin — internal article-publishing form, deliberately brand-neutral */

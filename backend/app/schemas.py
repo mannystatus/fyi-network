@@ -149,3 +149,16 @@ class TipCreate(BaseModel):
         if not v.strip():
             raise ValueError("must not be blank")
         return v
+
+
+class PushSubscribeIn(BaseModel):
+    endpoint: str
+    keys: dict[str, str]
+
+
+class PushUnsubscribeIn(BaseModel):
+    endpoint: str
+
+
+class PublicKeyOut(BaseModel):
+    publicKey: str

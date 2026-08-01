@@ -13,6 +13,7 @@ import { AD_SLOTS } from "../lib/analytics";
 import { BUYERS_GUIDES } from "../lib/buyersGuideRegistry";
 import { getDodgersGames, getTitlebarText as getDodgersTitlebarText } from "../lib/dodgers";
 import { getLakersGames, getTitlebarText as getLakersTitlebarText } from "../lib/lakers";
+import GameDaySoftPrompt from "../components/GameDaySoftPrompt";
 
 export default async function Template({ children }: { children: React.ReactNode }) {
   const [brand, brands] = await Promise.all([getCurrentBrand(), getAllBrands()]);
@@ -208,6 +209,9 @@ async function Chrome({
           </span>
         </footer>
       </div>
+
+      {brand.icon === "dodgers" && <GameDaySoftPrompt brandSlug={brand.slug} teamName="fyiDodgers" />}
+      {brand.icon === "lakers" && <GameDaySoftPrompt brandSlug={brand.slug} teamName="fyiLakers" />}
     </div>
   );
 }

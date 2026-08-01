@@ -1,54 +1,24 @@
-// fyiDodgers homepage widget — live score (if a game's in progress right
-// now) plus the next few games in the schedule window fetched by
-// getDodgersGames (today through +3 days, see lib/dodgers.ts). Renders
-// nothing if the schedule fetch came back empty, rather than showing an
-// empty "Schedule" section (offseason, or the upstream API being down).
-import { getDodgersGames, formatGameTime, type DodgersGame } from "../lib/dodgers";
+// fyiDodgers homepage widget — server component. Fetches the initial
+// schedule (today through +3 days, see lib/dodgers.ts) and emits the
+// SportsEvent JSON-LD for upcoming games server-side (structured data
+// should reflect what was actually server-rendered, not a client-side
+// poll result), then hands the data to DodgersScoreboardClient for the
+// actual rendering + live-score polling. Renders nothing if the schedule
+// fetch came back empty — offseason, or the upstream API being down.
+import { getDodgersGames } from "../lib/dodgers";
 import { buildSportsEventJsonLd } from "../lib/sportsJsonLd";
+import DodgersScoreboardClient from "./DodgersScoreboardClient";
 
-const UPCOMING_LIMIT = 3;
 const DODGERS_NAME = "Los Angeles Dodgers";
 
-function GameRow({ game }: { game: DodgersGame }) {
-  if (game.status === "live") {
-    return (
-      <div className="dodgers-game-row dodgers-game-row--live">
-        <span className="dodgers-live-dot" />
-        <span className="dodgers-game-matchup">
-          LAD {game.dodgersRuns} – {game.opponentAbbr} {game.opponentRuns}
-        </span>
-        <span className="dodgers-game-meta">{game.inningState}</span>
-      </div>
-    );
-  }
-  return (
-    <div className="dodgers-game-row-wrap">
-      <div className="dodgers-game-row">
-        <span className="dodgers-game-matchup">
-          {game.isHome ? "vs" : "@"} {game.opponent}
-        </span>
-        <span className="dodgers-game-meta">{formatGameTime(game.gameDate)}</span>
-      </div>
-      {game.odds && (
-        <div className="dodgers-game-odds">
-          {game.odds.details}
-          {game.odds.overUnder != null && ` · O/U ${game.odds.overUnder}`}
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default async function DodgersScoreboard() {
+export default async function DodgersScoreboard({ showScheduleLink = true }: { showScheduleLink?: boolean }) {
   const games = await getDodgersGames();
   if (games.length === 0) return null;
 
-  const live = games.find((g) => g.status === "live");
-  const upcoming = games.filter((g) => g.status === "preview").slice(0, UPCOMING_LIMIT);
-  const disclaimer = upcoming.find((g) => g.odds?.disclaimer)?.odds?.disclaimer;
+  const upcoming = games.filter((g) => g.status === "preview").slice(0, 3);
 
   return (
-    <div className="dodgers-scoreboard">
+    <>
       {upcoming.map((g) => (
         <script
           key={`jsonld-${g.gamePk}`}
@@ -67,17 +37,7 @@ export default async function DodgersScoreboard() {
           }}
         />
       ))}
-      <p className="section-label">{live ? "Live now" : "Upcoming games"}</p>
-      {live && <GameRow game={live} />}
-      {upcoming.length > 0 && (
-        <div className="dodgers-scoreboard-upcoming">
-          {live && upcoming.length > 0 && <p className="section-label">Next up</p>}
-          {upcoming.map((g) => (
-            <GameRow key={g.gamePk} game={g} />
-          ))}
-        </div>
-      )}
-      {disclaimer && <p className="dodgers-odds-disclaimer">{disclaimer}</p>}
-    </div>
+      <DodgersScoreboardClient initialGames={games} showScheduleLink={showScheduleLink} />
+    </>
   );
 }
