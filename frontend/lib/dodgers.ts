@@ -5,7 +5,10 @@
 // so a shape change upstream degrades to "no game data" instead of a
 // broken page (see getDodgersGames' try/catch).
 
+import { attachOddsToPreviewGames, type GameOdds } from "./sportsOdds";
+
 const DODGERS_TEAM_ID = 119;
+const DODGERS_ABBR = "LAD";
 const SCHEDULE_DAYS_AHEAD = 3;
 
 export type DodgersGame = {
@@ -20,6 +23,7 @@ export type DodgersGame = {
   dodgersRuns: number | null;
   opponentRuns: number | null;
   inningState: string | null; // e.g. "Top 8th", null unless status is "live"
+  odds: GameOdds | null; // only ever set for status === "preview" — see sportsOdds.ts
 };
 
 function toStatus(abstractGameState: string): DodgersGame["status"] {
@@ -66,10 +70,20 @@ export async function getDodgersGames(): Promise<DodgersGame[]> {
             status === "live" && ls?.inningState && ls?.currentInningOrdinal
               ? `${ls.inningState} ${ls.currentInningOrdinal}`
               : null,
+          odds: null,
         });
       }
     }
-    return games.sort((a, b) => a.gameDate.localeCompare(b.gameDate));
+    games.sort((a, b) => a.gameDate.localeCompare(b.gameDate));
+
+    const oddsByDate = await attachOddsToPreviewGames(games, "baseball/mlb", DODGERS_ABBR);
+    for (const g of games) {
+      if (g.status === "preview") {
+        g.odds = oddsByDate.get(g.gameDate.slice(0, 10).replace(/-/g, "")) ?? null;
+      }
+    }
+
+    return games;
   } catch {
     return [];
   }

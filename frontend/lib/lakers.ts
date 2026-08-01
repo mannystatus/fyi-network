@@ -6,7 +6,10 @@
 // upstream degrades to "no game data" instead of a broken page (see
 // getLakersGames' try/catch), same approach as lib/dodgers.ts.
 
+import { attachOddsToPreviewGames, type GameOdds } from "./sportsOdds";
+
 const LAKERS_TEAM_SLUG = "lal";
+const LAKERS_ABBR = "LAL";
 const SCHEDULE_DAYS_AHEAD = 3;
 
 export type LakersGame = {
@@ -20,6 +23,7 @@ export type LakersGame = {
   lakersScore: number | null;
   opponentScore: number | null;
   periodState: string | null; // e.g. "Q3 5:42", null unless status is "live"
+  odds: GameOdds | null; // only ever set for status === "preview" — see sportsOdds.ts
 };
 
 function toStatus(state: string): LakersGame["status"] {
@@ -75,9 +79,19 @@ export async function getLakersGames(): Promise<LakersGame[]> {
           status === "live" && comp.status?.period
             ? `Q${comp.status.period} ${comp.status.displayClock ?? ""}`.trim()
             : null,
+        odds: null,
       });
     }
-    return games.sort((a, b) => a.gameDate.localeCompare(b.gameDate));
+    games.sort((a, b) => a.gameDate.localeCompare(b.gameDate));
+
+    const oddsByDate = await attachOddsToPreviewGames(games, "basketball/nba", LAKERS_ABBR);
+    for (const g of games) {
+      if (g.status === "preview") {
+        g.odds = oddsByDate.get(g.gameDate.slice(0, 10).replace(/-/g, "")) ?? null;
+      }
+    }
+
+    return games;
   } catch {
     return [];
   }

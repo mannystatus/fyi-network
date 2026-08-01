@@ -4,8 +4,10 @@
 // lib/lakers.ts). Renders nothing if that comes back empty — offseason,
 // or ESPN's unofficial schedule endpoint being unreachable/changed shape.
 import { getLakersGames, formatGameTime, type LakersGame } from "../lib/lakers";
+import { buildSportsEventJsonLd } from "../lib/sportsJsonLd";
 
 const UPCOMING_LIMIT = 3;
+const LAKERS_NAME = "Los Angeles Lakers";
 
 function GameRow({ game }: { game: LakersGame }) {
   if (game.status === "live") {
@@ -20,11 +22,19 @@ function GameRow({ game }: { game: LakersGame }) {
     );
   }
   return (
-    <div className="lakers-game-row">
-      <span className="lakers-game-matchup">
-        {game.isHome ? "vs" : "@"} {game.opponent}
-      </span>
-      <span className="lakers-game-meta">{formatGameTime(game.gameDate)}</span>
+    <div className="lakers-game-row-wrap">
+      <div className="lakers-game-row">
+        <span className="lakers-game-matchup">
+          {game.isHome ? "vs" : "@"} {game.opponent}
+        </span>
+        <span className="lakers-game-meta">{formatGameTime(game.gameDate)}</span>
+      </div>
+      {game.odds && (
+        <div className="lakers-game-odds">
+          {game.odds.details}
+          {game.odds.overUnder != null && ` · O/U ${game.odds.overUnder}`}
+        </div>
+      )}
     </div>
   );
 }
@@ -35,9 +45,28 @@ export default async function LakersScoreboard() {
 
   const live = games.find((g) => g.status === "live");
   const upcoming = games.filter((g) => g.status === "preview").slice(0, UPCOMING_LIMIT);
+  const disclaimer = upcoming.find((g) => g.odds?.disclaimer)?.odds?.disclaimer;
 
   return (
     <div className="lakers-scoreboard">
+      {upcoming.map((g) => (
+        <script
+          key={`jsonld-${g.gameId}`}
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              buildSportsEventJsonLd({
+                startDate: g.gameDate,
+                venue: g.venue,
+                homeTeamName: g.isHome ? LAKERS_NAME : g.opponent,
+                awayTeamName: g.isHome ? g.opponent : LAKERS_NAME,
+                url: "https://www.fyilakers.com/",
+              })
+            ),
+          }}
+        />
+      ))}
       <p className="section-label">{live ? "Live now" : "Upcoming games"}</p>
       {live && <GameRow game={live} />}
       {upcoming.length > 0 && (
@@ -48,6 +77,7 @@ export default async function LakersScoreboard() {
           ))}
         </div>
       )}
+      {disclaimer && <p className="lakers-odds-disclaimer">{disclaimer}</p>}
     </div>
   );
 }

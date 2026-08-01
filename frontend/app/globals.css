@@ -2189,23 +2189,27 @@ body.theme-flynow-body {
   flex-direction: column;
 }
 
+/* Per-entry container for a non-live row — see .dodgers-game-row-wrap for
+   the full rationale (mirrored here for Lakers). */
+.lakers-game-row-wrap {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.lakers-game-row-wrap:last-child {
+  border-bottom: none;
+}
+
 .lakers-game-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
   font-size: 13px;
-}
-
-.lakers-game-row:last-child {
-  border-bottom: none;
 }
 
 .lakers-game-row--live {
   padding: 10px 12px;
   margin: -2px -2px 4px;
-  border-bottom: none;
   border-radius: 8px;
   background: color-mix(in srgb, var(--lakers-gold) 15%, transparent);
   font-weight: 700;
@@ -2229,6 +2233,23 @@ body.theme-flynow-body {
   color: var(--comment);
   font-size: 12px;
   white-space: nowrap;
+}
+
+.lakers-game-odds {
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--comment);
+}
+
+/* ESPN/sportsbook-supplied responsible-gambling notice — shown once per
+   widget (not per game row) whenever any upcoming game has odds. */
+.lakers-odds-disclaimer {
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--comment);
 }
 
 /* ---------- fyiDodgers theme, used only when fyiDodgers is active ---------- */
@@ -2377,23 +2398,29 @@ body.theme-flynow-body {
   flex-direction: column;
 }
 
+/* Per-entry container for a non-live row — holds the matchup/time line
+   (.dodgers-game-row) and, when present, the odds line below it, so the
+   border-bottom separates whole game entries rather than sitting between
+   a game's own matchup and odds lines. */
+.dodgers-game-row-wrap {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.dodgers-game-row-wrap:last-child {
+  border-bottom: none;
+}
+
 .dodgers-game-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
   font-size: 13px;
-}
-
-.dodgers-game-row:last-child {
-  border-bottom: none;
 }
 
 .dodgers-game-row--live {
   padding: 10px 12px;
   margin: -2px -2px 4px;
-  border-bottom: none;
   border-radius: 8px;
   background: color-mix(in srgb, var(--dodgers-chrome-bg) 12%, transparent);
   font-weight: 700;
@@ -2417,6 +2444,23 @@ body.theme-flynow-body {
   color: var(--comment);
   font-size: 12px;
   white-space: nowrap;
+}
+
+.dodgers-game-odds {
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--comment);
+}
+
+/* ESPN/DraftKings-supplied responsible-gambling notice — shown once per
+   widget (not per game row) whenever any upcoming game has odds. */
+.dodgers-odds-disclaimer {
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--comment);
 }
 
 /* /admin — internal article-publishing form, deliberately brand-neutral */

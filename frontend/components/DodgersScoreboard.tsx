@@ -4,8 +4,10 @@
 // nothing if the schedule fetch came back empty, rather than showing an
 // empty "Schedule" section (offseason, or the upstream API being down).
 import { getDodgersGames, formatGameTime, type DodgersGame } from "../lib/dodgers";
+import { buildSportsEventJsonLd } from "../lib/sportsJsonLd";
 
 const UPCOMING_LIMIT = 3;
+const DODGERS_NAME = "Los Angeles Dodgers";
 
 function GameRow({ game }: { game: DodgersGame }) {
   if (game.status === "live") {
@@ -20,11 +22,19 @@ function GameRow({ game }: { game: DodgersGame }) {
     );
   }
   return (
-    <div className="dodgers-game-row">
-      <span className="dodgers-game-matchup">
-        {game.isHome ? "vs" : "@"} {game.opponent}
-      </span>
-      <span className="dodgers-game-meta">{formatGameTime(game.gameDate)}</span>
+    <div className="dodgers-game-row-wrap">
+      <div className="dodgers-game-row">
+        <span className="dodgers-game-matchup">
+          {game.isHome ? "vs" : "@"} {game.opponent}
+        </span>
+        <span className="dodgers-game-meta">{formatGameTime(game.gameDate)}</span>
+      </div>
+      {game.odds && (
+        <div className="dodgers-game-odds">
+          {game.odds.details}
+          {game.odds.overUnder != null && ` · O/U ${game.odds.overUnder}`}
+        </div>
+      )}
     </div>
   );
 }
@@ -35,9 +45,28 @@ export default async function DodgersScoreboard() {
 
   const live = games.find((g) => g.status === "live");
   const upcoming = games.filter((g) => g.status === "preview").slice(0, UPCOMING_LIMIT);
+  const disclaimer = upcoming.find((g) => g.odds?.disclaimer)?.odds?.disclaimer;
 
   return (
     <div className="dodgers-scoreboard">
+      {upcoming.map((g) => (
+        <script
+          key={`jsonld-${g.gamePk}`}
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              buildSportsEventJsonLd({
+                startDate: g.gameDate,
+                venue: g.venue,
+                homeTeamName: g.isHome ? DODGERS_NAME : g.opponent,
+                awayTeamName: g.isHome ? g.opponent : DODGERS_NAME,
+                url: "https://www.fyidodgers.com/",
+              })
+            ),
+          }}
+        />
+      ))}
       <p className="section-label">{live ? "Live now" : "Upcoming games"}</p>
       {live && <GameRow game={live} />}
       {upcoming.length > 0 && (
@@ -48,6 +77,7 @@ export default async function DodgersScoreboard() {
           ))}
         </div>
       )}
+      {disclaimer && <p className="dodgers-odds-disclaimer">{disclaimer}</p>}
     </div>
   );
 }
