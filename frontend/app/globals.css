@@ -2113,6 +2113,19 @@ body.theme-flynow-body {
   letter-spacing: 0.02em;
 }
 
+/* Night mode only: gold reads better than the purple accent against the
+   dark background, echoing the lakers-gold scoreboard trim. Light mode
+   keeps the purple --accent color, which has better contrast on white. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) #site.theme-lakers .wordmark .suffix {
+    color: var(--lakers-gold);
+  }
+}
+
+:root[data-theme="dark"] #site.theme-lakers .wordmark .suffix {
+  color: var(--lakers-gold);
+}
+
 #site.theme-lakers .article-title {
   font-family: var(--font-sports-display), Oswald, sans-serif;
   font-weight: 600;
