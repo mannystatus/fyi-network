@@ -8,23 +8,18 @@
 // (Pixel 11 series + Pixel Watch 5), which is why those products carry a
 // `nextEventOn` instead of just a cycle-average guess. Re-verify all of
 // this whenever Google ships something new.
-import { amazonSearchUrl, awinDeepUrl, type GuideConfig, type GuideProduct } from "./buyersGuide";
+import { amazonSearchUrl, type GuideConfig, type GuideProduct } from "./buyersGuide";
 
 // Real Amazon Associates tag, shared across the fyi network's buyers guides.
 const AMAZON_ASSOCIATES_TAG = "wisedealsxyz-20";
-// Unlike Apple (which runs its affiliate program through Rakuten), Google
-// doesn't have a single confirmed affiliate network for store.google.com.
-// Awin is used here as the fallback network per the original brief.
-// AWIN_AFFILIATE_ID is our real Awin publisher id (account-level, same
-// across every advertiser). AWIN_GOOGLE_ADVERTISER_ID is still a placeholder:
-// confirm store.google.com is actually an Awin advertiser and get accepted
-// into its program to get a real advertiser/mid — until then this link
-// won't track or pay out. Replace 00000 once approved.
-const AWIN_AFFILIATE_ID = "2991473";
-const AWIN_GOOGLE_ADVERTISER_ID = "00000";
 
+// Awin is on hold — the program/advertiser id for store.google.com was never
+// confirmed and needs sorting out. Google links go straight to
+// store.google.com, unaffiliated, until that's resolved. To restore: import
+// awinDeepUrl from "./buyersGuide" and wrap the URL below in
+// awinDeepUrl("2991473", "<verified advertiser id>", `https://store.google.com${path}`).
 const amazon = (query: string) => amazonSearchUrl(AMAZON_ASSOCIATES_TAG, query);
-const google = (path: string) => awinDeepUrl(AWIN_AFFILIATE_ID, AWIN_GOOGLE_ADVERTISER_ID, `https://store.google.com${path}`);
+const google = (path: string) => `https://store.google.com${path}`;
 
 const PRODUCTS: GuideProduct[] = [
   // ---- Pixel ----
