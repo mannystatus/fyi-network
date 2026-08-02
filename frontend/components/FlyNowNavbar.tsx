@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { Brand } from "../lib/api";
 import DomainSwitcher from "./DomainSwitcher";
 
@@ -15,6 +18,8 @@ const NAV_LINKS = [
 ];
 
 export default function FlyNowNavbar({ brands, currentSlug }: { brands: Brand[]; currentSlug: string }) {
+  const pathname = usePathname();
+
   return (
     <header className="flynow-site-nav">
       <div className="flynow-site-nav-inner">
@@ -33,11 +38,14 @@ export default function FlyNowNavbar({ brands, currentSlug }: { brands: Brand[];
           <Link href="/#blog" prefetch={false}>
             Blog
           </Link>
-          {NAV_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} prefetch={false}>
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const active = pathname === link.href || pathname === decodeURIComponent(link.href);
+            return (
+              <Link key={link.href} href={link.href} data-active={active} prefetch={false}>
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
         <DomainSwitcher brands={brands} currentSlug={currentSlug} />
       </div>

@@ -2128,8 +2128,9 @@ footer {
   transition: color 0.15s;
 }
 
-.flynow-nav-links a:hover {
-  color: #fff;
+.flynow-nav-links a:hover,
+.flynow-nav-links a[data-active="true"] {
+  color: var(--accent);
 }
 
 @media (max-width: 880px) {
