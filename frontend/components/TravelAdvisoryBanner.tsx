@@ -43,13 +43,14 @@ export default async function TravelAdvisoryBanner() {
     <section className="travel-advisory-banner">
       <style>{`
         /* Same --fg/--comment/--border/--red tokens the rest of the site
-           uses (see globals.css) — a thin red border/heading is the only
-           thing marking this as an alert, rather than a one-off color set
-           that wouldn't track the site's light/dark toggle or per-brand
-           accent. */
+           uses (see globals.css) — the filled reddish background (a
+           color-mix of --red over --bg-alt, same technique as the
+           flynow article-card hover fill elsewhere in globals.css) is
+           what makes this read as an alert, while still tracking the
+           site's light/dark toggle instead of a fixed hex. */
         .travel-advisory-banner {
           color: var(--fg);
-          background: var(--bg-alt);
+          background: color-mix(in srgb, var(--red) 16%, var(--bg-alt));
           border: 1px solid var(--red);
           border-radius: 10px;
           padding: 20px 22px;
@@ -89,7 +90,7 @@ export default async function TravelAdvisoryBanner() {
         .travel-advisory-banner .tab-chip {
           font-size: 12.5px;
           color: var(--fg);
-          background: var(--bg);
+          background: color-mix(in srgb, var(--red) 8%, var(--bg));
           border: 1px solid var(--border);
           border-radius: 6px;
           padding: 6px 10px;
