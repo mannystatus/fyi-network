@@ -42,16 +42,9 @@ export default async function TravelAdvisoryBanner() {
   return (
     <section className="travel-advisory-banner">
       <style>{`
-        /* Same --fg/--comment/--border/--red tokens the rest of the site
-           uses (see globals.css) — the filled reddish background (a
-           color-mix of --red over --bg-alt, same technique as the
-           flynow article-card hover fill elsewhere in globals.css) is
-           what makes this read as an alert, while still tracking the
-           site's light/dark toggle instead of a fixed hex. */
         .travel-advisory-banner {
-          color: var(--fg);
-          background: color-mix(in srgb, var(--red) 16%, var(--bg-alt));
-          border: 1px solid var(--red);
+          background: #2a1408;
+          border: 1px solid #4a2412;
           border-radius: 10px;
           padding: 20px 22px;
           margin: 0 0 28px;
@@ -64,19 +57,19 @@ export default async function TravelAdvisoryBanner() {
         }
         .travel-advisory-banner .tab-dot {
           width: 8px; height: 8px; border-radius: 50%;
-          background: var(--red);
+          background: #ff8a4a;
           flex: none;
         }
         .travel-advisory-banner h2 {
           font-size: 14px;
           letter-spacing: .04em;
           text-transform: uppercase;
-          color: var(--red);
+          color: #ffb27a;
           margin: 0;
         }
         .travel-advisory-banner p.tab-desc {
           font-size: 13px;
-          color: var(--comment);
+          color: #d8b9a3;
           line-height: 1.6;
           margin: 0 0 16px;
           max-width: 640px;
@@ -89,13 +82,13 @@ export default async function TravelAdvisoryBanner() {
         }
         .travel-advisory-banner .tab-chip {
           font-size: 12.5px;
-          color: var(--fg);
-          background: color-mix(in srgb, var(--red) 8%, var(--bg));
-          border: 1px solid var(--border);
+          color: #ffdcc4;
+          background: #3a1c0e;
+          border: 1px solid #59301a;
           border-radius: 6px;
           padding: 6px 10px;
         }
-        .travel-advisory-banner .tab-chip b { font-weight: 600; }
+        .travel-advisory-banner .tab-chip b { color: #fff; font-weight: 600; }
       `}</style>
 
       <div className="tab-head">
