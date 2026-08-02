@@ -78,6 +78,9 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
        .flynow-site-nav rules) — used here and on every other fyiFlyNow page
        via app/template.tsx, so it isn't restyled locally. .logo/.flap below
        are only for the hero's big logo and the footer's small one. */
+    .flynow-homepage .logo { display:flex; gap:1px; }
+    .flynow-homepage .flap { font-family: var(--font-flynow-display), 'Archivo Black', sans-serif; font-size:15px; color:#fff; background:var(--navy2); border:1px solid var(--line); padding:3px 5px 4px; border-radius:2px; line-height:1; }
+    .flynow-homepage .flap.sky{color:var(--sky)} .flynow-homepage .flap.coral{color:var(--coral)} .flynow-homepage .flap.amber{color:var(--amber)}
 
     /* ---------- HERO ---------- */
     .flynow-homepage .hero {
