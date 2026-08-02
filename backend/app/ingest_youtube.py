@@ -31,6 +31,7 @@ from google import genai
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import (
     NoTranscriptFound,
+    RequestBlocked,
     TranscriptsDisabled,
     VideoUnavailable,
 )
@@ -149,8 +150,15 @@ def fetch_transcript_text(video_id: str) -> str | None:
         fetched = YouTubeTranscriptApi().fetch(video_id, languages=["en", "en-US", "en-GB"])
     except (TranscriptsDisabled, NoTranscriptFound, VideoUnavailable):
         return None
+    except RequestBlocked:
+        # YouTube is blocking this IP outright (routine on datacenter IPs
+        # like GitHub Actions runners) — not a per-video condition, so
+        # there's no point retrying the next video with the same IP.
+        # Re-raised rather than swallowed so the caller can abort the whole
+        # run instead of burning through every channel for nothing.
+        raise
     except Exception as exc:
-        print(f"    transcript fetch failed for {video_id}: {exc}", file=sys.stderr)
+        print(f"    transcript fetch failed for {video_id}: {type(exc).__name__}: {exc}", file=sys.stderr)
         return None
     text = " ".join(snippet.text.strip() for snippet in fetched.snippets if snippet.text)
     return text or None
@@ -277,7 +285,19 @@ def main() -> int:
         total = 0
         for handle, (channel_id, creator_name) in channels.items():
             print(f"Checking @{handle} ({creator_name})...")
-            total += ingest_channel(db, brand, client, handle, channel_id, creator_name, args.limit)
+            try:
+                total += ingest_channel(db, brand, client, handle, channel_id, creator_name, args.limit)
+            except RequestBlocked:
+                db.commit()  # keep whatever was already added before the block hit
+                print(
+                    "YouTube is blocking transcript requests from this machine's IP — routine for "
+                    "datacenter IPs (this includes GitHub Actions runners). Not fixable by retrying; "
+                    "needs either a residential proxy (see youtube-transcript-api's README, "
+                    "'Working around IP bans') or running this script from a non-datacenter machine. "
+                    f"Stopping here — {total} article(s) added before the block.",
+                    file=sys.stderr,
+                )
+                return 1
         db.commit()
         print(f"Done — {total} new article(s) added.")
     finally:
