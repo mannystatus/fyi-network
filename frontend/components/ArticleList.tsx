@@ -29,7 +29,12 @@ export default function ArticleList({
         const byline = a.is_featured && brandName ? brandName : a.author;
         return (
           <Fragment key={a.slug}>
-            <Link href={`/${a.slug}`} className="article-card" data-featured={a.is_featured || undefined}>
+            <Link
+              href={`/${a.slug}`}
+              className="article-card"
+              data-featured={a.is_featured || undefined}
+              prefetch={false}
+            >
               {a.is_featured && <span className="featured-badge">★ Featured</span>}
               {a.category && (
                 <span className="category" style={{ color: categoryColor(a.category) }}>

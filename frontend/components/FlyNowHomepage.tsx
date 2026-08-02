@@ -206,7 +206,7 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
           {posts.length > 0 ? (
             <div className="blog-grid">
               {posts.map((post) => (
-                <Link className="blog-card" href={`/${post.slug}`} key={post.slug}>
+                <Link className="blog-card" href={`/${post.slug}`} key={post.slug} prefetch={false}>
                   {post.category && (
                     <span className="blog-category" style={{ color: categoryColor(post.category) }}>
                       {post.category}

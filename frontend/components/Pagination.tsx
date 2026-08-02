@@ -24,7 +24,7 @@ export default function Pagination({
   return (
     <nav className="pagination" aria-label="Pagination">
       {page > 1 ? (
-        <Link href={href(page - 1)} className="pagination-link">
+        <Link href={href(page - 1)} className="pagination-link" prefetch={false}>
           &larr; Newer
         </Link>
       ) : (
@@ -32,7 +32,7 @@ export default function Pagination({
       )}
       <span className="pagination-page">Page {page}</span>
       {hasMore ? (
-        <Link href={href(page + 1)} className="pagination-link">
+        <Link href={href(page + 1)} className="pagination-link" prefetch={false}>
           Older &rarr;
         </Link>
       ) : (

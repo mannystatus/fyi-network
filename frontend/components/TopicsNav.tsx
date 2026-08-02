@@ -10,7 +10,7 @@ export default function TopicsNav({ topics, extra }: { topics: string[]; extra?:
   return (
     <nav className="topics-nav">
       <div className="topics-nav-scroll">
-        <Link href="/" className="topic-link" data-active={pathname === "/"}>
+        <Link href="/" className="topic-link" data-active={pathname === "/"} prefetch={false}>
           All
         </Link>
         {topics.map((topic) => {
@@ -24,6 +24,7 @@ export default function TopicsNav({ topics, extra }: { topics: string[]; extra?:
               className="topic-link"
               data-active={active}
               style={{ "--pill-color": color } as React.CSSProperties}
+              prefetch={false}
             >
               {topic}
             </Link>

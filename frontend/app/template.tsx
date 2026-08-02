@@ -165,7 +165,7 @@ async function Chrome({
           <header className="nav-bar">
             <div className="nav-bar-inner">
               <div className="wordmark-col">
-                <Link href="/" className="wordmark" aria-label={`${brand.name} home`}>
+                <Link href="/" className="wordmark" aria-label={`${brand.name} home`} prefetch={false}>
                   fyi
                   <span className="suffix">{suffix}</span>
                   {brand.icon === "mac" && <span className="cursor" />}
@@ -178,7 +178,7 @@ async function Chrome({
                   topics={brand.topics}
                   extra={
                     BUYERS_GUIDES[brand.slug] && (
-                      <Link href="/buyers-guide" className="topic-link topic-link-guide">
+                      <Link href="/buyers-guide" className="topic-link topic-link-guide" prefetch={false}>
                         📘 Buyers Guide
                       </Link>
                     )

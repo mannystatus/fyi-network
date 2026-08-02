@@ -18,7 +18,7 @@ export default function FlyNowNavbar({ brands, currentSlug }: { brands: Brand[];
   return (
     <header className="flynow-site-nav">
       <div className="flynow-site-nav-inner">
-        <Link href="/" className="flynow-logo" aria-label="fyiFlyNow home">
+        <Link href="/" className="flynow-logo" aria-label="fyiFlyNow home" prefetch={false}>
           <span className="flynow-flap-nav sky">f</span>
           <span className="flynow-flap-nav sky">y</span>
           <span className="flynow-flap-nav sky">i</span>
@@ -30,9 +30,11 @@ export default function FlyNowNavbar({ brands, currentSlug }: { brands: Brand[];
           <span className="flynow-flap-nav amber">w</span>
         </Link>
         <nav className="flynow-nav-links">
-          <Link href="/#blog">Blog</Link>
+          <Link href="/#blog" prefetch={false}>
+            Blog
+          </Link>
           {NAV_LINKS.map((link) => (
-            <Link key={link.href} href={link.href}>
+            <Link key={link.href} href={link.href} prefetch={false}>
               {link.label}
             </Link>
           ))}
