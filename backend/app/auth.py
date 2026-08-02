@@ -1,9 +1,11 @@
 import datetime as dt
 import hashlib
+import ipaddress
 import os
 import secrets
 from dataclasses import dataclass, field
 
+import httpx
 from fastapi import Depends, Header, HTTPException, Request
 from sqlalchemy.orm import Session
 
@@ -46,6 +48,42 @@ def _client_ip(request: Request) -> str:
 
 def hash_key(raw_key: str) -> str:
     return hashlib.sha256(raw_key.encode()).hexdigest()
+
+
+def geolocate_ip(ip: str) -> dict[str, str | None]:
+    """
+    Best-effort city/region/country for an IP, used to annotate the admin
+    access log (see AdminAccessLog, admin_keys.py's whoami). ip-api.com's
+    free tier needs no API key and allows 45 req/min (no daily cap, unlike
+    ipapi.co's 1000/day — this endpoint runs on every /admin load, and a
+    shared serverless egress IP can burn through a daily cap fast). Any
+    failure (rate limit, timeout, private/local IP with nothing to look up)
+    just means the log row has no location, not a broken admin page — this
+    must never raise.
+    """
+    empty: dict[str, str | None] = {"city": None, "region": None, "country": None}
+    try:
+        if ipaddress.ip_address(ip).is_private:
+            return empty
+    except ValueError:
+        return empty  # "unknown" or otherwise unparsable — nothing to look up
+
+    try:
+        resp = httpx.get(
+            f"http://ip-api.com/json/{ip}", params={"fields": "status,city,regionName,country"}, timeout=3.0
+        )
+        if resp.status_code != 200:
+            return empty
+        data = resp.json()
+        if data.get("status") != "success":
+            return empty
+        return {
+            "city": data.get("city"),
+            "region": data.get("regionName"),
+            "country": data.get("country"),
+        }
+    except Exception:
+        return empty
 
 
 def require_admin(

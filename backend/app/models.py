@@ -58,6 +58,27 @@ class AdminAuthFailure(Base):
     occurred_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
 
 
+class AdminAccessLog(Base):
+    """
+    One row per successful GET /api/admin/whoami — i.e. every time someone
+    with a valid X-Admin-Key loads /admin (see auth.py's _geolocate_ip and
+    admin_keys.py's whoami). Surfaced on the admin page itself (superadmin
+    only) as a security/audit trail: which IP, roughly where in the world,
+    and which key (or the shared superadmin one) was used — so a leaked or
+    shared key's use is visible after the fact.
+    """
+    __tablename__ = "admin_access_log"
+
+    id = Column(Integer, primary_key=True)
+    ip = Column(String(64), nullable=False, index=True)
+    city = Column(String(128), nullable=True)
+    region = Column(String(128), nullable=True)
+    country = Column(String(128), nullable=True)
+    is_superadmin = Column(Boolean, nullable=False, default=False)
+    key_label = Column(String(128), nullable=True)  # null for the shared superadmin key
+    occurred_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False, index=True)
+
+
 class AdminKey(Base):
     """
     A brand-scoped contributor key — issued from /admin by whoever holds

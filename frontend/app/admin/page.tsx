@@ -37,6 +37,17 @@ type AdminKeyRow = {
   created_at: string;
 };
 
+type AdminAccessLogRow = {
+  id: number;
+  ip: string;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  is_superadmin: boolean;
+  key_label: string | null;
+  occurred_at: string;
+};
+
 function slugPreview(title: string): string {
   return title
     .toLowerCase()
@@ -131,6 +142,9 @@ export default function AdminPage() {
   const [justCreatedKey, setJustCreatedKey] = useState<{ label: string; key: string } | null>(null);
   const [revokingId, setRevokingId] = useState<number | null>(null);
 
+  const [accessLog, setAccessLog] = useState<AdminAccessLogRow[]>([]);
+  const [accessLogError, setAccessLogError] = useState<string | null>(null);
+
   useEffect(() => {
     const saved = window.localStorage.getItem(ADMIN_KEY_STORAGE);
     if (saved) {
@@ -161,6 +175,16 @@ export default function AdminPage() {
     }
   }
 
+  async function fetchAccessLog(key: string) {
+    setAccessLogError(null);
+    try {
+      const res = await adminFetch("/api/admin/access-log", key);
+      setAccessLog(await res.json());
+    } catch (err) {
+      setAccessLogError(err instanceof Error ? err.message : "Couldn't load the access log.");
+    }
+  }
+
   async function verifyKey(keyOverride?: string) {
     const key = (keyOverride ?? adminKey).trim();
     if (!key) return;
@@ -176,7 +200,10 @@ export default function AdminPage() {
       if (!data.is_superadmin && data.label && author === DEFAULT_AUTHOR) {
         setAuthor(data.label);
       }
-      if (data.is_superadmin) fetchKeys(key);
+      if (data.is_superadmin) {
+        fetchKeys(key);
+        fetchAccessLog(key);
+      }
     } catch (err) {
       setScope(null);
       setScopeError(err instanceof Error ? err.message : "Couldn't verify key.");
@@ -693,6 +720,40 @@ export default function AdminPage() {
                       )}
                     </li>
                   ))}
+                </ul>
+              </div>
+
+              <div className="article-header">
+                <h2 className="article-title" style={{ fontSize: 20 }}>Access log</h2>
+                <p className="article-dek">
+                  Every successful /admin login, newest first — IP, rough location, and which key was used, so a
+                  leaked or shared key&rsquo;s use is visible after the fact.
+                </p>
+              </div>
+
+              <div className="admin-field">
+                {accessLogError && <p className="admin-error">{accessLogError}</p>}
+                {accessLog.length === 0 && !accessLogError && (
+                  <p style={{ color: "var(--comment)" }}>No logins recorded yet.</p>
+                )}
+                <ul>
+                  {accessLog.map((row) => {
+                    const location = [row.city, row.region, row.country].filter(Boolean).join(", ") || "Unknown location";
+                    return (
+                      <li key={row.id}>
+                        {new Date(row.occurred_at).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                        {" — "}
+                        <strong>{row.is_superadmin ? "Superadmin" : row.key_label || "Unknown key"}</strong>
+                        {" — "}
+                        {row.ip} ({location})
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </>

@@ -1,24 +1,45 @@
 import secrets
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from ..auth import AdminScope, hash_key, require_admin, require_superadmin
+from ..auth import AdminScope, _client_ip, geolocate_ip, hash_key, require_admin, require_superadmin
 from ..database import get_db
-from ..models import AdminKey
-from ..schemas import AdminKeyCreate, AdminKeyCreateResult, AdminKeyOut, AdminScopeOut
+from ..models import AdminAccessLog, AdminKey
+from ..schemas import AdminAccessLogOut, AdminKeyCreate, AdminKeyCreateResult, AdminKeyOut, AdminScopeOut
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 
 @router.get("/whoami", response_model=AdminScopeOut)
-def whoami(scope: AdminScope = Depends(require_admin)):
+def whoami(request: Request, scope: AdminScope = Depends(require_admin), db: Session = Depends(get_db)):
     """
     Lets a caller (superadmin or a scoped contributor key) discover its own
     access — the frontend uses this to decide what to render in /admin
-    before showing anything else (see admin/page.tsx).
+    before showing anything else (see admin/page.tsx). Doubles as the
+    access-log hook: every successful call here is one /admin load, so it's
+    also where we record who (which key), where (geolocated IP), and when —
+    see AdminAccessLog and GET /access-log below.
     """
+    location = geolocate_ip(_client_ip(request))
+    db.add(
+        AdminAccessLog(
+            ip=_client_ip(request),
+            city=location["city"],
+            region=location["region"],
+            country=location["country"],
+            is_superadmin=scope.is_superadmin,
+            key_label=scope.label,
+        )
+    )
+    db.commit()
     return AdminScopeOut(is_superadmin=scope.is_superadmin, brand_slugs=sorted(scope.brand_slugs), label=scope.label)
+
+
+@router.get("/access-log", response_model=list[AdminAccessLogOut], dependencies=[Depends(require_superadmin)])
+def list_access_log(db: Session = Depends(get_db)):
+    """Recent /admin logins, newest first — superadmin only, same gate as key management."""
+    return db.query(AdminAccessLog).order_by(AdminAccessLog.occurred_at.desc()).limit(200).all()
 
 
 @router.get("/keys", response_model=list[AdminKeyOut], dependencies=[Depends(require_superadmin)])

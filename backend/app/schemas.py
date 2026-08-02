@@ -84,6 +84,21 @@ class AdminScopeOut(BaseModel):
     label: str | None = None
 
 
+class AdminAccessLogOut(BaseModel):
+    """Response row for GET /api/admin/access-log — one /admin login/visit."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    ip: str
+    city: str | None = None
+    region: str | None = None
+    country: str | None = None
+    is_superadmin: bool
+    key_label: str | None = None
+    occurred_at: dt.datetime
+
+
 class AdminKeyOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
