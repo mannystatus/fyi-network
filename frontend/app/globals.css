@@ -189,6 +189,13 @@ a {
   border-bottom: 1px solid var(--border);
 }
 
+.chrome-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
 .chrome-dot {
   width: 12px;
   height: 12px;
@@ -204,9 +211,56 @@ a {
   margin-inline: auto;
 }
 
+/* Single-line sticky bar (logo + categories + actions), used by every
+   brand except fyiFlyNow (which keeps its own bespoke dark nav — see
+   .site-header above and FlyNowHomepage.tsx). Edge-to-edge rather than
+   capped at the site's 700px content column, so a brand's full category
+   list always has room to lay out on one line instead of hiding any of
+   them behind a scroll or ellipsis. */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-bar-inner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  padding: 12px 32px;
+  max-width: 1600px;
+  margin-inline: auto;
+}
+
+.wordmark-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+}
+
+.nav-bar .wordmark {
+  font-size: 20px;
+}
+
+.nav-bar .cursor {
+  width: 10px;
+  height: 16px;
+  vertical-align: -3px;
+}
+
+.nav-bar .tagline {
+  margin-top: 0;
+  white-space: nowrap;
+}
+
 .header-actions {
   display: flex;
   align-items: center;
+  flex: none;
   gap: 10px;
 }
 
@@ -271,7 +325,8 @@ a {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  z-index: 20;
+  /* See .switcher-menu's comment — same fix, same reason. */
+  z-index: 40;
 }
 
 .search-input {
@@ -325,7 +380,8 @@ a {
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-  z-index: 20;
+  /* See .switcher-menu's comment — same fix, same reason. */
+  z-index: 40;
 }
 
 .notify-popover-title {
@@ -431,37 +487,61 @@ a {
   margin-top: 6px;
 }
 
+/* Standalone usage — fyiFlyNow's secondary pages only (its homepage has
+   its own bespoke nav; see FlyNowHomepage.tsx). Every other brand renders
+   this nested inside .nav-bar-inner instead — see the override below. */
 .topics-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   padding: 0 32px;
   margin-bottom: 8px;
   max-width: 700px;
   margin-inline: auto;
 }
 
-.topic-pill {
-  --pill-color: var(--comment);
-  font-size: 12px;
-  font-weight: 500;
+.nav-bar-inner .topics-nav {
+  flex: 1 1 auto;
+  min-width: 220px;
+  padding: 0;
+  margin-bottom: 0;
+  max-width: none;
+}
+
+.topics-nav-scroll {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 22px;
+}
+
+/* Flat colored text, no pill background/border — each category keeps its
+   own color (set inline via --pill-color) so the bar stays scannable
+   without every item looking like a boxed button. */
+.topic-link {
+  --pill-color: var(--fg);
+  font-size: 13px;
+  font-weight: 600;
   color: var(--pill-color);
   text-decoration: none;
-  border: 1px solid color-mix(in srgb, var(--pill-color) 45%, transparent);
-  border-radius: 20px;
-  padding: 5px 14px;
-  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
 }
 
-.topic-pill:hover {
-  border-color: var(--pill-color);
-  background: color-mix(in srgb, var(--pill-color) 12%, transparent);
+.topic-link:hover {
+  opacity: 0.7;
 }
 
-.topic-pill[data-active="true"] {
-  color: var(--fg);
-  border-color: var(--pill-color);
-  background: color-mix(in srgb, var(--pill-color) 22%, transparent);
+.topic-link[data-active="true"] {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+/* Buyers Guide — a standing page, not a rotating topic, so it's pinned to
+   the end of the category row (see the "extra" prop on TopicsNav) and
+   colored with the site accent instead of a per-category hash color. */
+.topic-link-guide {
+  --pill-color: var(--accent);
+  margin-left: auto;
+  padding-left: 22px;
+  border-left: 1px solid var(--border);
 }
 
 main {
@@ -1055,31 +1135,6 @@ main {
   color: var(--fg);
 }
 
-.buyers-guide-banner {
-  max-width: 700px;
-  width: 100%;
-  margin: 0 auto 8px;
-  padding: 0 32px;
-  text-align: center;
-}
-
-.buyers-guide-banner-link {
-  display: inline-block;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--accent);
-  text-decoration: none;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  border-radius: 20px;
-  padding: 5px 14px;
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.buyers-guide-banner-link:hover {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-}
-
 .buyers-guide-disclosure {
   margin-top: 20px;
   padding: 12px 16px;
@@ -1531,7 +1586,10 @@ footer {
   border-radius: 10px;
   padding: 6px;
   min-width: 200px;
-  z-index: 10;
+  /* Above .nav-bar's sticky z-index (30) so the dropdown list isn't
+     visually cut across by the nav bar wherever the two overlap — bit us
+     once already when this got dropped back to 10 during a revert. */
+  z-index: 40;
   list-style: none;
   margin: 0;
 }
@@ -1754,6 +1812,22 @@ footer {
   flex: 1;
 }
 
+.cros-titlebar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+/* Scaled down from the usual 34px so these fit this bar's 40px height. */
+.cros-titlebar-actions .theme-toggle,
+.cros-titlebar-actions .search-trigger,
+.cros-titlebar-actions .notify-bell {
+  width: 26px;
+  height: 26px;
+  font-size: 12px;
+}
+
 #site.theme-google {
   font-family: "Google Sans", "Roboto", system-ui, sans-serif;
 }
@@ -1830,6 +1904,28 @@ footer {
   height: 40px;
   padding: 0 16px;
   background: var(--netflix-chrome-bg);
+}
+
+.netflix-titlebar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+/* Scaled down from the usual 34px so these fit this bar's fixed 40px
+   height alongside the switcher button. */
+.netflix-titlebar-actions .theme-toggle,
+.netflix-titlebar-actions .search-trigger,
+.netflix-titlebar-actions .notify-bell {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+}
+
+.netflix-titlebar-actions .switcher-btn {
+  padding: 6px 12px;
+  font-size: 12px;
 }
 
 .netflix-logo {
@@ -2047,6 +2143,25 @@ body.theme-flynow-body {
   border-bottom: 2px solid var(--lakers-gold);
 }
 
+.lakers-titlebar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lakers-titlebar-actions .theme-toggle,
+.lakers-titlebar-actions .search-trigger,
+.lakers-titlebar-actions .notify-bell {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+}
+
+.lakers-titlebar-actions .switcher-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
 .lakers-jersey {
   display: flex;
   align-items: center;
@@ -2070,23 +2185,6 @@ body.theme-flynow-body {
   font-size: 13px;
   letter-spacing: 0.06em;
   color: #fff;
-}
-
-.lakers-score {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: #d9c7ee;
-}
-
-.lakers-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--lakers-gold);
-  animation: lakers-pulse 1.8s ease-in-out infinite;
 }
 
 @keyframes lakers-pulse {
@@ -2252,6 +2350,35 @@ body.theme-flynow-body {
   color: var(--comment);
 }
 
+.lakers-odds-disclaimer summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--comment);
+}
+
+.lakers-odds-disclaimer summary::-webkit-details-marker {
+  display: none;
+}
+
+.lakers-odds-disclaimer summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 5px;
+  transition: transform 0.15s ease;
+}
+
+.lakers-odds-disclaimer[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.lakers-odds-disclaimer p {
+  margin: 8px 0 0;
+}
+
 .lakers-schedule-link {
   display: inline-block;
   margin-top: 12px;
@@ -2282,6 +2409,25 @@ body.theme-flynow-body {
   border-bottom: 2px solid rgba(255, 255, 255, 0.25);
 }
 
+.dodgers-titlebar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dodgers-titlebar-actions .theme-toggle,
+.dodgers-titlebar-actions .search-trigger,
+.dodgers-titlebar-actions .notify-bell {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+}
+
+.dodgers-titlebar-actions .switcher-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
 .dodgers-jersey {
   display: flex;
   align-items: center;
@@ -2305,23 +2451,6 @@ body.theme-flynow-body {
   font-size: 13px;
   letter-spacing: 0.06em;
   color: #fff;
-}
-
-.dodgers-score {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: #cfe3f2;
-}
-
-.dodgers-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #fff;
-  animation: dodgers-pulse 1.8s ease-in-out infinite;
 }
 
 @keyframes dodgers-pulse {
@@ -2474,6 +2603,35 @@ body.theme-flynow-body {
   font-size: 10px;
   line-height: 1.5;
   color: var(--comment);
+}
+
+.dodgers-odds-disclaimer summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--comment);
+}
+
+.dodgers-odds-disclaimer summary::-webkit-details-marker {
+  display: none;
+}
+
+.dodgers-odds-disclaimer summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 5px;
+  transition: transform 0.15s ease;
+}
+
+.dodgers-odds-disclaimer[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.dodgers-odds-disclaimer p {
+  margin: 8px 0 0;
 }
 
 .dodgers-schedule-link {

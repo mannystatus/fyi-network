@@ -75,7 +75,7 @@ export default function DodgersScoreboardClient({
 
   return (
     <div className="dodgers-scoreboard">
-      <p className="section-label">{live ? "Live now" : "Upcoming games"}</p>
+      <p className="section-label">{live ? "Live now" : "Today's Games & Upcoming Games"}</p>
       {live && <GameRow game={live} />}
       {upcoming.length > 0 && (
         <div className="dodgers-scoreboard-upcoming">
@@ -85,7 +85,12 @@ export default function DodgersScoreboardClient({
           ))}
         </div>
       )}
-      {disclaimer && <p className="dodgers-odds-disclaimer">{disclaimer}</p>}
+      {disclaimer && (
+        <details className="dodgers-odds-disclaimer">
+          <summary>Gambling disclosure</summary>
+          <p>{disclaimer}</p>
+        </details>
+      )}
       {showScheduleLink && (
         <Link href="/schedule" className="dodgers-schedule-link">
           Full schedule →

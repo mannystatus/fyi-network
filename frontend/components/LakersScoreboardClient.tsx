@@ -70,7 +70,7 @@ export default function LakersScoreboardClient({
 
   return (
     <div className="lakers-scoreboard">
-      <p className="section-label">{live ? "Live now" : "Upcoming games"}</p>
+      <p className="section-label">{live ? "Live now" : "Today's Games & Upcoming Games"}</p>
       {live && <GameRow game={live} />}
       {upcoming.length > 0 && (
         <div className="lakers-scoreboard-upcoming">
@@ -80,7 +80,12 @@ export default function LakersScoreboardClient({
           ))}
         </div>
       )}
-      {disclaimer && <p className="lakers-odds-disclaimer">{disclaimer}</p>}
+      {disclaimer && (
+        <details className="lakers-odds-disclaimer">
+          <summary>Gambling disclosure</summary>
+          <p>{disclaimer}</p>
+        </details>
+      )}
       {showScheduleLink && (
         <Link href="/schedule" className="lakers-schedule-link">
           Full schedule →

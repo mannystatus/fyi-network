@@ -11,9 +11,17 @@ import AdSlot from "../components/AdSlot";
 import ChromeGate from "../components/ChromeGate";
 import { AD_SLOTS } from "../lib/analytics";
 import { BUYERS_GUIDES } from "../lib/buyersGuideRegistry";
-import { getDodgersGames, getTitlebarText as getDodgersTitlebarText } from "../lib/dodgers";
-import { getLakersGames, getTitlebarText as getLakersTitlebarText } from "../lib/lakers";
 import GameDaySoftPrompt from "../components/GameDaySoftPrompt";
+
+// Brands whose decorative top titlebar (chrome-bar / cros-titlebar /
+// netflix-titlebar / dodgers-titlebar / lakers-titlebar) has room to host
+// the search/bell/theme icons directly, instead of the nav-bar-inner row
+// below. ACTIONS_MOVED additionally take the "fyi network" switcher up
+// there too — for those, .header-actions in nav-bar-inner is left empty
+// (or, for dodgers/lakers, repurposed for the score line that used to live
+// in the titlebar before the icons took its spot).
+const ICONS_MOVED = new Set(["mac", "google", "netflix", "dodgers", "lakers"]);
+const ACTIONS_MOVED = new Set(["netflix", "dodgers", "lakers"]);
 
 export default async function Template({ children }: { children: React.ReactNode }) {
   const [brand, brands] = await Promise.all([getCurrentBrand(), getAllBrands()]);
@@ -45,12 +53,6 @@ async function Chrome({
   suffix: string;
   children: React.ReactNode;
 }) {
-  // Only fetched for their own brand — every other brand skips these
-  // entirely, since Chrome renders on every page of every brand in the
-  // network.
-  const dodgersGames = brand.icon === "dodgers" ? await getDodgersGames() : [];
-  const lakersGames = brand.icon === "lakers" ? await getLakersGames() : [];
-
   return (
     <div className={`browser-frame theme-${brand.icon}`}>
       {brand.icon === "win" && (
@@ -86,6 +88,11 @@ async function Chrome({
             </svg>
             {brand.domain}
           </div>
+          <div className="cros-titlebar-actions">
+            <SearchBox />
+            <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
+            <ThemeToggle />
+          </div>
         </div>
       )}
 
@@ -93,6 +100,12 @@ async function Chrome({
         <div className="netflix-titlebar">
           <div className="netflix-logo">N</div>
           <div className="netflix-title">{brand.name}</div>
+          <div className="netflix-titlebar-actions">
+            <SearchBox />
+            <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
+            <ThemeToggle />
+            <DomainSwitcher brands={brands} currentSlug={brand.slug} />
+          </div>
         </div>
       )}
 
@@ -102,9 +115,11 @@ async function Chrome({
             <span className="lakers-badge">LAL</span>
             <span className="lakers-name">LAKERS</span>
           </div>
-          <div className="lakers-score">
-            <span className="lakers-dot" />
-            {getLakersTitlebarText(lakersGames, brand.domain)}
+          <div className="lakers-titlebar-actions">
+            <SearchBox />
+            <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
+            <ThemeToggle />
+            <DomainSwitcher brands={brands} currentSlug={brand.slug} />
           </div>
         </div>
       )}
@@ -115,9 +130,11 @@ async function Chrome({
             <span className="dodgers-badge">LAD</span>
             <span className="dodgers-name">DODGERS</span>
           </div>
-          <div className="dodgers-score">
-            <span className="dodgers-dot" />
-            {getDodgersTitlebarText(dodgersGames, brand.domain)}
+          <div className="dodgers-titlebar-actions">
+            <SearchBox />
+            <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
+            <ThemeToggle />
+            <DomainSwitcher brands={brands} currentSlug={brand.slug} />
           </div>
         </div>
       )}
@@ -154,41 +171,75 @@ async function Chrome({
             <span className="chrome-dot" style={{ background: "var(--red)" }} />
             <span className="chrome-dot" style={{ background: "var(--yellow)" }} />
             <span className="chrome-dot" style={{ background: "var(--green)" }} />
-            <span style={{ marginLeft: "auto", fontSize: 12, color: "var(--comment)" }}>fyi &mdash; terminal</span>
+            <div className="chrome-bar-actions">
+              <SearchBox />
+              <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
+              <ThemeToggle />
+            </div>
           </div>
         )}
 
-        <div className="site-header">
-          <div>
-            <Link href="/" className="wordmark" aria-label={`${brand.name} home`}>
-              fyi
-              <span className="suffix">{suffix}</span>
-              {brand.icon === "mac" && <span className="cursor" />}
-            </Link>
-            <div className="tagline">{brand.tagline}</div>
+        {brand.icon === "flynow" ? (
+          <div className="site-header">
+            <div>
+              <Link href="/" className="wordmark" aria-label={`${brand.name} home`}>
+                fyi
+                <span className="suffix">{suffix}</span>
+              </Link>
+              <div className="tagline">{brand.tagline}</div>
+            </div>
+            <div className="header-actions">
+              <SearchBox />
+              <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
+              <ThemeToggle />
+              <DomainSwitcher brands={brands} currentSlug={brand.slug} />
+            </div>
           </div>
-          <div className="header-actions">
-            <SearchBox />
-            <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
-            <ThemeToggle />
-            <DomainSwitcher brands={brands} currentSlug={brand.slug} />
-          </div>
-        </div>
+        ) : (
+          <header className="nav-bar">
+            <div className="nav-bar-inner">
+              <div className="wordmark-col">
+                <Link href="/" className="wordmark" aria-label={`${brand.name} home`}>
+                  fyi
+                  <span className="suffix">{suffix}</span>
+                  {brand.icon === "mac" && <span className="cursor" />}
+                </Link>
+                {brand.tagline && <p className="tagline">{brand.tagline}</p>}
+              </div>
+
+              {brand.topics.length > 0 && (
+                <TopicsNav
+                  topics={brand.topics}
+                  extra={
+                    BUYERS_GUIDES[brand.slug] && (
+                      <Link href="/buyers-guide" className="topic-link topic-link-guide">
+                        📘 Buyers Guide
+                      </Link>
+                    )
+                  }
+                />
+              )}
+
+              <div className="header-actions">
+                {!ICONS_MOVED.has(brand.icon) && (
+                  <>
+                    <SearchBox />
+                    <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
+                    <ThemeToggle />
+                  </>
+                )}
+                {!ACTIONS_MOVED.has(brand.icon) && <DomainSwitcher brands={brands} currentSlug={brand.slug} />}
+              </div>
+            </div>
+          </header>
+        )}
 
         {brand.image_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={brand.image_url} alt="" className="brand-banner" />
         )}
 
-        {brand.topics.length > 0 && <TopicsNav topics={brand.topics} />}
-
-        {BUYERS_GUIDES[brand.slug] && (
-          <div className="buyers-guide-banner">
-            <Link href="/buyers-guide" className="buyers-guide-banner-link">
-              📘 {BUYERS_GUIDES[brand.slug].heading} — Buyers Guide
-            </Link>
-          </div>
-        )}
+        {brand.icon === "flynow" && brand.topics.length > 0 && <TopicsNav topics={brand.topics} />}
 
         <div className="ad-slot-wrap">
           <AdSlot slot={AD_SLOTS.header} />
