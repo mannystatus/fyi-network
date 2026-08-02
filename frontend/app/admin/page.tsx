@@ -1,11 +1,30 @@
 "use client";
 
 import Link from "next/link";
+import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const DEFAULT_AUTHOR = "Manny Contreras";
 const ADMIN_KEY_STORAGE = "fyi-admin-key";
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (
+        container: HTMLElement,
+        options: {
+          sitekey: string;
+          callback: (token: string) => void;
+          "expired-callback"?: () => void;
+          "error-callback"?: () => void;
+        }
+      ) => string;
+      reset: (widgetId?: string) => void;
+    };
+  }
+}
 
 type Brand = {
   slug: string;
@@ -108,6 +127,11 @@ export default function AdminPage() {
   const [scopeChecking, setScopeChecking] = useState(false);
   const [scopeError, setScopeError] = useState<string | null>(null);
 
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileReady, setTurnstileReady] = useState(false);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetId = useRef<string | null>(null);
+
   const [title, setTitle] = useState("");
   const [dek, setDek] = useState("");
   const [category, setCategory] = useState("");
@@ -149,7 +173,11 @@ export default function AdminPage() {
     const saved = window.localStorage.getItem(ADMIN_KEY_STORAGE);
     if (saved) {
       setAdminKey(saved);
-      verifyKey(saved);
+      // With Turnstile configured, wait for a token before calling
+      // whoami — the effect below re-triggers this once one arrives.
+      // Widget resolution is normally near-instant, so this is a brief
+      // delay rather than requiring a second manual click.
+      if (!TURNSTILE_SITE_KEY) verifyKey(saved);
     }
 
     fetch(`${API_URL}/api/brands`)
@@ -164,6 +192,30 @@ export default function AdminPage() {
       .catch(() => setBrandsError("Couldn't load the brand list from the API — is the backend running?"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Renders the Turnstile widget once its script has loaded — separate from
+  // the mount effect above since the script loads async and this must wait
+  // for it, not fire immediately on mount.
+  useEffect(() => {
+    if (!turnstileReady || !TURNSTILE_SITE_KEY || !turnstileRef.current || turnstileWidgetId.current) return;
+    turnstileWidgetId.current = window.turnstile!.render(turnstileRef.current, {
+      sitekey: TURNSTILE_SITE_KEY,
+      callback: (token) => setTurnstileToken(token),
+      "expired-callback": () => setTurnstileToken(null),
+      "error-callback": () => setTurnstileToken(null),
+    });
+  }, [turnstileReady]);
+
+  // Covers both the saved-key auto-login path (verifyKey was skipped above
+  // until a token existed) and manual entry finished before the widget
+  // resolves — either way, once a token shows up and there's a key typed
+  // in, go ahead and verify.
+  useEffect(() => {
+    if (TURNSTILE_SITE_KEY && turnstileToken && adminKey.trim() && !scope && !scopeChecking) {
+      verifyKey();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turnstileToken]);
 
   async function fetchKeys(key: string) {
     setKeysError(null);
@@ -188,10 +240,13 @@ export default function AdminPage() {
   async function verifyKey(keyOverride?: string) {
     const key = (keyOverride ?? adminKey).trim();
     if (!key) return;
+    if (TURNSTILE_SITE_KEY && !turnstileToken) return;
     setScopeChecking(true);
     setScopeError(null);
     try {
-      const res = await adminFetch("/api/admin/whoami", key);
+      const res = await adminFetch("/api/admin/whoami", key, {
+        headers: turnstileToken ? { "CF-Turnstile-Response": turnstileToken } : undefined,
+      });
       const data: Scope = await res.json();
       setScope(data);
       window.localStorage.setItem(ADMIN_KEY_STORAGE, key);
@@ -414,6 +469,14 @@ export default function AdminPage() {
 
   return (
     <article>
+      {TURNSTILE_SITE_KEY && (
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+          strategy="afterInteractive"
+          onLoad={() => setTurnstileReady(true)}
+        />
+      )}
+
       <p className="section-label">
         <Link href="/">&larr; Latest</Link>
       </p>
@@ -439,7 +502,12 @@ export default function AdminPage() {
           placeholder="X-Admin-Key"
           autoComplete="off"
         />
-        <button type="button" onClick={() => verifyKey()} disabled={scopeChecking || !adminKey.trim()}>
+        {TURNSTILE_SITE_KEY && <div ref={turnstileRef} style={{ margin: "10px 0" }} />}
+        <button
+          type="button"
+          onClick={() => verifyKey()}
+          disabled={scopeChecking || !adminKey.trim() || (!!TURNSTILE_SITE_KEY && !turnstileToken)}
+        >
           {scopeChecking ? "Checking…" : "Verify"}
         </button>
         {scopeError && <p className="admin-error">{scopeError}</p>}

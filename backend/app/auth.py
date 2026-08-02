@@ -86,6 +86,45 @@ def geolocate_ip(ip: str) -> dict[str, str | None]:
         return empty
 
 
+def verify_turnstile(
+    request: Request,
+    cf_turnstile_response: str | None = Header(default=None, alias="CF-Turnstile-Response"),
+) -> None:
+    """
+    Gate for the /admin key-entry step specifically (GET /api/admin/whoami,
+    the check the frontend runs before showing anything else — see
+    admin/page.tsx). Separate from require_admin's rate limiter: that caps
+    how fast a brute-force script can *try* keys, this stops it from being
+    a script at all, since only a real browser can solve the widget and
+    obtain a token.
+
+    Deliberately fails OPEN (does nothing) when TURNSTILE_SECRET_KEY isn't
+    set, same as GEMINI_API_KEY elsewhere — this is an opt-in hardening
+    layer on top of the key check, not a required one, so /admin keeps
+    working before it's configured. Once set, a missing/invalid token fails
+    closed (401) same as a wrong key.
+    """
+    secret = os.getenv("TURNSTILE_SECRET_KEY")
+    if not secret:
+        return
+
+    if not cf_turnstile_response:
+        raise HTTPException(status_code=401, detail="Missing Turnstile verification")
+
+    try:
+        resp = httpx.post(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            data={"secret": secret, "response": cf_turnstile_response, "remoteip": _client_ip(request)},
+            timeout=5.0,
+        )
+        ok = resp.status_code == 200 and resp.json().get("success") is True
+    except Exception:
+        ok = False
+
+    if not ok:
+        raise HTTPException(status_code=401, detail="Turnstile verification failed")
+
+
 def require_admin(
     request: Request,
     db: Session = Depends(get_db),

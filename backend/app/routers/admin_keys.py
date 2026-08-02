@@ -3,7 +3,7 @@ import secrets
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
-from ..auth import AdminScope, _client_ip, geolocate_ip, hash_key, require_admin, require_superadmin
+from ..auth import AdminScope, _client_ip, geolocate_ip, hash_key, require_admin, require_superadmin, verify_turnstile
 from ..database import get_db
 from ..models import AdminAccessLog, AdminKey
 from ..schemas import AdminAccessLogOut, AdminKeyCreate, AdminKeyCreateResult, AdminKeyOut, AdminScopeOut
@@ -11,7 +11,7 @@ from ..schemas import AdminAccessLogOut, AdminKeyCreate, AdminKeyCreateResult, A
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 
-@router.get("/whoami", response_model=AdminScopeOut)
+@router.get("/whoami", response_model=AdminScopeOut, dependencies=[Depends(verify_turnstile)])
 def whoami(request: Request, scope: AdminScope = Depends(require_admin), db: Session = Depends(get_db)):
     """
     Lets a caller (superadmin or a scoped contributor key) discover its own
@@ -20,6 +20,10 @@ def whoami(request: Request, scope: AdminScope = Depends(require_admin), db: Ses
     access-log hook: every successful call here is one /admin load, so it's
     also where we record who (which key), where (geolocated IP), and when —
     see AdminAccessLog and GET /access-log below.
+
+    verify_turnstile runs first (listed in `dependencies`, ahead of the
+    require_admin key check below) — a bot with no way to solve the widget
+    never even gets to try a key against require_admin's rate limiter.
     """
     location = geolocate_ip(_client_ip(request))
     db.add(
