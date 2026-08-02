@@ -1,0 +1,30 @@
+name: Visa requirements ingest
+
+# Runs app/ingest_visa_requirements.py to refresh VisaRequirement from the
+# passport-index-data dataset (github.com/imorte/passport-index-data),
+# which fyiFlyNow's /travel-advisories page uses for the passport-picker
+# visa/e-visa/ETA badges. Weekly, not every few hours like the advisories
+# ingest — this dataset changes on the order of weeks, not hours.
+#
+# Requires the same DATABASE_URL secret as ingest-news.yml.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Monday 06:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m app.ingest_visa_requirements
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

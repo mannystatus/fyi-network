@@ -49,8 +49,35 @@ export type ArticleListItem = {
 
 export type ArticleDetail = ArticleListItem & { body_md: string; image_url: string | null };
 
+export type TravelAdvisory = {
+  source: "US" | "UK";
+  country: string;
+  level: string;
+  severity: number;
+  scope: "whole_country" | "parts";
+  url: string;
+  advisory_updated_at: string | null;
+};
+
 export const getCurrentBrand = (): Promise<Brand> => apiFetch("/api/brands/current");
 export const getAllBrands = (): Promise<Brand[]> => apiFetch("/api/brands");
+// Refreshed every 6h by the ingest job (see .github/workflows/travel-advisories.yml)
+// — a longer revalidate than the 60s default keeps this from hammering the
+// backend for data that can't have changed since the last ingest run.
+export const getTravelAdvisories = (): Promise<TravelAdvisory[]> =>
+  apiFetch("/api/travel-advisories", 1800);
+
+export type VisaPassport = { code: string; name: string };
+export type VisaRequirement = { country: string; requirement: string };
+
+// The passport-index-data source only refreshes every few weeks (see
+// .github/workflows/visa-requirements.yml) — an even longer revalidate
+// than advisories.
+const VISA_REVALIDATE = 6 * 60 * 60;
+export const getVisaPassports = (): Promise<VisaPassport[]> =>
+  apiFetch("/api/visa-requirements/passports", VISA_REVALIDATE);
+export const getVisaRequirements = (passportCode: string): Promise<VisaRequirement[]> =>
+  apiFetch(`/api/visa-requirements?passport=${encodeURIComponent(passportCode)}`, VISA_REVALIDATE);
 export const getArticles = (
   category?: string,
   limit?: number,

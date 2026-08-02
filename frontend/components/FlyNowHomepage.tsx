@@ -218,6 +218,7 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
             <Link href="/topics/Airline%20News">Airline News</Link>
             <Link href="/topics/Travel%20Tips">Travel Tips</Link>
             <Link href="/topics/Travel%20Guides">Travel Guides</Link>
+            <Link href="/travel-advisories">Advisories</Link>
           </nav>
           <DomainSwitcher brands={brands} currentSlug={currentSlug} />
         </div>
@@ -370,6 +371,7 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
               <Link href="/topics/Airline%20News">Airline News</Link>
               <Link href="/topics/Travel%20Tips">Travel Tips</Link>
               <Link href="/topics/Travel%20Guides">Travel Guides</Link>
+              <Link href="/travel-advisories">Travel Advisories</Link>
             </div>
             <div className="footer-col">
               <h4>The fyi Network</h4>

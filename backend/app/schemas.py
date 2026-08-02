@@ -151,6 +151,28 @@ class TipCreate(BaseModel):
         return v
 
 
+class TravelAdvisoryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    source: str
+    country: str
+    level: str
+    severity: int
+    scope: str
+    url: str
+    advisory_updated_at: dt.datetime | None = None
+
+
+class VisaPassportOut(BaseModel):
+    code: str
+    name: str
+
+
+class VisaRequirementOut(BaseModel):
+    country: str  # matches TravelAdvisory.country, not necessarily the dataset's own destination_name
+    requirement: str
+
+
 class PushSubscribeIn(BaseModel):
     endpoint: str
     keys: dict[str, str]

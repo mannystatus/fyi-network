@@ -112,6 +112,68 @@ class PushSubscription(Base):
     created_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
 
 
+class TravelAdvisory(Base):
+    """
+    High-severity "don't go here" advisories for fyiFlyNow, sourced from
+    the US State Dept and UK FCDO official feeds — see
+    app/ingest_travel_advisories.py. Global, not brand-scoped (every other
+    table here is per-brand); only fyiFlyNow's frontend reads it.
+
+    Each ingestion run fully replaces the rows for whichever source it
+    successfully fetched (delete-then-reinsert, not upsert-by-diff) so a
+    country that's no longer flagged simply disappears next run. A source
+    whose fetch fails or comes back empty is left untouched rather than
+    wiped — see ingest_travel_advisories.py's _replace_source — since both
+    upstream feeds are occasionally flaky/rate-limited and a failed fetch
+    should never look like "every advisory was lifted."
+    """
+    __tablename__ = "travel_advisories"
+
+    id = Column(Integer, primary_key=True)
+    source = Column(String(8), nullable=False, index=True)   # "US" | "UK"
+    country = Column(String(128), nullable=False)
+    level = Column(String(128), nullable=False)               # e.g. "Level 4: Do Not Travel" / "Avoid all travel"
+    severity = Column(Integer, nullable=False)                 # 3 or 4 (US levels); UK mapped onto the same scale for sorting
+    scope = Column(String(16), nullable=False, default="whole_country")  # "whole_country" | "parts"
+    url = Column(String(1024), nullable=False)
+    advisory_updated_at = Column(DateTime, nullable=True)      # the advisory's own last-updated date, per the source
+    fetched_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("source", "country", name="uq_travel_advisory_source_country"),
+    )
+
+
+class VisaRequirement(Base):
+    """
+    The full passport -> destination visa requirement matrix (~199x199),
+    sourced from the open-source passport-index-data dataset — see
+    app/ingest_visa_requirements.py. Unlike TravelAdvisory this covers
+    every destination, not just the currently-flagged ones; scoping to
+    "only advisory-flagged countries" (fyiFlyNow's current use) happens at
+    read time in routers/visa_requirements.py, by joining against whatever
+    TravelAdvisory currently holds — so this table doesn't need
+    re-ingesting every time the advisory list changes.
+
+    requirement is one of: "visa required", "visa free", "visa on arrival",
+    "e-visa", "eta", "no admission", or a bare integer-as-string (visa-free
+    for that many days, e.g. "90").
+    """
+    __tablename__ = "visa_requirements"
+
+    id = Column(Integer, primary_key=True)
+    passport_code = Column(String(4), nullable=False, index=True)        # ISO3, e.g. "USA"
+    passport_name = Column(String(128), nullable=False)                  # "United States"
+    destination_code = Column(String(4), nullable=False, index=True)
+    destination_name = Column(String(128), nullable=False)               # dataset's own naming — see visa_requirements.py's alias map for how this reconciles with TravelAdvisory.country
+    requirement = Column(String(32), nullable=False)
+    fetched_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("passport_code", "destination_code", name="uq_visa_passport_destination"),
+    )
+
+
 class SentGameAlert(Base):
     """
     Dedup record for game-day push alerts — app/send_game_alerts.py runs on
