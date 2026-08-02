@@ -1,9 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ShareButtons({ title }: { title: string }) {
   const [copied, setCopied] = useState(false);
+  const [canNativeShare, setCanNativeShare] = useState(false);
+
+  useEffect(() => {
+    // Neither Instagram nor TikTok has a web share-intent URL like
+    // Twitter/Facebook/LinkedIn do, so the only real way to get an article
+    // into either app is the OS share sheet (mobile only — no desktop
+    // browser exposes Instagram/TikTok as a share target).
+    setCanNativeShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
 
   function currentUrl(): string {
     return typeof window !== "undefined" ? window.location.href : "";
@@ -11,6 +20,14 @@ export default function ShareButtons({ title }: { title: string }) {
 
   function openShareWindow(url: string) {
     window.open(url, "_blank", "noopener,noreferrer,width=600,height=500");
+  }
+
+  async function nativeShare() {
+    try {
+      await navigator.share({ title, url: currentUrl() });
+    } catch {
+      // AbortError when the user dismisses the share sheet — nothing to do.
+    }
   }
 
   async function copyLink() {
@@ -28,6 +45,22 @@ export default function ShareButtons({ title }: { title: string }) {
   return (
     <div className="share-buttons">
       <span className="share-label">Share</span>
+      {canNativeShare && (
+        <button
+          type="button"
+          aria-label="Share to Instagram, TikTok & more"
+          title="Share to Instagram, TikTok & more"
+          onClick={nativeShare}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.6" y1="10.5" x2="15.4" y2="6.5" />
+            <line x1="8.6" y1="13.5" x2="15.4" y2="17.5" />
+          </svg>
+        </button>
+      )}
       <button
         type="button"
         aria-label="Share on X"
