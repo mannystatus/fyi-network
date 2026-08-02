@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getCurrentBrand, getAllBrands } from "../lib/api";
 import DomainSwitcher from "../components/DomainSwitcher";
 import TopicsNav from "../components/TopicsNav";
+import FlyNowNavbar from "../components/FlyNowNavbar";
+import FlyNowTitlebar from "../components/FlyNowTitlebar";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
 import SearchBox from "../components/SearchBox";
@@ -140,29 +142,7 @@ async function Chrome({
       )}
 
       {brand.icon === "flynow" && (
-        <div className="flynow-titlebar">
-          <div className="flynow-flaps">
-            {["f", "y", "i"].map((ch, i) => (
-              <span key={`s${i}`} className="flynow-flap sky">
-                {ch}
-              </span>
-            ))}
-            {["F", "l", "y"].map((ch, i) => (
-              <span key={`c${i}`} className="flynow-flap coral">
-                {ch}
-              </span>
-            ))}
-            {["N", "o", "w"].map((ch, i) => (
-              <span key={`a${i}`} className="flynow-flap amber">
-                {ch}
-              </span>
-            ))}
-          </div>
-          <div className="flynow-status">
-            <span className="flynow-dot" />
-            Now boarding &middot; {brand.domain}
-          </div>
-        </div>
+        <FlyNowTitlebar domain={brand.domain} brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
       )}
 
       <div id="site" className={`theme-${brand.icon}`}>
@@ -180,21 +160,7 @@ async function Chrome({
         )}
 
         {brand.icon === "flynow" ? (
-          <div className="site-header">
-            <div>
-              <Link href="/" className="wordmark" aria-label={`${brand.name} home`}>
-                fyi
-                <span className="suffix">{suffix}</span>
-              </Link>
-              <div className="tagline">{brand.tagline}</div>
-            </div>
-            <div className="header-actions">
-              <SearchBox />
-              <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
-              <ThemeToggle />
-              <DomainSwitcher brands={brands} currentSlug={brand.slug} />
-            </div>
-          </div>
+          <FlyNowNavbar brands={brands} currentSlug={brand.slug} />
         ) : (
           <header className="nav-bar">
             <div className="nav-bar-inner">
@@ -238,8 +204,6 @@ async function Chrome({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={brand.image_url} alt="" className="brand-banner" />
         )}
-
-        {brand.icon === "flynow" && brand.topics.length > 0 && <TopicsNav topics={brand.topics} />}
 
         <div className="ad-slot-wrap">
           <AdSlot slot={AD_SLOTS.header} />

@@ -212,11 +212,11 @@ a {
 }
 
 /* Single-line sticky bar (logo + categories + actions), used by every
-   brand except fyiFlyNow (which keeps its own bespoke dark nav — see
-   .site-header above and FlyNowHomepage.tsx). Edge-to-edge rather than
-   capped at the site's 700px content column, so a brand's full category
-   list always has room to lay out on one line instead of hiding any of
-   them behind a scroll or ellipsis. */
+   brand except fyiFlyNow (which uses its own dark nav, .flynow-site-nav
+   below, shared across FlyNowHomepage.tsx and every other fyiFlyNow page).
+   Edge-to-edge rather than capped at the site's 700px content column, so a
+   brand's full category list always has room to lay out on one line instead
+   of hiding any of them behind a scroll or ellipsis. */
 .nav-bar {
   position: sticky;
   top: 0;
@@ -2003,7 +2003,7 @@ footer {
 /* ---------- fyiFlyNow theme, used only when fyiFlyNow is active ---------- */
 /* Split-flap airport departure board — always dark, regardless of the site's
    light/dark toggle (see --flynow-chrome-bg above). Coral (this brand's
-   accent_color) drives the wordmark suffix, active switcher state, and
+   accent_color) drives the nav logo's coral flaps, active switcher state, and
    article-card hover, same pattern every other theme uses var(--accent) for. */
 
 .flynow-titlebar {
@@ -2016,34 +2016,6 @@ footer {
   border-bottom: 1px solid var(--flynow-line);
 }
 
-.flynow-flaps {
-  display: flex;
-  gap: 2px;
-}
-
-.flynow-flap {
-  font-family: var(--font-flynow-display), "Archivo Black", sans-serif;
-  font-size: 12px;
-  line-height: 1;
-  color: #fff;
-  background: #0a1a3d;
-  border: 1px solid var(--flynow-line);
-  border-radius: 2px;
-  padding: 3px 4px 4px;
-}
-
-.flynow-flap.sky {
-  color: #4fc3ff;
-}
-
-.flynow-flap.coral {
-  color: #ff6b4a;
-}
-
-.flynow-flap.amber {
-  color: #ffb627;
-}
-
 .flynow-status {
   display: flex;
   align-items: center;
@@ -2052,6 +2024,22 @@ footer {
   font-size: 11px;
   letter-spacing: 0.04em;
   color: #6a7fa8;
+}
+
+.flynow-titlebar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Scaled down from the usual 34px so these fit this bar's 40px height,
+   same reasoning as the other brands' *-titlebar-actions overrides. */
+.flynow-titlebar-actions .theme-toggle,
+.flynow-titlebar-actions .search-trigger,
+.flynow-titlebar-actions .notify-bell {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
 }
 
 .flynow-dot {
@@ -2069,6 +2057,84 @@ footer {
   }
   50% {
     opacity: 0.3;
+  }
+}
+
+/* The one navbar fyiFlyNow uses everywhere — the bare homepage
+   (FlyNowHomepage) and every other page (rendered inside #site via
+   template.tsx's Chrome) both mount <FlyNowNavbar>, so this styling isn't
+   scoped under #site.theme-flynow or .flynow-homepage like the rest of this
+   theme block. Sticky + translucent navy, same treatment as .flynow-titlebar
+   above, deliberately always-dark for the same "departure board" reasoning. */
+.flynow-site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(6, 18, 43, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--flynow-line);
+}
+
+.flynow-site-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 16px 28px;
+}
+
+.flynow-logo {
+  display: flex;
+  gap: 1px;
+  text-decoration: none;
+}
+
+.flynow-flap-nav {
+  font-family: var(--font-flynow-display), "Archivo Black", sans-serif;
+  font-size: 15px;
+  line-height: 1;
+  color: #fff;
+  background: #0a1a3d;
+  border: 1px solid var(--flynow-line);
+  border-radius: 2px;
+  padding: 3px 5px 4px;
+}
+
+.flynow-flap-nav.sky {
+  color: #4fc3ff;
+}
+
+.flynow-flap-nav.coral {
+  color: #ff6b4a;
+}
+
+.flynow-flap-nav.amber {
+  color: #ffb627;
+}
+
+.flynow-nav-links {
+  display: flex;
+  gap: 32px;
+  font-family: var(--font-flynow-body), "Space Grotesk", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+
+.flynow-nav-links a {
+  color: #b7c3de;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.flynow-nav-links a:hover {
+  color: #fff;
+}
+
+@media (max-width: 880px) {
+  .flynow-nav-links {
+    display: none;
   }
 }
 
@@ -2094,18 +2160,11 @@ body.theme-flynow-body {
   font-family: var(--font-flynow-body), "Space Grotesk", sans-serif;
 }
 
-#site.theme-flynow .wordmark {
-  font-family: var(--font-flynow-display), "Archivo Black", sans-serif;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-}
-
 #site.theme-flynow .article-title {
   font-family: var(--font-flynow-display), "Archivo Black", sans-serif;
   font-weight: 400;
 }
 
-#site.theme-flynow .tagline,
 #site.theme-flynow .switcher-btn,
 #site.theme-flynow .brand-opt,
 #site.theme-flynow .article-meta,
@@ -2118,7 +2177,7 @@ body.theme-flynow-body {
 }
 
 #site.theme-flynow .switcher-btn {
-  border-radius: 30px;
+  border-radius: 24px;
 }
 
 #site.theme-flynow .article-card {

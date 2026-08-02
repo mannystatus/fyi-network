@@ -3,7 +3,8 @@ import type { Brand } from "../lib/api";
 import { getArticles } from "../lib/api";
 import { categoryColor } from "../lib/colors";
 import { canonicalOrigin } from "../lib/url";
-import DomainSwitcher from "./DomainSwitcher";
+import FlyNowNavbar from "./FlyNowNavbar";
+import FlyNowTitlebar from "./FlyNowTitlebar";
 
 const BLOG_POST_COUNT = 6;
 
@@ -50,7 +51,8 @@ function LogoFlaps({ big = false }: { big?: boolean }) {
 
 export default async function FlyNowHomepage({ brands, currentSlug }: { brands: Brand[]; currentSlug: string }) {
   const posts = (await getArticles()).slice(0, BLOG_POST_COUNT);
-  const origin = canonicalOrigin(brands.find((b) => b.slug === currentSlug)?.domain ?? "fyiflynow.com");
+  const brand = brands.find((b) => b.slug === currentSlug);
+  const origin = canonicalOrigin(brand?.domain ?? "fyiflynow.com");
 
   return (
     <div className="flynow-homepage">
@@ -72,35 +74,10 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
     .flynow-homepage a { color: inherit; }
     .flynow-homepage .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
 
-    /* ---------- NAV ---------- */
-    .flynow-homepage header.site-nav {
-      position: sticky; top: 0; z-index: 50;
-      background: rgba(6,18,43,0.88);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #142549;
-    }
-    .flynow-homepage .nav-inner { display:flex; align-items:center; justify-content:space-between; gap: 20px; padding:16px 28px; }
-    .flynow-homepage .logo { display:flex; gap:1px; }
-    .flynow-homepage .flap { font-family: var(--font-flynow-display), 'Archivo Black', sans-serif; font-size:15px; color:#fff; background:var(--navy2); border:1px solid var(--line); padding:3px 5px 4px; border-radius:2px; line-height:1; }
-    .flynow-homepage .flap.sky{color:var(--sky)} .flynow-homepage .flap.coral{color:var(--coral)} .flynow-homepage .flap.amber{color:var(--amber)}
-    .flynow-homepage nav.links { display:flex; gap:32px; font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:13px; letter-spacing:.03em; }
-    .flynow-homepage nav.links a { color:#b7c3de; text-decoration:none; transition:color .15s; }
-    .flynow-homepage nav.links a:hover { color:#fff; }
-    @media (max-width: 880px){
-      .flynow-homepage nav.links { display:none; }
-    }
-
-    /* domain switcher, restyled to sit in this dark nav regardless of the
-       site's global light/dark toggle — see globals.css for the defaults
-       this overrides. */
-    .flynow-homepage .switcher-btn { background:var(--navy2); border:1px solid var(--line); color:#fff; border-radius:24px; font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:13px; }
-    .flynow-homepage .switcher-btn:hover { border-color: var(--coral); }
-    .flynow-homepage .switcher-dot { background: var(--coral); }
-    .flynow-homepage .chevron { color: var(--text-dim); }
-    .flynow-homepage .switcher-menu { background:var(--navy2); border:1px solid var(--line); }
-    .flynow-homepage .brand-opt { color:#fff; }
-    .flynow-homepage .brand-opt:hover { background:var(--navy3); }
-    .flynow-homepage .brand-opt .current-tag { color:var(--text-dim); }
+    /* Nav itself is the shared <FlyNowNavbar> (see globals.css's
+       .flynow-site-nav rules) — used here and on every other fyiFlyNow page
+       via app/template.tsx, so it isn't restyled locally. .logo/.flap below
+       are only for the hero's big logo and the footer's small one. */
 
     /* ---------- HERO ---------- */
     .flynow-homepage .hero {
@@ -209,20 +186,13 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
     .flynow-homepage .blog-empty { color:var(--text-dim); font-size:14px; }
       `}</style>
 
-      <header className="site-nav">
-        <div className="nav-inner">
-          <LogoFlaps />
-          <nav className="links">
-            <a href="#blog">Blog</a>
-            <Link href="/topics/Flight%20Deals">Flight Deals</Link>
-            <Link href="/topics/Airline%20News">Airline News</Link>
-            <Link href="/topics/Travel%20Tips">Travel Tips</Link>
-            <Link href="/topics/Travel%20Guides">Travel Guides</Link>
-            <Link href="/travel-advisories">Advisories</Link>
-          </nav>
-          <DomainSwitcher brands={brands} currentSlug={currentSlug} />
-        </div>
-      </header>
+      <FlyNowTitlebar
+        domain={brand?.domain ?? "fyiflynow.com"}
+        brandSlug={currentSlug}
+        brandName={brand?.name ?? "fyiFlyNow"}
+        topics={brand?.topics ?? []}
+      />
+      <FlyNowNavbar brands={brands} currentSlug={currentSlug} />
 
       <section className="section blog-section" id="blog">
         <div className="wrap">
