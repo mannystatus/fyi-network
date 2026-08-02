@@ -2131,10 +2131,17 @@ footer {
   transition: color 0.15s, background-color 0.15s;
 }
 
-.flynow-nav-links a:hover,
-.flynow-nav-links a[data-active="true"] {
+.flynow-nav-links a:hover {
   color: var(--flynow-chrome-bg);
   background: var(--accent);
+}
+
+/* Sky blue from the logo's "fyi" flaps — after :hover in source order so
+   the active page's pill stays blue rather than flipping coral when it's
+   the one being hovered. */
+.flynow-nav-links a[data-active="true"] {
+  color: var(--flynow-chrome-bg);
+  background: #4fc3ff;
 }
 
 @media (max-width: 880px) {
