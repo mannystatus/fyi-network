@@ -69,6 +69,7 @@ CHANNELS: dict[str, tuple[str, str]] = {
     "PackHacker": ("UC_rI3y1DzDULTr-UIvshiwg", "Pack Hacker"),
     "LisaAndJosh": ("UCmFVeAWxiBM9wkS1OeJKhUg", "Lisa and Josh"),
     "DotsonaMap": ("UCmf0FVB5zt6Ltq7RooWvc0g", "Dots on a Map"),
+    "DWTravel": ("UCAjA4SbeRNqig8NdNszDBsA", "DW Travel"),
 }
 
 ATOM_NS = {
