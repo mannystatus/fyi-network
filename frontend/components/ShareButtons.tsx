@@ -31,14 +31,21 @@ export default function ShareButtons({ title }: { title: string }) {
   // directly. Best available option: copy the link and drop the user into
   // the app/site so they can paste it into a Story, bio, or caption.
   async function shareToApp(appUrl: string, appName: string) {
+    // window.open must happen synchronously in the click handler — once we
+    // `await` the clipboard write first, the browser no longer considers
+    // this a user-triggered action and silently blocks the popup (Safari
+    // in particular).
+    window.open(appUrl, "_blank", "noopener,noreferrer");
     try {
       await navigator.clipboard.writeText(currentUrl());
-      setToast(`Link copied — paste it into ${appName}`);
-      setTimeout(() => setToast(null), 2800);
+      // Long timeout on purpose — the browser just switched focus to the
+      // new tab, so the user won't see this until they switch back, which
+      // can be several seconds later.
+      setToast(`Link copied — switch back here and paste it into ${appName}`);
+      setTimeout(() => setToast(null), 8000);
     } catch {
-      // Clipboard denied/unavailable — still open the app below.
+      // Clipboard denied/unavailable — app is already open above.
     }
-    window.open(appUrl, "_blank", "noopener,noreferrer");
   }
 
   return (

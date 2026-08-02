@@ -842,6 +842,7 @@ main {
 
 .share-buttons {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-top: 16px;
@@ -884,8 +885,14 @@ main {
 }
 
 .share-toast {
+  flex-basis: 100%;
   font-size: 12px;
-  color: var(--comment);
+  font-weight: 600;
+  color: var(--blue);
+  background: color-mix(in srgb, var(--blue) 12%, transparent);
+  border-radius: 20px;
+  padding: 4px 12px;
+  width: fit-content;
 }
 
 .related-section {
