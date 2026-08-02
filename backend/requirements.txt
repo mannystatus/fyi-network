@@ -7,6 +7,10 @@ python-dotenv>=1.0
 python-multipart>=0.0.9
 httpx>=0.27
 pywebpush>=2.0
+# Re-encodes admin-uploaded header/banner images in uploads.py — raw
+# uploads (e.g. HEIC/AVIF straight from a phone, multi-MB PNGs) were
+# silently failing to render in iMessage/SMS link previews.
+Pillow>=10.0
 # Gemini (via Google AI Studio's free tier) does the transcript
 # summarization in ingest_youtube.py.
 google-genai>=1.0
