@@ -1,14 +1,21 @@
 name: Ingest YouTube travel guides
 
-# Runs app/ingest_youtube.py on a schedule so fyiFlyNow's "Travel Guides"
-# topic keeps getting new articles adapted from its curated creator
-# channels, without anyone doing it by hand. Needs both DATABASE_URL and
-# GEMINI_API_KEY repo secrets — without GEMINI_API_KEY the script
-# exits cleanly, doing nothing (see ingest_youtube.py).
-
+# Runs app/ingest_youtube.py so fyiFlyNow's "Travel Guides" topic keeps
+# getting new articles adapted from its curated creator channels. Needs
+# both DATABASE_URL and GEMINI_API_KEY repo secrets — without
+# GEMINI_API_KEY the script exits cleanly, doing nothing.
+#
+# No `schedule:` trigger on purpose — confirmed by hand (2026-08-02) that
+# YouTube blocks transcript requests from GitHub Actions' IP outright
+# (RequestBlocked/IpBlocked, see ingest_youtube.py), so an automated run
+# would just fail the same way every time. Re-add a schedule once a
+# residential proxy is wired into ingest_youtube.py (see its README link
+# on working around IP bans); until then, trigger manually below — that
+# works today from a non-datacenter IP (confirmed the same day: 10/13
+# channels succeeded from a residential connection before YouTube's
+# volume-based block kicked in, so a manual run may need repeating a
+# couple of times to get through all channels).
 on:
-  schedule:
-    - cron: "41 14 * * *" # daily at 14:41 UTC — offset from ingest-news.yml's 13:17 so they don't compete for the same DB connection window
   workflow_dispatch:
     inputs:
       channel:
