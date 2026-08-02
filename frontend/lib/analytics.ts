@@ -12,6 +12,7 @@ export const GA_IDS: Record<string, string> = {
   fyiwin: "G-H1KWGNYG72",
   fyinetflix: "G-GWCX8LQ6JW",
   fyiflynow: "G-BXQTYX90RJ",
+  fyigoogle: "G-4RXXED6S0T",
 };
 
 // One AdSense account for the whole network — loaded sitewide, not per-brand.
