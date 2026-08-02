@@ -11,15 +11,42 @@ import { canonicalOrigin } from "../lib/url";
 
 // Only fyiFlyNow's theme references these (via --font-flynow-*) — self-hosted
 // by next/font so there's no extra external request for the other brands.
-const flynowDisplay = Archivo_Black({ weight: "400", subsets: ["latin"], variable: "--font-flynow-display" });
-const flynowBody = Space_Grotesk({ weight: "500", subsets: ["latin"], variable: "--font-flynow-body" });
-const flynowSans = Inter({ weight: ["300", "400", "500", "600"], subsets: ["latin"], variable: "--font-flynow-sans" });
+// preload:false on all four below — next/font otherwise emits a <link
+// rel=preload> for every one of these on every brand's pages regardless of
+// whether that brand's theme CSS ever references the variable (confirmed via
+// a production build: fyiwin/fyimac were fetching all 4 woff2 files, ~78KiB,
+// for fonts their CSS never uses). preload:false stops the eager fetch; the
+// font still loads normally, on demand, wherever its CSS variable actually
+// gets used (fyiFlyNow, fyiLakers/fyiDodgers).
+const flynowDisplay = Archivo_Black({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-flynow-display",
+  preload: false,
+});
+const flynowBody = Space_Grotesk({
+  weight: "500",
+  subsets: ["latin"],
+  variable: "--font-flynow-body",
+  preload: false,
+});
+const flynowSans = Inter({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-flynow-sans",
+  preload: false,
+});
 
 // Shared by every sports-team brand (fyiLakers, fyiDodgers, ...) via
 // --font-sports-display — condensed bold caps matching each one's
 // "fyi <TEAM>" logo lockup lettering. One shared font load rather than a
 // per-brand Oswald instance, since it's the same typeface for all of them.
-const sportsDisplay = Oswald({ weight: ["500", "600", "700"], subsets: ["latin"], variable: "--font-sports-display" });
+const sportsDisplay = Oswald({
+  weight: ["500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-sports-display",
+  preload: false,
+});
 
 // A plain <meta> tag has no JS dependency, unlike next/script's adsbygoogle
 // loader (which Next only ever injects client-side, even with
