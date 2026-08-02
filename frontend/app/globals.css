@@ -2116,7 +2116,8 @@ footer {
 
 .flynow-nav-links {
   display: flex;
-  gap: 32px;
+  align-items: center;
+  gap: 4px;
   font-family: var(--font-flynow-body), "Space Grotesk", sans-serif;
   font-size: 13px;
   letter-spacing: 0.03em;
@@ -2125,12 +2126,15 @@ footer {
 .flynow-nav-links a {
   color: #b7c3de;
   text-decoration: none;
-  transition: color 0.15s;
+  padding: 7px 12px;
+  border-radius: 6px;
+  transition: color 0.15s, background-color 0.15s;
 }
 
 .flynow-nav-links a:hover,
 .flynow-nav-links a[data-active="true"] {
-  color: var(--accent);
+  color: var(--flynow-chrome-bg);
+  background: var(--accent);
 }
 
 @media (max-width: 880px) {
