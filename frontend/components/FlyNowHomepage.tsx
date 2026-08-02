@@ -2,90 +2,33 @@ import Link from "next/link";
 import type { Brand } from "../lib/api";
 import { getArticles } from "../lib/api";
 import { categoryColor } from "../lib/colors";
+import { canonicalOrigin } from "../lib/url";
 import DomainSwitcher from "./DomainSwitcher";
-import FlyNowFareAlertForm from "./FlyNowFareAlertForm";
 
 const BLOG_POST_COUNT = 6;
 
-const DEALS = [
-  {
-    eyebrow: "Fare Alert",
-    badge: "TODAY",
-    route: "LAX → NRT",
-    meta: "Round trip · Nonstop · Tokyo, Japan",
-    price: "$612",
-    was: "$1,180",
-    spotted: "Spotted 6 min ago",
-  },
-  {
-    eyebrow: "Fare Alert",
-    badge: "TODAY",
-    route: "JFK → LIS",
-    meta: "Round trip · 1 stop · Lisbon, Portugal",
-    price: "$398",
-    was: "$740",
-    spotted: "Spotted 22 min ago",
-  },
-  {
-    eyebrow: "Fare Alert",
-    badge: "NEW",
-    route: "SFO → AKL",
-    meta: "Round trip · Nonstop · Auckland, NZ",
-    price: "$719",
-    was: "$1,340",
-    spotted: "Spotted 1 hr ago",
-  },
-  {
-    eyebrow: "Fare Alert",
-    badge: "TODAY",
-    route: "ORD → CDG",
-    meta: "Round trip · Nonstop · Paris, France",
-    price: "$454",
-    was: "$890",
-    spotted: "Spotted 3 hr ago",
-  },
-  {
-    eyebrow: "Fare Alert",
-    badge: "TODAY",
-    route: "MIA → BOG",
-    meta: "Round trip · Nonstop · Bogotá, Colombia",
-    price: "$211",
-    was: "$402",
-    spotted: "Spotted 4 hr ago",
-  },
-  {
-    eyebrow: "Fare Alert",
-    badge: "TODAY",
-    route: "SEA → ICN",
-    meta: "Round trip · Nonstop · Seoul, South Korea",
-    price: "$588",
-    was: "$1,050",
-    spotted: "Spotted 5 hr ago",
-  },
-];
-
-const BOARD_ROWS = [
-  { route: "LAX → NRT", price: "$612" },
-  { route: "JFK → LIS", price: "$398" },
-  { route: "ORD → CDG", price: "$454" },
-  { route: "SFO → AKL", price: "$719", tag: "NEW" },
+const COVERAGE_ROWS = [
+  { label: "Flight Deals", desc: "Fare drops & sales worth booking" },
+  { label: "Airline News", desc: "Policy changes, routes, delays" },
+  { label: "Travel Tips", desc: "Airports, packing, booking tricks" },
+  { label: "Travel Guides", desc: "City & destination guides from creators" },
 ];
 
 const STEPS = [
   {
     num: "01",
-    title: "We scan constantly",
-    body: "Fares across 340+ routes are checked around the clock, watching for drops that don't match the usual pattern.",
+    title: "Flight & airline news, daily",
+    body: "Fare trends, airline policy changes, and airport updates pulled from trusted travel and aviation outlets, updated throughout the day.",
   },
   {
     num: "02",
-    title: "We verify it's real",
-    body: "Every alert is checked by hand before it goes out — no mistake fares, no fine-print surprises, no expired links.",
+    title: "Real guides from travel creators",
+    body: "Destination and city breakdowns drawn from creators who've actually been there — not generic, templated listicles.",
   },
   {
     num: "03",
-    title: "You get the alert",
-    body: "A short email lands with the route, the price, and a link — usually within minutes of the fare appearing.",
+    title: "The practical version, fast",
+    body: "Every guide and story is boiled down to what actually matters before you book, pack, or fly.",
   },
 ];
 
@@ -107,6 +50,7 @@ function LogoFlaps({ big = false }: { big?: boolean }) {
 
 export default async function FlyNowHomepage({ brands, currentSlug }: { brands: Brand[]; currentSlug: string }) {
   const posts = (await getArticles()).slice(0, BLOG_POST_COUNT);
+  const origin = canonicalOrigin(brands.find((b) => b.slug === currentSlug)?.domain ?? "fyiflynow.com");
 
   return (
     <div className="flynow-homepage">
@@ -142,11 +86,6 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
     .flynow-homepage nav.links { display:flex; gap:32px; font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:13px; letter-spacing:.03em; }
     .flynow-homepage nav.links a { color:#b7c3de; text-decoration:none; transition:color .15s; }
     .flynow-homepage nav.links a:hover { color:#fff; }
-    .flynow-homepage .nav-cta {
-      font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:13px; font-weight:500;
-      background:var(--coral); color:var(--navy); padding:10px 20px; border-radius:24px;
-      text-decoration:none; white-space:nowrap;
-    }
     @media (max-width: 880px){
       .flynow-homepage nav.links { display:none; }
     }
@@ -190,38 +129,29 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
     .flynow-homepage .hero h1 .accent { color:var(--amber); }
     .flynow-homepage .hero p.lede { font-size:15px; color:var(--text-dim); line-height:1.7; max-width:460px; margin-bottom:32px; font-weight:300; }
 
-    .flynow-homepage .hero-form { display:flex; gap:10px; max-width:420px; flex-wrap:wrap; }
-    .flynow-homepage .hero-form input {
-      flex:1; min-width:200px; background:var(--navy2); border:1px solid var(--line); border-radius:8px;
-      padding:14px 16px; color:#fff; font-family: var(--font-flynow-sans), 'Inter', sans-serif; font-size:14px;
-    }
-    .flynow-homepage .hero-form input::placeholder { color:var(--text-dimmer); }
-    .flynow-homepage .hero-form button {
+    .flynow-homepage .hero-ctas { display:flex; gap:14px; flex-wrap:wrap; }
+    .flynow-homepage .hero-cta-primary {
       font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:13px; font-weight:500;
-      background:var(--coral); color:var(--navy); border:none; padding:14px 24px; border-radius:8px;
-      cursor:pointer; white-space:nowrap; transition:background .15s, transform .15s;
+      background:var(--coral); color:var(--navy); padding:14px 24px; border-radius:8px;
+      text-decoration:none; white-space:nowrap; transition:background .15s, transform .15s;
     }
-    .flynow-homepage .hero-form button:hover { background:var(--amber); transform:translateY(-1px); }
-    .flynow-homepage .hero-microcopy { font-size:11px; color:var(--text-dimmer); margin-top:10px; font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; letter-spacing:.03em; }
+    .flynow-homepage .hero-cta-primary:hover { background:var(--amber); transform:translateY(-1px); }
+    .flynow-homepage .hero-cta-secondary {
+      font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:13px; font-weight:500;
+      background:transparent; color:#fff; padding:14px 24px; border-radius:8px; border:1px solid var(--line);
+      text-decoration:none; white-space:nowrap; transition:border-color .15s;
+    }
+    .flynow-homepage .hero-cta-secondary:hover { border-color: var(--sky); }
 
     .flynow-homepage .board-card {
       background:var(--navy2); border:1px solid var(--line); border-radius:10px; padding:22px;
       position:relative;
     }
-    .flynow-homepage .board-title { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--text-dim); margin-bottom:16px; display:flex; justify-content:space-between; }
+    .flynow-homepage .board-title { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--text-dim); margin-bottom:16px; }
     .flynow-homepage .board-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-top:1px solid #16264d; font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; }
     .flynow-homepage .board-row:first-of-type { border-top:none; }
-    .flynow-homepage .board-route { font-size:14px; color:#fff; }
-    .flynow-homepage .board-route span.dim { color:var(--text-dim); font-weight:400; }
-    .flynow-homepage .board-price { font-family: var(--font-flynow-display), 'Archivo Black', sans-serif; font-size:18px; color:var(--amber); }
-    .flynow-homepage .board-tag { font-size:10px; color:var(--coral); border:1px solid var(--coral); padding:2px 8px; border-radius:12px; }
-
-    /* ---------- STATS STRIP ---------- */
-    .flynow-homepage .stats { border-bottom:1px solid #142549; }
-    .flynow-homepage .stats-inner { display:flex; justify-content:space-between; padding:32px 28px; flex-wrap:wrap; gap:24px; }
-    .flynow-homepage .stat { text-align:left; }
-    .flynow-homepage .stat .num { font-family: var(--font-flynow-display), 'Archivo Black', sans-serif; font-size:26px; color:#fff; }
-    .flynow-homepage .stat .label { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); margin-top:4px; }
+    .flynow-homepage .board-label { font-size:14px; color:#fff; }
+    .flynow-homepage .board-desc { font-size:12px; color:var(--text-dim); text-align:right; }
 
     /* ---------- SECTION HEAD ---------- */
     .flynow-homepage .section { padding:80px 28px; }
@@ -229,29 +159,7 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
     .flynow-homepage .section h2 { font-family: var(--font-flynow-display), 'Archivo Black', sans-serif; font-weight: 400; font-size:28px; color:#fff; margin-bottom:14px; }
     .flynow-homepage .section p.desc { font-size:14px; color:var(--text-dim); max-width:560px; line-height:1.7; font-weight:300; margin-bottom:44px; }
 
-    /* ---------- DEAL GRID ---------- */
-    .flynow-homepage .deal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-    @media (max-width:880px){ .flynow-homepage .deal-grid{ grid-template-columns:1fr 1fr; } }
-    @media (max-width:600px){ .flynow-homepage .deal-grid{ grid-template-columns:1fr; } }
-
-    .flynow-homepage .deal-card {
-      background:var(--navy2); border:1px solid var(--line); border-radius:10px; padding:22px;
-      position:relative; overflow:hidden; transition:border-color .15s, transform .15s;
-    }
-    .flynow-homepage .deal-card:hover { border-color:var(--coral); transform:translateY(-2px); }
-    .flynow-homepage .deal-card::before { content:''; position:absolute; top:-40%; right:-20%; width:180px; height:180px; background:radial-gradient(circle, rgba(255,107,74,.16), transparent 70%); pointer-events:none; }
-    .flynow-homepage .deal-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; position:relative; }
-    .flynow-homepage .deal-eyebrow { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--sky); }
-    .flynow-homepage .deal-badge { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:9px; color:var(--amber); border:1px solid var(--amber); padding:3px 8px; border-radius:16px; letter-spacing:.06em; }
-    .flynow-homepage .deal-route { font-family: var(--font-flynow-display), 'Archivo Black', sans-serif; font-weight: 400; font-size:20px; color:#fff; margin-bottom:6px; position:relative; }
-    .flynow-homepage .deal-meta { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; color:var(--text-dim); margin-bottom:16px; position:relative; }
-    .flynow-homepage .deal-price-row { display:flex; align-items:baseline; gap:10px; position:relative; }
-    .flynow-homepage .deal-price { font-family: var(--font-flynow-display), 'Archivo Black', sans-serif; font-size:30px; color:var(--amber); }
-    .flynow-homepage .deal-was { font-family: var(--font-flynow-sans), 'Inter', sans-serif; font-size:13px; color:var(--text-dimmer); text-decoration:line-through; }
-    .flynow-homepage .deal-foot { margin-top:18px; padding-top:14px; border-top:1px solid #16264d; display:flex; justify-content:space-between; align-items:center; font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; color:var(--text-dim); position:relative; }
-    .flynow-homepage .deal-foot a { color:var(--coral); text-decoration:none; }
-
-    /* ---------- HOW IT WORKS ---------- */
+    /* ---------- HOW IT WORKS / SOURCES ---------- */
     .flynow-homepage .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
     @media (max-width:820px){ .flynow-homepage .steps{ grid-template-columns:1fr; } }
     .flynow-homepage .step { border-top:1px solid #16264d; padding-top:20px; }
@@ -259,7 +167,7 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
     .flynow-homepage .step h3 { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:16px; color:#fff; margin-bottom:10px; }
     .flynow-homepage .step p { font-size:13px; color:var(--text-dim); line-height:1.7; font-weight:300; }
 
-    /* ---------- NEWSLETTER CTA ---------- */
+    /* ---------- CTA BAND ---------- */
     .flynow-homepage .cta-band {
       background: linear-gradient(135deg, var(--navy3), var(--navy2));
       border-top:1px solid #142549; border-bottom:1px solid #142549;
@@ -267,7 +175,12 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
     }
     .flynow-homepage .cta-band h2 { font-family: var(--font-flynow-display), 'Archivo Black', sans-serif; font-weight: 400; font-size:26px; color:#fff; margin-bottom:14px; }
     .flynow-homepage .cta-band p { font-size:14px; color:var(--text-dim); margin-bottom:30px; font-weight:300; }
-    .flynow-homepage .cta-band .hero-form { margin:0 auto; }
+    .flynow-homepage .cta-band-link {
+      display:inline-block; font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:13px; font-weight:500;
+      background:var(--coral); color:var(--navy); padding:14px 26px; border-radius:8px;
+      text-decoration:none; transition:background .15s, transform .15s;
+    }
+    .flynow-homepage .cta-band-link:hover { background:var(--amber); transform:translateY(-1px); }
 
     /* ---------- FOOTER ---------- */
     .flynow-homepage footer { padding:48px 28px 32px; }
@@ -294,21 +207,6 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
     .flynow-homepage .blog-dek { font-size:13px; color:var(--text-dim); line-height:1.6; font-weight:300; margin-bottom:16px; }
     .flynow-homepage .blog-meta { font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; color:var(--text-dimmer); }
     .flynow-homepage .blog-empty { color:var(--text-dim); font-size:14px; }
-
-    /* ---------- "coming soon" states for the not-yet-real fare-alert feature ---------- */
-    .flynow-homepage .coming-soon-pill {
-      display:inline-flex; align-items:center; gap:6px;
-      font-family: var(--font-flynow-body), 'Space Grotesk', sans-serif; font-size:11px; font-weight:500;
-      color:var(--amber); border:1px solid var(--amber); padding:9px 18px; border-radius:24px;
-      letter-spacing:.04em; white-space:nowrap; text-decoration:none;
-    }
-    .flynow-homepage .hero-form input:disabled,
-    .flynow-homepage .hero-form button:disabled {
-      opacity:.55; cursor:not-allowed;
-    }
-    .flynow-homepage .hero-form button:disabled {
-      background:var(--navy2); color:var(--text-dim); border:1px solid var(--line);
-    }
       `}</style>
 
       <header className="site-nav">
@@ -316,26 +214,22 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
           <LogoFlaps />
           <nav className="links">
             <a href="#blog">Blog</a>
-            <a href="#deals">Today&apos;s Deals</a>
-            <a href="#how">How It Works</a>
-            <a href="#">Destinations</a>
-            <a href="#subscribe">Subscribe</a>
+            <Link href="/topics/Flight%20Deals">Flight Deals</Link>
+            <Link href="/topics/Airline%20News">Airline News</Link>
+            <Link href="/topics/Travel%20Tips">Travel Tips</Link>
+            <Link href="/topics/Travel%20Guides">Travel Guides</Link>
           </nav>
           <DomainSwitcher brands={brands} currentSlug={currentSlug} />
-          <a className="coming-soon-pill" href="#subscribe">
-            <span className="pulse-dot" />
-            Fare Alerts: Coming Soon
-          </a>
         </div>
       </header>
 
       <section className="section blog-section" id="blog">
         <div className="wrap">
           <div className="section-head">The fyiFlyNow Blog</div>
-          <h2>Travel tips, hacks &amp; real fares</h2>
+          <h2>Travel guides, flight news &amp; real tips</h2>
           <p className="desc">
-            Real coverage from real publishers — airline news, fare-booking tips, and travel hacks, updated
-            daily. (Live fare alerts are still on the way — see below.)
+            Flight and airline coverage updated daily, plus destination guides pulled from travel creators who&apos;ve
+            actually been there — everything you need before you book, pack, or fly abroad.
           </p>
 
           {posts.length > 0 ? (
@@ -367,6 +261,25 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
             </p>
           )}
         </div>
+
+        {posts.length > 0 && (
+          <script
+            type="application/ld+json"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                itemListElement: posts.map((post, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  url: `${origin}/${post.slug}`,
+                  name: post.title,
+                })),
+              }),
+            }}
+          />
+        )}
       </section>
 
       <section className="hero">
@@ -374,102 +287,47 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
           <div>
             <div className="hero-kicker">
               <span className="pulse-dot" />
-              Now Boarding · Fare Tracking Coming Soon
+              Now Boarding · Real Travel Guides &amp; Flight News
             </div>
             <LogoFlaps big />
             <h1>
-              We&apos;ll watch fares across hundreds of routes, <span className="accent">so you don&apos;t have to.</span>
+              Travel guides, flight news, and real tips —{" "}
+              <span className="accent">before you fly abroad.</span>
             </h1>
             <p className="lede">
-              Live fare tracking is on the way — the moment a fare falls through the floor, you&apos;ll know, before
-              the airlines notice and pull it back. Until then, real travel deals and tips are already live in the
-              blog above.
+              We track flight and airline news daily, and pull practical travel guides from creators covering
+              destinations, city breakdowns, and what to actually expect on the ground — so you&apos;re ready before
+              you book, pack, or fly.
             </p>
-            <FlyNowFareAlertForm />
-            <div className="hero-microcopy">Not live yet — check back soon, or read the blog above in the meantime.</div>
+            <div className="hero-ctas">
+              <a className="hero-cta-primary" href="#blog">
+                Read the blog →
+              </a>
+              <Link className="hero-cta-secondary" href="/topics/Travel%20Tips">
+                Browse travel tips
+              </Link>
+            </div>
           </div>
 
           <div className="board-card">
-            <div className="board-title">
-              <span>Departure Board</span>
-              <span>Preview</span>
-            </div>
-            {BOARD_ROWS.map((row) => {
-              const [from, to] = row.route.split(" → ");
-              return (
-                <div className="board-row" key={row.route}>
-                  <div className="board-route">
-                    {from} <span className="dim">→</span> {to}
-                  </div>
-                  <div className="board-price">{row.price}</div>
-                  {row.tag && <div className="board-tag">{row.tag}</div>}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <div className="stats">
-        <div className="wrap stats-inner">
-          <div className="stat">
-            <div className="num">340+</div>
-            <div className="label">Routes Tracked</div>
-          </div>
-          <div className="stat">
-            <div className="num">6 min</div>
-            <div className="label">Avg. Alert Speed</div>
-          </div>
-          <div className="stat">
-            <div className="num">$412</div>
-            <div className="label">Avg. Fare Saved</div>
-          </div>
-          <div className="stat">
-            <div className="num">100%</div>
-            <div className="label">Free, No Catch</div>
-          </div>
-        </div>
-      </div>
-
-      <section className="section" id="deals">
-        <div className="wrap">
-          <div className="section-head">Preview · Coming Soon</div>
-          <h2>Fares worth booking</h2>
-          <p className="desc">
-            A preview of what the live board will look like once fare tracking launches — these example fares
-            aren&apos;t bookable yet.
-          </p>
-
-          <div className="deal-grid">
-            {DEALS.map((deal) => (
-              <div className="deal-card" key={deal.route}>
-                <div className="deal-top">
-                  <span className="deal-eyebrow">{deal.eyebrow}</span>
-                  <span className="deal-badge">{deal.badge}</span>
-                </div>
-                <div className="deal-route">{deal.route}</div>
-                <div className="deal-meta">{deal.meta}</div>
-                <div className="deal-price-row">
-                  <span className="deal-price">{deal.price}</span>
-                  <span className="deal-was">{deal.was}</span>
-                </div>
-                <div className="deal-foot">
-                  <span>{deal.spotted}</span>
-                  <a href="#">View →</a>
-                </div>
+            <div className="board-title">What we cover</div>
+            {COVERAGE_ROWS.map((row) => (
+              <div className="board-row" key={row.label}>
+                <div className="board-label">{row.label}</div>
+                <div className="board-desc">{row.desc}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section" id="how">
+      <section className="section" id="sources">
         <div className="wrap">
-          <div className="section-head">How It Works</div>
-          <h2>Three steps, no app required</h2>
+          <div className="section-head">Where Our Coverage Comes From</div>
+          <h2>Real news. Real guides. No fluff.</h2>
           <p className="desc">
-            We do the boring part — scanning fares constantly — so your inbox only hears from us when it&apos;s
-            worth it.
+            No fabricated fare-tracking gimmicks — just flight and airline news worth reading, and travel guides
+            drawn from creators who&apos;ve actually made the trip.
           </p>
 
           <div className="steps">
@@ -484,11 +342,13 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
         </div>
       </section>
 
-      <div className="cta-band" id="subscribe">
+      <div className="cta-band">
         <div className="wrap">
-          <h2>Fare alerts: coming soon</h2>
-          <p>We&apos;re building free, real-time fare alerts. In the meantime, the blog above has real travel deals and tips.</p>
-          <FlyNowFareAlertForm />
+          <h2>New guides &amp; flight news, every day</h2>
+          <p>Fresh coverage lands in the blog daily — no signup required.</p>
+          <a className="cta-band-link" href="#blog">
+            Read the latest →
+          </a>
         </div>
       </div>
 
@@ -499,16 +359,17 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
               <LogoFlaps />
             </div>
             <p style={{ fontSize: 12, color: "var(--text-dim)", maxWidth: 220, lineHeight: 1.7, fontWeight: 300 }}>
-              Real-time fare tracking from the fyi network.
+              Travel guides and flight news from the fyi network.
             </p>
           </div>
           <div className="footer-cols">
             <div className="footer-col">
               <h4>Site</h4>
               <a href="#blog">Blog</a>
-              <a href="#deals">Today&apos;s Deals</a>
-              <a href="#how">How It Works</a>
-              <a href="#">Destinations</a>
+              <Link href="/topics/Flight%20Deals">Flight Deals</Link>
+              <Link href="/topics/Airline%20News">Airline News</Link>
+              <Link href="/topics/Travel%20Tips">Travel Tips</Link>
+              <Link href="/topics/Travel%20Guides">Travel Guides</Link>
             </div>
             <div className="footer-col">
               <h4>The fyi Network</h4>
@@ -527,7 +388,7 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
         </div>
         <div className="wrap footer-bottom">
           <span>© 2026 fyiFlyNow. Part of the fyi network.</span>
-          <span>NOW BOARDING · DEALS IN REAL TIME</span>
+          <span>NOW BOARDING · REAL GUIDES, REAL FLIGHT NEWS</span>
         </div>
       </footer>
     </div>

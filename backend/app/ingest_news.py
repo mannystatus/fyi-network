@@ -192,7 +192,10 @@ TRUSTED_SOURCES = {
 # newswire for "our own staff's opinion"), so ingestion skips them entirely
 # rather than searching the topic name literally and pulling in unrelated
 # junk attributed to random outlets. Populated only by hand via /admin.
-MANUAL_ONLY_TOPICS = {"Staff Reviews"}
+# fyiFlyNow's "Travel Guides" is skipped here for a different reason — it's
+# fed by the separate YouTube creator pipeline (see ingest_youtube.py), not
+# a news search.
+MANUAL_ONLY_TOPICS = {"Staff Reviews", "Travel Guides"}
 
 # A short, original sentence prepended to every ingested article's body —
 # the syndicated description itself already exists verbatim on the

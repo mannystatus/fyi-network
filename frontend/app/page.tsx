@@ -7,9 +7,22 @@ import LakersScoreboard from "../components/LakersScoreboard";
 import LatestFromUs from "../components/LatestFromUs";
 import Pagination from "../components/Pagination";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/" },
-};
+// fyiFlyNow's homepage is its own bespoke landing page (FlyNowHomepage.tsx,
+// not the standard article list every other brand uses below), so it gets
+// its own keyword-targeted title/description instead of falling back to
+// the layout's generic "{brand.name} | {tagline}" default.
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getCurrentBrand();
+  if (brand.icon === "flynow") {
+    return {
+      title: "Travel Guides, Flight & Airline News",
+      description:
+        "Daily flight and airline news, plus real travel guides for destinations abroad — pulled from travel creators who've actually made the trip.",
+      alternates: { canonical: "/" },
+    };
+  }
+  return { alternates: { canonical: "/" } };
+}
 
 const PAGE_SIZE = 20;
 

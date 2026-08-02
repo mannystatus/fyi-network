@@ -42,8 +42,11 @@ BRANDS = [
     dict(
         slug="fyiflynow", name="fyiFlyNow", domain="fyiflynow.com",
         accent_color="#FF6B4A", icon="flynow",  # coral — the promo module's CTA/highlight color
-        tagline="Flight deals. Decoded daily.",
-        topics="Flight Deals,Airline News,Travel Tips",
+        tagline="Travel guides, flight news & real tips before you fly abroad.",
+        # Travel Guides is manual-only (see MANUAL_ONLY_TOPICS in
+        # ingest_news.py) — it's fed by the YouTube creator pipeline, not
+        # the Bing/Google News search-by-topic ingestion the other three use.
+        topics="Flight Deals,Airline News,Travel Tips,Travel Guides",
     ),
     dict(
         slug="fyilakers", name="fyiLakers", domain="fyilakers.com",

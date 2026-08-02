@@ -158,14 +158,14 @@ export default function FlyNowCrossPromo() {
       <div className="ffn-body">
         <div>
           <div className="ffn-headline">
-            We just launched a site that watches fares <span className="accent">so you don&apos;t have to.</span>
+            Travel guides &amp; flight news <span className="accent">before you fly abroad.</span>
           </div>
           <div className="ffn-sub">
-            Real-time flight deal alerts, tracked across hundreds of routes. New on the fyi network.
+            Destination guides from travel creators, plus daily airline and flight coverage. On the fyi network.
           </div>
         </div>
         <a className="ffn-cta" href="https://fyiflynow.com" target="_blank" rel="noopener">
-          Check today&apos;s fares →
+          Read the latest →
         </a>
       </div>
 

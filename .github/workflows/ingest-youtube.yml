@@ -1,0 +1,43 @@
+name: Ingest YouTube travel guides
+
+# Runs app/ingest_youtube.py on a schedule so fyiFlyNow's "Travel Guides"
+# topic keeps getting new articles adapted from its curated creator
+# channels, without anyone doing it by hand. Needs both DATABASE_URL and
+# GEMINI_API_KEY repo secrets — without GEMINI_API_KEY the script
+# exits cleanly, doing nothing (see ingest_youtube.py).
+
+on:
+  schedule:
+    - cron: "41 14 * * *" # daily at 14:41 UTC — offset from ingest-news.yml's 13:17 so they don't compete for the same DB connection window
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Only ingest this one channel handle (e.g. AbroadinJapan) — leave blank for all"
+        required: false
+      limit:
+        description: "Max new videos per channel (default 1)"
+        required: false
+        default: "1"
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m app.seed
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - run: >
+          python -m app.ingest_youtube
+          ${{ github.event.inputs.channel && format('--channel {0}', github.event.inputs.channel) || '' }}
+          --limit ${{ github.event.inputs.limit || '1' }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
