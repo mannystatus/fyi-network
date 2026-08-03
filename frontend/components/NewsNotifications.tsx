@@ -121,12 +121,25 @@ export default function NewsNotifications({
     <div className="notify-widget" ref={widgetRef}>
       <button
         type="button"
-        className="notify-bell"
+        className={`notify-bell${permission === "granted" ? " is-active" : ""}`}
         aria-label={permission === "granted" ? "Manage notifications" : "Enable notifications"}
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
       >
-        {permission === "granted" ? "🔔" : "🔕"}
+        {permission === "granted" ? (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          </svg>
+        ) : (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M18 8a6 6 0 0 0-9.33-5" />
+            <path d="M6.26 6.26A6 6 0 0 0 6 8c0 7-3 9-3 9h14" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            <line x1="2" y1="2" x2="22" y2="22" />
+          </svg>
+        )}
+        {permission === "granted" && <span className="notify-dot" aria-hidden="true" />}
       </button>
 
       {open && (

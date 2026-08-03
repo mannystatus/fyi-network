@@ -22,8 +22,8 @@ import GameDaySoftPrompt from "../components/GameDaySoftPrompt";
 // there too — for those, .header-actions in nav-bar-inner is left empty
 // (or, for dodgers/lakers, repurposed for the score line that used to live
 // in the titlebar before the icons took its spot).
-const ICONS_MOVED = new Set(["mac", "google", "netflix", "dodgers", "lakers"]);
-const ACTIONS_MOVED = new Set(["netflix", "dodgers", "lakers"]);
+const ICONS_MOVED = new Set(["mac", "win", "google", "netflix", "dodgers", "lakers"]);
+const ACTIONS_MOVED = new Set(["win", "netflix", "dodgers", "lakers"]);
 
 export default async function Template({ children }: { children: React.ReactNode }) {
   const [brand, brands] = await Promise.all([getCurrentBrand(), getAllBrands()]);
@@ -66,12 +66,11 @@ async function Chrome({
             <span />
           </div>
           <div className="win-title">{brand.name}</div>
-          <div className="win-controls">
-            <button aria-label="Minimize">&#8211;</button>
-            <button aria-label="Maximize">&#9633;</button>
-            <button className="win-close" aria-label="Close">
-              &#10005;
-            </button>
+          <div className="win-titlebar-actions">
+            <SearchBox />
+            <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
+            <ThemeToggle />
+            <DomainSwitcher brands={brands} currentSlug={brand.slug} />
           </div>
         </div>
       )}

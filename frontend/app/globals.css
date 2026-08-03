@@ -315,6 +315,7 @@ a {
   cursor: pointer;
   font-size: 14px;
   font-family: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .search-trigger:hover {
@@ -327,6 +328,7 @@ a {
   right: 0;
   /* See .switcher-menu's comment — same fix, same reason. */
   z-index: 40;
+  animation: widget-pop-in 0.14s ease-out;
 }
 
 .search-input {
@@ -351,6 +353,7 @@ a {
 }
 
 .notify-bell {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -364,10 +367,24 @@ a {
   cursor: pointer;
   font-size: 15px;
   font-family: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .notify-bell:hover {
   border-color: var(--comment);
+}
+
+/* Small "you're subscribed" indicator — base fallback is a plain accent dot;
+   brands with an existing pulse motif (lakers/dodgers/flynow) override the
+   animation/color to reuse their own keyframes instead of this one. */
+.notify-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
 .notify-popover {
@@ -382,6 +399,18 @@ a {
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
   /* See .switcher-menu's comment — same fix, same reason. */
   z-index: 40;
+  animation: widget-pop-in 0.14s ease-out;
+}
+
+@keyframes widget-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .notify-popover-title {
@@ -1640,7 +1669,7 @@ footer {
   display: flex;
   align-items: center;
   height: 40px;
-  padding: 0 0 0 14px;
+  padding: 0 14px;
   background: var(--win-chrome-bg);
   border-bottom: 1px solid var(--border);
 }
@@ -1663,30 +1692,52 @@ footer {
   font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
 }
 
-.win-controls {
+/* Windows 11 taskbar system-tray look: small acrylic-card icon buttons,
+   reusing the same translucent Fluent tokens already applied to
+   .switcher-btn/.article-card elsewhere in this theme rather than
+   inventing a new color language. The fake min/max/close buttons this
+   used to sit left of were purely decorative (no click handlers) and were
+   removed so these functional icons could take the titlebar's right edge
+   instead — closer to how the real Windows 11 taskbar puts search and
+   notifications, not a window's own titlebar controls. */
+.win-titlebar-actions {
   display: flex;
+  align-items: center;
+  gap: 6px;
   margin-left: auto;
-  height: 100%;
 }
 
-.win-controls button {
-  width: 46px;
-  height: 100%;
-  border: none;
-  background: transparent;
-  color: var(--fg);
+.win-titlebar-actions .search-trigger,
+.win-titlebar-actions .notify-bell,
+.win-titlebar-actions .theme-toggle {
+  width: 28px;
+  height: 28px;
   font-size: 12px;
-  cursor: pointer;
-  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  border-radius: 6px;
+  background: var(--win-card-bg);
+  border: 1px solid var(--win-card-border);
 }
 
-.win-controls button:hover {
+.win-titlebar-actions .search-trigger:hover,
+.win-titlebar-actions .notify-bell:hover,
+.win-titlebar-actions .theme-toggle:hover {
   background: var(--win-chrome-hover);
 }
 
-.win-controls button.win-close:hover {
-  background: #e81123;
-  color: #fff;
+/* Shape/color already comes from #site.theme-win .switcher-btn — just
+   compress it to fit the 40px bar. */
+.win-titlebar-actions .switcher-btn {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.win-titlebar-actions .search-form .search-input,
+.win-titlebar-actions .notify-popover {
+  background: color-mix(in srgb, var(--win-chrome-bg) 85%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--win-card-border);
+  border-radius: 8px;
 }
 
 /* fyiMac uses fyiGoogle's font on purpose, per explicit request — not a
@@ -1715,6 +1766,43 @@ footer {
 #site.theme-mac .section-label,
 #site.theme-mac footer {
   font-family: "Google Sans", "Roboto", system-ui, sans-serif;
+}
+
+/* Native macOS toolbar icons: borderless circles with a soft hover fill,
+   instead of the generic bordered square — matches how Safari/Finder's
+   toolbar buttons look, not a boxy web widget. */
+#site.theme-mac .chrome-bar-actions .search-trigger,
+#site.theme-mac .chrome-bar-actions .notify-bell,
+#site.theme-mac .chrome-bar-actions .theme-toggle {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+}
+
+#site.theme-mac .chrome-bar-actions .search-trigger:hover,
+#site.theme-mac .chrome-bar-actions .notify-bell:hover,
+#site.theme-mac .chrome-bar-actions .theme-toggle:hover {
+  /* Reuses fyiWin's hover tint token — it already flips the right way
+     (light fg tint in dark mode, dark fg tint in light mode) and a plain
+     toolbar-icon hover doesn't need its own mac-specific variable. */
+  background: var(--win-chrome-hover);
+}
+
+/* Notification Center-style "vibrancy" panel — translucent + blurred,
+   rather than a flat bordered card. */
+#site.theme-mac .chrome-bar-actions .search-form .search-input,
+#site.theme-mac .chrome-bar-actions .notify-popover {
+  background: color-mix(in srgb, var(--bg-alt) 75%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 14px;
+}
+
+#site.theme-mac .chrome-bar-actions .search-input {
+  width: 260px;
 }
 
 #site.theme-win {
@@ -1840,6 +1928,43 @@ footer {
   font-size: 12px;
 }
 
+/* Material "icon button": fully round, tinted instead of bordered — same
+   rgba(122,162,247) tint already used for .switcher-btn/.article-meta below. */
+.cros-titlebar-actions .search-trigger,
+.cros-titlebar-actions .notify-bell {
+  border: none;
+  border-radius: 50%;
+  background: rgba(122, 162, 247, 0.1);
+}
+
+.cros-titlebar-actions .search-trigger:hover,
+.cros-titlebar-actions .notify-bell:hover {
+  background: rgba(122, 162, 247, 0.18);
+}
+
+.cros-titlebar-actions .search-form .search-input {
+  border: none;
+  border-radius: 20px;
+  background: var(--cros-omnibox-bg);
+}
+
+.cros-titlebar-actions .notify-popover {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.cros-titlebar-actions .notify-subscribe {
+  background: var(--accent);
+}
+
+/* A little Google easter egg on the "you're subscribed" dot — the real
+   4-color brand palette (lives in GoogleCrossPromo.tsx, not used anywhere
+   else in this theme) as a tiny pinwheel instead of one flat accent dot. */
+.cros-titlebar-actions .notify-dot {
+  background: conic-gradient(#4285f4 0deg 90deg, #ea4335 90deg 180deg, #fbbc05 180deg 270deg, #34a853 270deg 360deg);
+}
+
 #site.theme-google {
   font-family: "Google Sans", "Roboto", system-ui, sans-serif;
 }
@@ -1938,6 +2063,39 @@ footer {
 .netflix-titlebar-actions .switcher-btn {
   padding: 6px 12px;
   font-size: 12px;
+}
+
+.netflix-titlebar-actions .search-trigger,
+.netflix-titlebar-actions .notify-bell {
+  border-radius: 4px;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.netflix-titlebar-actions .search-trigger:hover,
+.netflix-titlebar-actions .notify-bell:hover {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-alt));
+  box-shadow: 0 4px 14px rgba(229, 9, 20, 0.3);
+  transform: scale(1.05);
+}
+
+/* netflix.com's own search UX: the icon expands into a wide inline bar
+   instead of a small dropdown. */
+.netflix-titlebar-actions .search-form .search-input {
+  width: min(70vw, 340px);
+  border-radius: 4px;
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(229, 9, 20, 0.35);
+  font-weight: 700;
+}
+
+.netflix-titlebar-actions .notify-popover {
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 8px 28px rgba(229, 9, 20, 0.3);
+}
+
+.netflix-titlebar-actions .notify-dot {
+  box-shadow: 0 0 6px var(--accent);
 }
 
 .netflix-logo {
@@ -2040,6 +2198,53 @@ footer {
   width: 28px;
   height: 28px;
   font-size: 13px;
+  /* Split-flap tile shape — sharp corners, not the base 8px radius. Colors
+     (navy bg, --flynow-line border) already come from body.theme-flynow-body's
+     --bg-alt/--border overrides, so no color redeclaration needed here. */
+  border-radius: 2px;
+}
+
+.flynow-titlebar-actions .search-form,
+.flynow-titlebar-actions .notify-popover {
+  /* .flynow-site-nav sits at z-index: 50 and is tall enough to overlap
+     these popovers' usual z-index: 40 — bump above it so the popover isn't
+     rendered underneath the sticky nav. */
+  z-index: 55;
+}
+
+.flynow-titlebar-actions .search-form .search-input,
+.flynow-titlebar-actions .notify-popover {
+  border-radius: 2px;
+}
+
+.flynow-titlebar-actions .search-input {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.flynow-titlebar-actions .search-input:focus {
+  border-color: #4fc3ff;
+}
+
+.flynow-titlebar-actions .notify-popover-title {
+  font-family: var(--font-flynow-display), "Archivo Black", sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.flynow-titlebar-actions .notify-topic-row input {
+  accent-color: #4fc3ff;
+}
+
+.flynow-titlebar-actions .notify-subscribe {
+  border-radius: 2px;
+}
+
+/* Reuses the titlebar's own amber status-dot animation verbatim instead of
+   the generic accent dot. */
+.flynow-titlebar-actions .notify-dot {
+  background: #ffb627;
+  animation: flynow-pulse 1.8s ease-in-out infinite;
 }
 
 .flynow-dot {
@@ -2243,6 +2448,34 @@ body.theme-flynow-body {
 .lakers-titlebar-actions .switcher-btn {
   padding: 6px 12px;
   font-size: 12px;
+}
+
+/* Scoreboard-card treatment for the popovers — gold top stripe + condensed
+   Oswald title, echoing .lakers-scoreboard/.lakers-game-row--live below. */
+.lakers-titlebar-actions .notify-popover {
+  border-top: 3px solid var(--lakers-gold);
+}
+
+.lakers-titlebar-actions .notify-popover-title {
+  font-family: var(--font-sports-display), Oswald, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lakers-titlebar-actions .notify-topic-row:hover {
+  background: color-mix(in srgb, var(--lakers-gold) 12%, transparent);
+  border-radius: 6px;
+}
+
+.lakers-titlebar-actions .notify-subscribe {
+  background: var(--lakers-gold);
+  color: var(--lakers-chrome-bg);
+}
+
+/* Reuses the scoreboard's own gold pulse instead of the generic accent dot. */
+.lakers-titlebar-actions .notify-dot {
+  background: var(--lakers-gold);
+  animation: lakers-pulse 1.8s ease-in-out infinite;
 }
 
 .lakers-jersey {
@@ -2509,6 +2742,34 @@ body.theme-flynow-body {
 .dodgers-titlebar-actions .switcher-btn {
   padding: 6px 12px;
   font-size: 12px;
+}
+
+/* Mirrors the Lakers treatment above — blue top stripe (Dodgers has no
+   secondary accent, so white stands in the way .dodgers-badge already
+   uses white-on-blue) + condensed Oswald title. */
+.dodgers-titlebar-actions .notify-popover {
+  border-top: 3px solid var(--dodgers-chrome-bg);
+}
+
+.dodgers-titlebar-actions .notify-popover-title {
+  font-family: var(--font-sports-display), Oswald, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dodgers-titlebar-actions .notify-topic-row:hover {
+  background: color-mix(in srgb, var(--dodgers-chrome-bg) 12%, transparent);
+  border-radius: 6px;
+}
+
+.dodgers-titlebar-actions .notify-subscribe {
+  background: var(--dodgers-chrome-bg);
+  color: #fff;
+}
+
+.dodgers-titlebar-actions .notify-dot {
+  background: var(--dodgers-chrome-bg);
+  animation: dodgers-pulse 1.8s ease-in-out infinite;
 }
 
 .dodgers-jersey {

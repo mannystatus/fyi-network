@@ -1,10 +1,13 @@
 import SearchBox from "./SearchBox";
 import NewsNotifications from "./NewsNotifications";
-import ThemeToggle from "./ThemeToggle";
 
 // Shared between the bare homepage and every other fyiFlyNow page (via
 // template.tsx's Chrome), same reasoning as FlyNowNavbar — one definition so
 // the two can't drift.
+//
+// No ThemeToggle here: the departure-board look is fixed dark navy
+// everywhere on this brand (see globals.css's theme-flynow-body rules), so a
+// light/dark toggle would have no visible effect.
 export default function FlyNowTitlebar({
   domain,
   brandSlug,
@@ -25,7 +28,6 @@ export default function FlyNowTitlebar({
       <div className="flynow-titlebar-actions">
         <SearchBox />
         <NewsNotifications brandSlug={brandSlug} brandName={brandName} topics={topics} />
-        <ThemeToggle />
       </div>
     </div>
   );
