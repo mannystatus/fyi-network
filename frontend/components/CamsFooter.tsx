@@ -1,5 +1,11 @@
 import Link from "next/link";
 import CamsLogoMark from "./CamsLogoMark";
+import { EXTERNAL_SITES } from "../lib/externalSites";
+
+// Every other fyi brand, same full roster EditorialFooter's networkLinks
+// use — fyiCams doesn't share that config type (it's not one of the
+// editorial-template brands), so this is just hardcoded here instead.
+const NETWORK_BRANDS = ["fyiMac", "fyiWin", "fyiGoogle", "fyiNetflix", "fyiFlyNow", "fyiLakers", "fyiDodgers"];
 
 // Shared between the bare homepage and every other fyiCams page, same
 // reasoning as CamsHeader.
@@ -24,6 +30,19 @@ export default function CamsFooter({ brandName }: { brandName: string }) {
             <h5>Community</h5>
             <a href="/#podcast">Podcast</a>
             <a href="mailto:tips@fyicams.com?subject=Contact">Contact</a>
+          </div>
+          <div className="cams-footer-col">
+            <h5>Network</h5>
+            {NETWORK_BRANDS.map((n) => (
+              <a key={n} href={`https://${n.toLowerCase()}.com`}>
+                {n}
+              </a>
+            ))}
+            {EXTERNAL_SITES.map((site) => (
+              <a key={site.url} href={site.url} target="_blank" rel="noopener noreferrer">
+                {site.name}.com
+              </a>
+            ))}
           </div>
           <div className="cams-footer-col">
             <h5>About</h5>

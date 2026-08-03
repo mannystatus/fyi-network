@@ -3,6 +3,7 @@ import type { Brand } from "../lib/api";
 import { getArticles } from "../lib/api";
 import { categoryColor } from "../lib/colors";
 import { canonicalOrigin } from "../lib/url";
+import { EXTERNAL_SITES } from "../lib/externalSites";
 import FlyNowNavbar from "./FlyNowNavbar";
 import FlyNowTitlebar from "./FlyNowTitlebar";
 
@@ -352,6 +353,14 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
               <a href="https://fyiwin.com">fyiWin</a>
               <a href="https://fyigoogle.com">fyiGoogle</a>
               <a href="https://fyinetflix.com">fyiNetflix</a>
+              <a href="https://fyilakers.com">fyiLakers</a>
+              <a href="https://fyidodgers.com">fyiDodgers</a>
+              <a href="https://fyicams.com">fyiCams</a>
+              {EXTERNAL_SITES.map((site) => (
+                <a key={site.url} href={site.url} target="_blank" rel="noopener noreferrer">
+                  {site.name}.com
+                </a>
+              ))}
             </div>
             <div className="footer-col">
               <h4>Legal</h4>

@@ -141,7 +141,7 @@ export const MAC_EDITORIAL: EditorialConfig = {
   ],
   roadmapConfidenceSuffix: true,
   disclaimer: "Not affiliated with Apple Inc.",
-  networkLinks: ["fyiWin", "fyiGoogle", "fyiNetflix"],
+  networkLinks: ["fyiWin", "fyiGoogle", "fyiNetflix", "fyiFlyNow", "fyiLakers", "fyiDodgers", "fyiCams"],
   ticker: [
     { tag: "Rumor", text: "Next-gen chip said to enter mass production this quarter" },
     { tag: "Software", text: "Latest OS update fixes battery drain bug on older models" },
@@ -212,7 +212,7 @@ export const WIN_EDITORIAL: EditorialConfig = {
   ],
   roadmapConfidenceSuffix: true,
   disclaimer: "Not affiliated with Microsoft Corporation.",
-  networkLinks: ["fyiMac", "fyiGoogle", "fyiNetflix"],
+  networkLinks: ["fyiMac", "fyiGoogle", "fyiNetflix", "fyiFlyNow", "fyiLakers", "fyiDodgers", "fyiCams"],
   ticker: [
     { tag: "Rumor", text: "Next OS feature update said to enter broad rollout next month" },
     { tag: "Update", text: "Latest cumulative update fixes a printer driver bug" },
@@ -283,7 +283,7 @@ export const GOOGLE_EDITORIAL: EditorialConfig = {
   ],
   roadmapConfidenceSuffix: true,
   disclaimer: "Not affiliated with Google LLC.",
-  networkLinks: ["fyiMac", "fyiWin", "fyiNetflix"],
+  networkLinks: ["fyiMac", "fyiWin", "fyiNetflix", "fyiFlyNow", "fyiLakers", "fyiDodgers", "fyiCams"],
   ticker: [
     { tag: "Rumor", text: "Next Pixel chip said to enter mass production this quarter" },
     { tag: "Update", text: "Latest Android release fixes a notification bug" },
@@ -350,7 +350,7 @@ export const NETFLIX_EDITORIAL: EditorialConfig = {
   ],
   roadmapConfidenceSuffix: false,
   disclaimer: "Not affiliated with Netflix, Inc.",
-  networkLinks: ["fyiMac", "fyiWin", "fyiGoogle"],
+  networkLinks: ["fyiMac", "fyiWin", "fyiGoogle", "fyiFlyNow", "fyiLakers", "fyiDodgers", "fyiCams"],
   ticker: [
     { tag: "Renewal", text: "Breakout drama said to be a strong bet for a season 3 renewal" },
     { tag: "Leaving", text: "Fan-favorite comedy leaving the platform at month's end" },
@@ -502,7 +502,7 @@ export const DODGERS_EDITORIAL: EditorialConfig = {
   roadmapRows: [],
   roadmapConfidenceSuffix: false,
   disclaimer: "Independent fan coverage — not affiliated with MLB or the Los Angeles Dodgers.",
-  networkLinks: [],
+  networkLinks: ["fyiMac", "fyiWin", "fyiGoogle", "fyiNetflix", "fyiFlyNow", "fyiLakers", "fyiCams"],
   ticker: [
     { tag: "Rumor", text: "Front office reportedly scouting bullpen arms ahead of deadline" },
     { tag: "Injury", text: "Starting outfielder day-to-day with tight hamstring" },
