@@ -52,7 +52,7 @@ export default async function EditorialHomepage({
                   {config.heroCtaLabel ?? "Read today's roundup"}
                 </Link>
                 <a className="editorial-cta-secondary" href="#rumor-mill">
-                  {config.navSecondaryLabel === "Renewal Tracker" ? "Renewal tracker" : "Rumor mill"} →
+                  {config.navSecondaryLabel === "Renewal Tracker" ? "Renewal tracker" : "Rumors"} →
                 </a>
               </div>
             </div>
@@ -95,18 +95,28 @@ export default async function EditorialHomepage({
             </div>
             {articles.length > 0 ? (
               <div className="editorial-news-grid">
-                {articles.map((a) => (
-                  <Link className="editorial-news-card" href={`/${a.slug}`} key={a.slug} prefetch={false}>
-                    <div className="editorial-news-thumb" style={{ aspectRatio: config.posterAspect }}>
-                      {a.category && <span className="editorial-news-cat">{a.category}</span>}
-                    </div>
-                    <h3>{a.title}</h3>
-                    {a.dek && <p>{a.dek}</p>}
-                    <span className="editorial-news-meta">
-                      {new Date(a.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                    </span>
-                  </Link>
-                ))}
+                {articles.map((a) => {
+                  const source = a.is_featured ? brand.name : a.author;
+                  return (
+                    <Link className="editorial-news-card" href={`/${a.slug}`} key={a.slug} prefetch={false}>
+                      <div className="editorial-news-thumb" style={{ aspectRatio: config.posterAspect }}>
+                        {a.image_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={a.image_url} alt="" className="editorial-news-thumb-img" />
+                        ) : null}
+                        {a.category && <span className="editorial-news-cat">{a.category}</span>}
+                      </div>
+                      <span className="fyi-badge editorial-news-badge-inline">
+                        fyi network{source ? ` · ${source}` : ""}
+                      </span>
+                      <h3>{a.title}</h3>
+                      {a.dek && <p>{a.dek}</p>}
+                      <span className="editorial-news-meta">
+                        {new Date(a.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </span>
+                    </Link>
+                  );
+                })}
               </div>
             ) : (
               <p className="editorial-empty">

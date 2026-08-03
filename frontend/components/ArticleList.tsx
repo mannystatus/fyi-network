@@ -33,24 +33,36 @@ export default function ArticleList({
               href={`/${a.slug}`}
               className="article-card"
               data-featured={a.is_featured || undefined}
+              data-has-thumb={a.image_url ? "true" : undefined}
               prefetch={false}
             >
-              {a.is_featured && <span className="featured-badge">★ Featured</span>}
-              {a.category && (
-                <span className="category" style={{ color: categoryColor(a.category) }}>
-                  {a.category}
-                </span>
+              {a.image_url && (
+                <div className="article-card-thumb">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={a.image_url} alt="" />
+                </div>
               )}
-              <h2>{a.title}</h2>
-              {a.dek && <p>{a.dek}</p>}
-              <div className="article-meta">
-                {byline}
-                {byline && " · "}
-                {new Date(a.published_at).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+              <div className="article-card-body">
+                {a.is_featured && <span className="featured-badge">★ Featured</span>}
+                <div className="article-card-tags">
+                  <span className="fyi-badge">fyi network{byline ? ` · ${byline}` : ""}</span>
+                  {a.category && (
+                    <span className="category" style={{ color: categoryColor(a.category) }}>
+                      {a.category}
+                    </span>
+                  )}
+                </div>
+                <h2>{a.title}</h2>
+                {a.dek && <p>{a.dek}</p>}
+                <div className="article-meta">
+                  {byline}
+                  {byline && " · "}
+                  {new Date(a.published_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </div>
               </div>
             </Link>
             {i > 0 && (i + 1) % IN_FEED_INTERVAL === 0 && (

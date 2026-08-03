@@ -36,11 +36,11 @@ class ArticleListItem(BaseModel):
     author: str | None
     published_at: dt.datetime
     is_featured: bool
+    image_url: str | None = None
 
 
 class ArticleDetail(ArticleListItem):
     body_md: str
-    image_url: str | None = None
 
 
 class ArticleCreate(BaseModel):

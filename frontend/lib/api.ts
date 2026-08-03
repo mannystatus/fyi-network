@@ -45,9 +45,10 @@ export type ArticleListItem = {
   author: string | null;
   published_at: string;
   is_featured: boolean;
+  image_url: string | null;
 };
 
-export type ArticleDetail = ArticleListItem & { body_md: string; image_url: string | null };
+export type ArticleDetail = ArticleListItem & { body_md: string };
 
 export type TravelAdvisory = {
   source: "US" | "UK";

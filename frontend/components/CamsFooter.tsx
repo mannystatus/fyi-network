@@ -17,7 +17,7 @@ export default function CamsFooter({ brandName }: { brandName: string }) {
             <h5>Coverage</h5>
             <Link href="/">Latest</Link>
             <Link href="/reviews">Reviews</Link>
-            <Link href="/#rumor-mill">Rumor Mill</Link>
+            <Link href="/#rumor-mill">Rumors</Link>
             <Link href="/#deals">Deals</Link>
           </div>
           <div className="cams-footer-col">

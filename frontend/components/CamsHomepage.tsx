@@ -99,10 +99,12 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
     @media (max-width: 560px) { .cams-story-grid { grid-template-columns: 1fr; } }
     .cams-story-card { display: flex; flex-direction: column; gap: 12px; }
     .cams-story-thumb {
-      aspect-ratio: 4/3; position: relative; display: flex; align-items: center; justify-content: center;
+      aspect-ratio: 4/3; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
       background: repeating-linear-gradient(45deg,#EDE9E2,#EDE9E2 10px,#E4E0D6 10px,#E4E0D6 20px);
     }
+    .cams-story-thumb-img { width: 100%; height: 100%; object-fit: cover; }
     .cams-story-thumb-cat { position: absolute; top: 10px; left: 10px; background: #14120F; color: #F7F5F1; padding: 4px 9px; font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .cams-story-thumb-badge { align-self: flex-start; margin-top: -4px; }
     .cams-story-thumb-score {
       position: absolute; bottom: 10px; right: 10px; color: #F7F5F1; width: 36px; height: 36px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center; font-family: var(--font-cams-mono), monospace; font-weight: 700; font-size: .78rem;
@@ -195,7 +197,7 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
                   </Link>
                 )}
                 <a className="cams-hero-cta-secondary" href="#rumor-mill">
-                  See the rumor mill →
+                  See the rumors →
                 </a>
               </div>
             </div>
@@ -255,9 +257,14 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
               <div className="cams-story-grid">
                 {latest.map((a) => {
                   const review = CAMS_REVIEWS[a.slug];
+                  const source = a.is_featured ? brand.name : a.author;
                   return (
                     <Link className="cams-story-card" href={`/${a.slug}`} key={a.slug} prefetch={false}>
                       <div className="cams-story-thumb">
+                        {a.image_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={a.image_url} alt="" className="cams-story-thumb-img" />
+                        ) : null}
                         {a.category && <span className="cams-story-thumb-cat">{a.category}</span>}
                         {review && (
                           <span className="cams-story-thumb-score" style={{ background: scoreColor(review.score) }}>
@@ -265,6 +272,9 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
                           </span>
                         )}
                       </div>
+                      <span className="fyi-badge cams-story-thumb-badge">
+                        fyi network{source ? ` · ${source}` : ""}
+                      </span>
                       <h3>{a.title}</h3>
                       {a.dek && <p>{a.dek}</p>}
                       <div className="cams-story-meta">
@@ -311,7 +321,7 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
         <section className="cams-section cams-rule" id="rumor-mill">
           <div className="wrap">
             <div className="cams-section-head">
-              <h2>Rumor mill</h2>
+              <h2>Rumors</h2>
             </div>
             {RUMORS.map((r) => (
               <div className="cams-rumor-row" key={r.title}>

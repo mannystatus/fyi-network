@@ -5,7 +5,9 @@ import TopicsNav from "../components/TopicsNav";
 import FlyNowNavbar from "../components/FlyNowNavbar";
 import FlyNowTitlebar from "../components/FlyNowTitlebar";
 import CamsHeader from "../components/CamsHeader";
+import CamsFooter from "../components/CamsFooter";
 import EditorialHeader from "../components/EditorialHeader";
+import EditorialFooter from "../components/EditorialFooter";
 import { EDITORIAL_CONFIGS } from "../lib/editorialConfig";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
@@ -54,6 +56,8 @@ async function Chrome({
   suffix: string;
   children: React.ReactNode;
 }) {
+  const hasBespokeFooter = brand.icon !== "flynow" && (!!EDITORIAL_CONFIGS[brand.icon] || brand.icon === "cams");
+
   return (
     <div className={`browser-frame theme-${brand.icon}`}>
       {EDITORIAL_CONFIGS[brand.icon] && (
@@ -67,7 +71,7 @@ async function Chrome({
 
       <div id="site" className={`theme-${brand.icon}`}>
         {brand.icon === "flynow" ? (
-          <FlyNowNavbar brands={brands} currentSlug={brand.slug} />
+          <FlyNowNavbar brands={brands} currentSlug={brand.slug} brandName={brand.name} />
         ) : brand.icon === "cams" || EDITORIAL_CONFIGS[brand.icon] ? null : (
           // Every current brand now has its own bespoke titlebar/masthead
           // (FlyNow/Cams/the editorial-template brands above), so this
@@ -89,11 +93,16 @@ async function Chrome({
                 <TopicsNav
                   topics={brand.topics}
                   extra={
-                    BUYERS_GUIDES[brand.slug] && (
-                      <Link href="/buyers-guide" className="topic-link topic-link-guide" prefetch={false}>
-                        📘 Buyers Guide
+                    <>
+                      <Link href="/from-us" className="topic-link topic-link-fromus" prefetch={false}>
+                        📰 Latest from {brand.name}
                       </Link>
-                    )
+                      {BUYERS_GUIDES[brand.slug] && (
+                        <Link href="/buyers-guide" className="topic-link topic-link-guide" prefetch={false}>
+                          📘 Buyers Guide
+                        </Link>
+                      )}
+                    </>
                   }
                 />
               )}
@@ -119,14 +128,27 @@ async function Chrome({
 
         <main>{children}</main>
 
-        <footer>
-          <span>&copy; fyi -m-w-g-n</span>
+        {/* Every inner page (articles, topics, search, etc.) used to end in
+            just the plain utility footer below — the branded footer only
+            ever showed up on each brand's bespoke homepage. That made every
+            non-homepage page read as the old pre-redesign site. fyiFlyNow
+            is excluded on purpose: it never got this redesign treatment. */}
+        {brand.icon !== "flynow" && EDITORIAL_CONFIGS[brand.icon] && (
+          <EditorialFooter brand={brand} config={EDITORIAL_CONFIGS[brand.icon]} />
+        )}
+        {brand.icon === "cams" && <CamsFooter brandName={brand.name} />}
+
+        <footer className={hasBespokeFooter ? "utility-footer" : undefined}>
+          {!hasBespokeFooter && <span>&copy; fyi -m-w-g-n</span>}
           <span className="footer-links">
             <SendTipForm brandName={brand.name} />
             {BUYERS_GUIDES[brand.slug] && <Link href="/buyers-guide">Buyers Guide</Link>}
             <Link href="/advertise">Advertise</Link>
-            <Link href="/terms">Terms</Link>
-            <Link href="/privacy">Privacy</Link>
+            {/* CamsFooter's own "About" column already links Terms/Privacy —
+                skip the duplicate here, everyone else's bespoke footer
+                (or, for fyiFlyNow, no bespoke footer at all) doesn't have them. */}
+            {brand.icon !== "cams" && <Link href="/terms">Terms</Link>}
+            {brand.icon !== "cams" && <Link href="/privacy">Privacy</Link>}
             <CookieSettingsLink />
             <span>{brand.domain}</span>
           </span>

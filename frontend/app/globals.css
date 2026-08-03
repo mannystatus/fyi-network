@@ -507,12 +507,21 @@ a {
   text-underline-offset: 5px;
 }
 
-/* Buyers Guide — a standing page, not a rotating topic, so it's pinned to
-   the end of the category row (see the "extra" prop on TopicsNav) and
-   colored with the site accent instead of a per-category hash color. */
-.topic-link-guide {
+/* "Latest from us"/Buyers Guide — standing pages, not rotating topics, so
+   they're pinned to the end of the category row (see the "extra" prop on
+   TopicsNav) and colored with the site accent instead of a per-category
+   hash color. topic-link-fromus (always rendered, every brand) carries the
+   auto-margin that pushes this whole pinned group to the row's right edge;
+   topic-link-guide (only some brands) just tags along after it. */
+.topic-link-fromus {
   --pill-color: var(--accent);
   margin-left: auto;
+  padding-left: 22px;
+  border-left: 1px solid var(--border);
+}
+
+.topic-link-guide {
+  --pill-color: var(--accent);
   padding-left: 22px;
   border-left: 1px solid var(--border);
 }
@@ -585,6 +594,48 @@ main {
   box-shadow: 0 0 0 1px var(--accent) inset;
 }
 
+.article-card[data-has-thumb="true"] {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.article-card-thumb {
+  flex-shrink: 0;
+  width: 128px;
+  height: 96px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.article-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.article-card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .article-card[data-has-thumb="true"] {
+    flex-direction: column;
+  }
+
+  .article-card-thumb {
+    width: 100%;
+    height: 160px;
+  }
+}
+
+/* fyiFlyNow never got this redesign pass — its article/topic/search lists
+   keep the plain text-only card they've always had. */
+#site.theme-flynow .article-card-thumb {
+  display: none;
+}
+
 .featured-badge {
   /* flex (not inline-flex) + fit-content so this is a block-level box
      sized to its own content — otherwise it sits flush against the very
@@ -631,8 +682,48 @@ main {
   box-shadow: 0 0 6px currentColor;
 }
 
+/* Provenance mark — every article (ingested or hand-published) gets this,
+   independent of .featured-badge/is_featured above (that one's about byline
+   swapping, this one's just "this is fyi network content"). Base look here
+   is the generic fallback; each brand theme below (mac/win/google/netflix/
+   lakers/dodgers share one rule, cams and flynow get their own) re-skins the
+   font to match its own masthead/category typography instead of one look
+   forced onto every site. */
+.fyi-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.fyi-badge-lg {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
 .article-card .category {
   margin-bottom: 8px;
+}
+
+.article-card-tags,
+.article-header-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.article-card-tags .category,
+.article-header-tags .category {
+  margin-bottom: 0;
 }
 
 .article-card h2 {
@@ -663,7 +754,7 @@ main {
   border-bottom: 1px solid var(--border);
 }
 
-.article-header .category {
+.article-header .article-header-tags {
   margin-bottom: 10px;
 }
 
@@ -1264,6 +1355,18 @@ footer {
   justify-content: space-between;
 }
 
+/* Slim second row under the bespoke EditorialFooter/CamsFooter (see
+   template.tsx) — those already cover branding/nav/disclaimer, so this only
+   needs the handful of utility links (tip form, buyers guide, legal) that
+   aren't part of either bespoke footer. No top border/copyright line of its
+   own since the bespoke footer above already closes with one. */
+.utility-footer {
+  max-width: 1240px;
+  border-top: none;
+  padding: 14px 32px 28px;
+  justify-content: center;
+}
+
 /* Non-blocking floating card, bottom-anchored — matches the banner used on
    hackthedeal.com rather than a full-width bar, so visitors can keep
    scrolling/reading behind it instead of being gated by it. */
@@ -1688,13 +1791,19 @@ footer {
   height: 76px;
 }
 
+.editorial-wordmark-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
 .editorial-wordmark {
   font-family: var(--font-sports-display), Oswald, sans-serif;
   font-weight: 700;
   font-size: 1.5rem;
   color: var(--editorial-ink);
   text-transform: uppercase;
-  flex-shrink: 0;
 }
 
 .editorial-wordmark span {
@@ -1707,7 +1816,6 @@ footer {
 .editorial-signature-mark {
   display: flex;
   gap: 2px;
-  flex-shrink: 0;
 }
 
 .editorial-signature-mark span {
@@ -1809,6 +1917,7 @@ footer {
   --pill-color: var(--editorial-ink);
 }
 
+.editorial-topics-row .topic-link-fromus,
 .editorial-topics-row .topic-link-guide {
   --pill-color: var(--accent);
   border-left-color: var(--editorial-line);
@@ -2077,6 +2186,7 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   background: repeating-linear-gradient(
     45deg,
     var(--editorial-bg-alt),
@@ -2084,6 +2194,12 @@ footer {
     var(--editorial-line) 10px,
     var(--editorial-line) 20px
   );
+}
+
+.editorial-news-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .editorial-news-cat {
@@ -2097,6 +2213,14 @@ footer {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+/* Lives below the thumb, not overlaid on it — these cards' thumbs are too
+   narrow to fit both the category tag and this badge side by side without
+   the two colliding. */
+.editorial-news-badge-inline {
+  align-self: flex-start;
+  margin-top: -4px;
 }
 
 .editorial-news-card h3 {
@@ -2750,7 +2874,11 @@ footer {
 .theme-mac .category,
 .theme-win .category,
 .theme-google .category,
-.theme-netflix .category {
+.theme-netflix .category,
+.theme-mac .fyi-badge,
+.theme-win .fyi-badge,
+.theme-google .fyi-badge,
+.theme-netflix .fyi-badge {
   font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
 }
 
@@ -2959,6 +3087,11 @@ footer {
   background: #4fc3ff;
 }
 
+.flynow-nav-links a.flynow-nav-fromus {
+  margin-left: auto;
+  color: #ffb627;
+}
+
 @media (max-width: 880px) {
   .flynow-nav-links {
     display: none;
@@ -3024,6 +3157,10 @@ body.theme-flynow-body {
   font-weight: 700;
 }
 
+#site.theme-flynow .fyi-badge {
+  border-radius: 20px;
+}
+
 /* ---------- fyiLakers theme, used only when fyiLakers is active ----------
    Editorial-ticker template (see the shared .editorial-* rules and the
    mac/win/google/netflix theme blocks above) — purple/gold from the
@@ -3045,6 +3182,11 @@ body.theme-flynow-body {
 }
 
 @media (prefers-color-scheme: dark) {
+  /* The team's real purple (--accent, set inline per-brand in layout.tsx)
+     reads poorly as text/pill color against a near-black dark-mode
+     background — swapping to the lakers-gold trim color for dark mode only
+     fixes that everywhere --accent drives text (nav links, category tags,
+     hero accent word) without touching the light-mode look at all. */
   :root:not([data-theme="light"]) .theme-lakers {
     --editorial-bg: #141414;
     --editorial-bg-alt: #1a1a1a;
@@ -3052,6 +3194,7 @@ body.theme-flynow-body {
     --editorial-ink-soft: #a3a3a3;
     --editorial-stone: #8a8a8a;
     --editorial-line: #3a3a3a;
+    --accent: var(--lakers-gold);
   }
 }
 
@@ -3062,6 +3205,7 @@ body.theme-flynow-body {
   --editorial-ink-soft: #a3a3a3;
   --editorial-stone: #8a8a8a;
   --editorial-line: #3a3a3a;
+  --accent: var(--lakers-gold);
 }
 
 .theme-lakers,
@@ -3079,6 +3223,10 @@ body.theme-flynow-body {
 .theme-lakers .category {
   font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
   color: var(--accent);
+}
+
+.theme-lakers .fyi-badge {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
 }
 
 .theme-lakers .article-card {
@@ -3273,6 +3421,10 @@ body.theme-flynow-body {
 .theme-dodgers .category {
   font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
   color: var(--accent);
+}
+
+.theme-dodgers .fyi-badge {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
 }
 
 .theme-dodgers .article-card {
@@ -3599,11 +3751,13 @@ body.theme-flynow-body {
 
 #site.theme-cams .article-meta,
 #site.theme-cams .category,
-#site.theme-cams footer {
+#site.theme-cams footer,
+#site.theme-cams .fyi-badge {
   font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
 }
 
-#site.theme-cams .article-card {
+#site.theme-cams .article-card,
+#site.theme-cams .fyi-badge {
   border-radius: 3px;
 }
 
@@ -3717,6 +3871,13 @@ body.theme-flynow-body {
 
 .cams-nav a[data-active="true"] {
   color: #14120F;
+}
+
+.cams-nav a.cams-nav-fromus {
+  margin-left: auto;
+  padding-left: 22px;
+  border-left: 1px solid #E0DCD3;
+  color: #0B5E52;
 }
 
 .cams-masthead-actions {

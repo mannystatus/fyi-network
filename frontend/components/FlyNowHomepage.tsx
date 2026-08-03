@@ -195,7 +195,7 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
         brandName={brand?.name ?? "fyiFlyNow"}
         topics={brand?.topics ?? []}
       />
-      <FlyNowNavbar brands={brands} currentSlug={currentSlug} />
+      <FlyNowNavbar brands={brands} currentSlug={currentSlug} brandName={brand?.name ?? "fyiFlyNow"} />
 
       <section className="section blog-section" id="blog">
         <div className="wrap">

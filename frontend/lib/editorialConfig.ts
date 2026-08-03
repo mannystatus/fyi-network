@@ -28,10 +28,15 @@ export type EditorialConfig = {
   navSecondaryLabel: string;
   navLastLabel: string;
   // Explicit nav override — only fyiLakers/fyiDodgers need this (their nav
-  // is News/Rumor Mill/Fantasy/Schedule/Injury Report, not the
-  // News/Rumor-Mill/Reviews/Compare?/Deals shape every other brand shares).
+  // is News/Rumors/Fantasy/Schedule/Injury Report, not the
+  // News/Rumors/Reviews/Compare?/Deals shape every other brand shares).
   // Everyone else falls back to the auto-assembled nav in EditorialHeader.
   navItems?: { label: string; href: string }[];
+  // Appended after the auto-assembled (or explicit) nav above — currently
+  // only fyiMac, promoting Apple TV+/Services out of the topic-pill row
+  // into the primary nav. EditorialHeader also filters these labels out of
+  // the topic pills it renders from brand.topics, so they don't show twice.
+  extraNavItems?: { label: string; href: string }[];
   heroEyebrow: string;
   heroPre: string; // "Every Apple story worth "
   heroPost: string; // " attention, verified before it trends."
@@ -76,8 +81,9 @@ export type EditorialConfig = {
 export const MAC_EDITORIAL: EditorialConfig = {
   mode: "light",
   signatureMark: "rainbow",
-  navSecondaryLabel: "Rumor Mill",
+  navSecondaryLabel: "Rumors",
   navLastLabel: "Deals",
+  extraNavItems: [{ label: "Apple TV+", href: `/topics/${encodeURIComponent("Apple TV+")}` }],
   heroEyebrow: "Updated every morning",
   heroPre: "Every Apple story worth ",
   heroPost: " attention, verified before it trends.",
@@ -85,7 +91,7 @@ export const MAC_EDITORIAL: EditorialConfig = {
   newsGridTitle: "Latest news",
   newsGridCta: "View all →",
   posterAspect: "4/3",
-  secondarySectionTitle: "Rumor mill",
+  secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
   confidenceRows: [
     {
@@ -147,7 +153,7 @@ export const MAC_EDITORIAL: EditorialConfig = {
 export const WIN_EDITORIAL: EditorialConfig = {
   mode: "light",
   signatureMark: "fourbar",
-  navSecondaryLabel: "Rumor Mill",
+  navSecondaryLabel: "Rumors",
   navLastLabel: "Deals",
   heroEyebrow: "Updated every morning",
   heroPre: "Every Windows story worth ",
@@ -156,7 +162,7 @@ export const WIN_EDITORIAL: EditorialConfig = {
   newsGridTitle: "Latest news",
   newsGridCta: "View all →",
   posterAspect: "4/3",
-  secondarySectionTitle: "Rumor mill",
+  secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
   confidenceRows: [
     {
@@ -218,7 +224,7 @@ export const WIN_EDITORIAL: EditorialConfig = {
 export const GOOGLE_EDITORIAL: EditorialConfig = {
   mode: "light",
   signatureMark: null,
-  navSecondaryLabel: "Rumor Mill",
+  navSecondaryLabel: "Rumors",
   navLastLabel: "Deals",
   heroEyebrow: "Updated every morning",
   heroPre: "Every Google story worth ",
@@ -227,7 +233,7 @@ export const GOOGLE_EDITORIAL: EditorialConfig = {
   newsGridTitle: "Latest news",
   newsGridCta: "View all →",
   posterAspect: "4/3",
-  secondarySectionTitle: "Rumor mill",
+  secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
   confidenceRows: [
     {
@@ -356,11 +362,11 @@ export const NETFLIX_EDITORIAL: EditorialConfig = {
 export const LAKERS_EDITORIAL: EditorialConfig = {
   mode: "light",
   signatureMark: null,
-  navSecondaryLabel: "Rumor Mill",
+  navSecondaryLabel: "Rumors",
   navLastLabel: "Injury Report",
   navItems: [
     { label: "News", href: "/" },
-    { label: "Rumor Mill", href: "/#rumor-mill" },
+    { label: "Rumors", href: "/#rumor-mill" },
     { label: "Fantasy", href: "/#fantasy" },
     { label: "Schedule", href: "/#scoreboard" },
     { label: "Injury Report", href: "/#injury-report" },
@@ -373,7 +379,7 @@ export const LAKERS_EDITORIAL: EditorialConfig = {
   newsGridTitle: "Latest news",
   newsGridCta: "View all →",
   posterAspect: "4/3",
-  secondarySectionTitle: "Rumor mill",
+  secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
   confidenceRows: [
     {
@@ -409,7 +415,7 @@ export const LAKERS_EDITORIAL: EditorialConfig = {
   roadmapRows: [],
   roadmapConfidenceSuffix: false,
   disclaimer: "Independent fan coverage — not affiliated with the NBA or the Los Angeles Lakers.",
-  networkLinks: [],
+  networkLinks: ["fyiMac", "fyiWin", "fyiGoogle", "fyiNetflix", "fyiFlyNow", "fyiDodgers", "fyiCams"],
   ticker: [
     { tag: "Rumor", text: "Front office reportedly gauging trade interest before the deadline" },
     { tag: "Injury", text: "Starting guard listed questionable with sore knee" },
@@ -443,11 +449,11 @@ export const LAKERS_EDITORIAL: EditorialConfig = {
 export const DODGERS_EDITORIAL: EditorialConfig = {
   mode: "light",
   signatureMark: null,
-  navSecondaryLabel: "Rumor Mill",
+  navSecondaryLabel: "Rumors",
   navLastLabel: "Injury Report",
   navItems: [
     { label: "News", href: "/" },
-    { label: "Rumor Mill", href: "/#rumor-mill" },
+    { label: "Rumors", href: "/#rumor-mill" },
     { label: "Fantasy", href: "/#fantasy" },
     { label: "Schedule", href: "/#scoreboard" },
     { label: "Injury Report", href: "/#injury-report" },
@@ -460,7 +466,7 @@ export const DODGERS_EDITORIAL: EditorialConfig = {
   newsGridTitle: "Latest news",
   newsGridCta: "View all →",
   posterAspect: "4/3",
-  secondarySectionTitle: "Rumor mill",
+  secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
   confidenceRows: [
     {

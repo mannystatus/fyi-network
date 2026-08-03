@@ -21,7 +21,7 @@ export default async function LatestFromUs({
 
   return (
     <div className={`latest-from-us latest-from-us--${variant}`}>
-      <p className="section-label">Latest from us</p>
+      <p className="section-label">Latest from {brand.name}</p>
       <ArticleList articles={articles} emptyMessage="" brandName={brand.name} />
     </div>
   );

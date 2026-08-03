@@ -43,13 +43,21 @@ export default function EditorialHeader({
   const pathname = usePathname();
   const suffix = brand.name.replace("fyi", "");
 
-  const navLinks = config.navItems ?? [
-    { label: "News", href: "/" },
-    { label: config.navSecondaryLabel, href: "/#rumor-mill" },
-    { label: "Reviews", href: "/" },
-    ...(config.showCompare ? [{ label: "Compare", href: "/#compare" }] : []),
-    { label: config.navLastLabel, href: config.navLastLabel === "New This Week" ? "/#news-grid" : "/" },
+  const navLinks = [
+    ...(config.navItems ?? [
+      { label: "News", href: "/" },
+      { label: config.navSecondaryLabel, href: "/#rumor-mill" },
+      { label: "Reviews", href: "/" },
+      ...(config.showCompare ? [{ label: "Compare", href: "/#compare" }] : []),
+      { label: config.navLastLabel, href: config.navLastLabel === "New This Week" ? "/#news-grid" : "/" },
+    ]),
+    ...(config.extraNavItems ?? []),
   ];
+
+  // Topics promoted into extraNavItems (e.g. fyiMac's Apple TV+/Services)
+  // shouldn't also show up as pills in the topics row below.
+  const promotedLabels = new Set((config.extraNavItems ?? []).map((item) => item.label));
+  const pillTopics = brand.topics.filter((t) => !promotedLabels.has(t));
 
   return (
     <>
@@ -66,11 +74,13 @@ export default function EditorialHeader({
 
       <header className="editorial-masthead">
         <div className="editorial-masthead-inner">
-          <Link href="/" className="editorial-wordmark" aria-label={`${brand.name} home`} prefetch={false}>
-            fyi
-            <span>{suffix}</span>
-          </Link>
-          <SignatureMark kind={config.signatureMark} />
+          <div className="editorial-wordmark-col">
+            <Link href="/" className="editorial-wordmark" aria-label={`${brand.name} home`} prefetch={false}>
+              fyi
+              <span>{suffix}</span>
+            </Link>
+            <SignatureMark kind={config.signatureMark} />
+          </div>
           <nav className="editorial-nav">
             {navLinks.map((link, i) => (
               <Link key={`${link.label}-${i}`} href={link.href} data-active={pathname === link.href} prefetch={false}>
@@ -96,16 +106,21 @@ export default function EditorialHeader({
             Guide, etc.) — dropped when this masthead replaced the old
             generic nav-bar's <TopicsNav>, restored here as a second row so
             the fixed mockup nav above doesn't have to fake it. */}
-        {brand.topics.length > 0 && (
+        {pillTopics.length > 0 && (
           <div className="editorial-topics-row">
             <TopicsNav
-              topics={brand.topics}
+              topics={pillTopics}
               extra={
-                BUYERS_GUIDES[brand.slug] && (
-                  <Link href="/buyers-guide" className="topic-link topic-link-guide" prefetch={false}>
-                    📘 Buyers Guide
+                <>
+                  <Link href="/from-us" className="topic-link topic-link-fromus" prefetch={false}>
+                    📰 Latest from {brand.name}
                   </Link>
-                )
+                  {BUYERS_GUIDES[brand.slug] && (
+                    <Link href="/buyers-guide" className="topic-link topic-link-guide" prefetch={false}>
+                      📘 Buyers Guide
+                    </Link>
+                  )}
+                </>
               }
             />
           </div>

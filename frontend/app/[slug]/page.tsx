@@ -168,6 +168,12 @@ export default async function ArticlePage({
       </p>
 
       {(() => {
+        // Hand-authored fyi content (is_featured) credits the brand itself
+        // here, same swap ArticleList already does for its cards —
+        // otherwise this would show the admin key's own label instead of
+        // the actual outlet. Aggregated RSS briefs keep crediting their
+        // real source (article.author).
+        const source = article.is_featured ? brand.name : article.author;
         const mainContent = (
           <>
             <div className="article-header">
@@ -176,16 +182,19 @@ export default async function ArticlePage({
                 <img src={article.image_url} alt="" className="article-banner" />
               )}
               {article.is_featured && <span className="featured-badge featured-badge-lg">★ Featured</span>}
-              {article.category && (
-                <span className="category" style={{ color: categoryColor(article.category) }}>
-                  {article.category}
-                </span>
-              )}
+              <div className="article-header-tags">
+                <span className="fyi-badge fyi-badge-lg">fyi network{source ? ` · ${source}` : ""}</span>
+                {article.category && (
+                  <span className="category" style={{ color: categoryColor(article.category) }}>
+                    {article.category}
+                  </span>
+                )}
+              </div>
               <h1 className="article-title">{article.title}</h1>
               {article.dek && <p className="article-dek">{article.dek}</p>}
               <div className="article-meta">
-                {article.author}
-                {article.author && " · "}
+                {source}
+                {source && " · "}
                 {new Date(article.published_at).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",

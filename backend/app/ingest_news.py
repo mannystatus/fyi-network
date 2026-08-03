@@ -333,10 +333,16 @@ def fetch_bing(brand_slug: str, topic: str) -> list[dict]:
         link = qs.get("url", [raw_link])[0]
 
         source_name = None
+        image_url = None
         for child in item:
-            if _local_name(child.tag) == "Source":
+            tag = _local_name(child.tag)
+            if tag == "Source" and source_name is None:
                 source_name = (child.text or "").strip() or None
-                break
+            elif tag == "Image" and image_url is None:
+                # Bing News RSS's own <News:Image> thumbnail — same feed
+                # item, no extra fetch needed to get a real article image
+                # instead of leaving image_url blank.
+                image_url = (child.text or "").strip() or None
 
         items.append(
             dict(
@@ -345,6 +351,7 @@ def fetch_bing(brand_slug: str, topic: str) -> list[dict]:
                 source=source_name,
                 description=description or None,
                 published_at=_parse_pub_date(item.findtext("pubDate")),
+                image_url=image_url,
             )
         )
     return items
@@ -374,6 +381,7 @@ def fetch_google_fallback(brand_slug: str, topic: str, when: str = "3d") -> list
                 source=source_name,
                 description=None,
                 published_at=_parse_pub_date(item.findtext("pubDate")),
+                image_url=None,  # Google News RSS items carry no thumbnail
             )
         )
     return items
@@ -426,6 +434,7 @@ def make_article(brand: Brand, topic: str, item: dict) -> Article:
         author=source,
         published_at=item["published_at"],
         is_published=True,
+        image_url=item.get("image_url"),
     )
 
 

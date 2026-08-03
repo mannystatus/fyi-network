@@ -17,7 +17,15 @@ const NAV_LINKS = [
   { label: "Advisories", href: "/travel-advisories" },
 ];
 
-export default function FlyNowNavbar({ brands, currentSlug }: { brands: Brand[]; currentSlug: string }) {
+export default function FlyNowNavbar({
+  brands,
+  currentSlug,
+  brandName,
+}: {
+  brands: Brand[];
+  currentSlug: string;
+  brandName: string;
+}) {
   const pathname = usePathname();
 
   return (
@@ -46,6 +54,9 @@ export default function FlyNowNavbar({ brands, currentSlug }: { brands: Brand[];
               </Link>
             );
           })}
+          <Link href="/from-us" className="flynow-nav-fromus" data-active={pathname === "/from-us"} prefetch={false}>
+            Latest from {brandName}
+          </Link>
         </nav>
         <DomainSwitcher brands={brands} currentSlug={currentSlug} />
       </div>

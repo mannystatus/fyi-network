@@ -1,11 +1,14 @@
 import Link from "next/link";
 import type { Brand } from "../lib/api";
 import type { EditorialConfig } from "../lib/editorialConfig";
+import { EXTERNAL_SITES } from "../lib/externalSites";
 
-// Homepage-only footer (mirrors CamsFooter/FlyNowHomepage's own footer) —
-// inner pages keep the existing shared generic <footer> in template.tsx's
-// Chrome (SendTipForm, Buyers Guide, Advertise, Terms, Privacy,
-// CookieSettingsLink), just re-themed via CSS, so those stay reachable.
+// Used both on the bespoke homepage and, via template.tsx's Chrome, on
+// every other page for this brand (articles, topics, search, etc.) — the
+// generic <footer> that used to be the only thing inner pages got still
+// renders right below this (SendTipForm, Buyers Guide, Advertise, Terms,
+// Privacy, CookieSettingsLink), just trimmed to a slim utility row now that
+// this covers the branding/nav part.
 export default function EditorialFooter({ brand, config }: { brand: Brand; config: EditorialConfig }) {
   const suffix = brand.name.replace("fyi", "");
   const year = new Date().getFullYear();
@@ -29,6 +32,15 @@ export default function EditorialFooter({ brand, config }: { brand: Brand; confi
             {config.networkLinks.map((n) => (
               <a key={n} href={`https://${n.toLowerCase()}.com`}>
                 {n}
+              </a>
+            ))}
+            {/* Part of the fyi family but outside the Brand system (see
+                lib/externalSites.ts) — same registry DomainSwitcher and
+                /advertise already pull from, so this can't drift out of
+                sync with those. */}
+            {EXTERNAL_SITES.map((site) => (
+              <a key={site.url} href={site.url} target="_blank" rel="noopener noreferrer">
+                {site.name}.com
               </a>
             ))}
           </div>
