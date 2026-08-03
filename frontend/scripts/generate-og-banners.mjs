@@ -120,11 +120,12 @@ function bannerSvg({ suffix, tagline, icon }) {
 </svg>`;
 }
 
+// fyimac/fyiwin/fyigoogle/fyinetflix are deliberately NOT listed here
+// anymore — they moved to their own per-site brand kits (Oswald wordmark,
+// solid brand-color lockup) rendered by scripts/generate-brand-kit-assets.mjs
+// instead of this shared dark-terminal template. Re-adding a brand here
+// would make this script overwrite that work on the next run.
 const BRANDS = [
-  { slug: "fyimac", suffix: "Mac", icon: "mac", tagline: "Apple news. Decoded daily." },
-  { slug: "fyiwin", suffix: "Win", icon: "win", tagline: "Windows news. Decoded daily." },
-  { slug: "fyigoogle", suffix: "Google", icon: "google", tagline: "Google news. Decoded daily." },
-  { slug: "fyinetflix", suffix: "Netflix", icon: "netflix", tagline: "Netflix news. Decoded daily." },
   { slug: "fyiflynow", suffix: "FlyNow", icon: "flynow", tagline: "Flight deals. Decoded daily." },
   { slug: "fyilakers", suffix: "Lakers", icon: "lakers", tagline: "Lakers news. Decoded daily." },
   { slug: "fyidodgers", suffix: "Dodgers", icon: "dodgers", tagline: "Dodgers news. Decoded daily." },
