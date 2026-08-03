@@ -3092,9 +3092,21 @@ footer {
   color: #ffb627;
 }
 
+/* Below 880px there isn't room for logo + all nav links + the domain
+   switcher on one row — this used to just hide .flynow-nav-links outright,
+   which left mobile visitors with no navigation at all (logo and switcher
+   only). Same fix as the editorial/cams mastheads: wrap the row and drop
+   the nav links to their own full-width line instead of vanishing. */
 @media (max-width: 880px) {
+  .flynow-site-nav-inner {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
   .flynow-nav-links {
-    display: none;
+    order: 3;
+    width: 100%;
+    flex-wrap: wrap;
   }
 }
 
