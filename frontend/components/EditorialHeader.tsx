@@ -1,0 +1,116 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type { Brand } from "../lib/api";
+import type { EditorialConfig } from "../lib/editorialConfig";
+import DomainSwitcher from "./DomainSwitcher";
+import SearchBox from "./SearchBox";
+import NewsNotifications from "./NewsNotifications";
+import ThemeToggle from "./ThemeToggle";
+import TopicsNav from "./TopicsNav";
+import { BUYERS_GUIDES } from "../lib/buyersGuideRegistry";
+
+// Shared ticker + sticky masthead for fyiMac/fyiWin/fyiGoogle/fyiNetflix —
+// used both inside each brand's bespoke homepage and via app/template.tsx's
+// Chrome for every other page, same dual-use pattern as CamsHeader/
+// FlyNowTitlebar.
+
+const RAINBOW = ["#61BB46", "#FDB827", "#F5821F", "#E03A3E", "#963D97", "#0071BC"];
+const FOURBAR = ["#F25022", "#7FBA00", "#00A4EF", "#FFB900"];
+
+function SignatureMark({ kind }: { kind: EditorialConfig["signatureMark"] }) {
+  if (!kind) return null;
+  const bars = kind === "rainbow" ? RAINBOW : FOURBAR;
+  return (
+    <span className="editorial-signature-mark">
+      {bars.map((c, i) => (
+        <span key={i} style={{ background: c }} />
+      ))}
+    </span>
+  );
+}
+
+export default function EditorialHeader({
+  brand,
+  brands,
+  config,
+}: {
+  brand: Brand;
+  brands: Brand[];
+  config: EditorialConfig;
+}) {
+  const pathname = usePathname();
+  const suffix = brand.name.replace("fyi", "");
+
+  const navLinks = config.navItems ?? [
+    { label: "News", href: "/" },
+    { label: config.navSecondaryLabel, href: "/#rumor-mill" },
+    { label: "Reviews", href: "/" },
+    ...(config.showCompare ? [{ label: "Compare", href: "/#compare" }] : []),
+    { label: config.navLastLabel, href: config.navLastLabel === "New This Week" ? "/#news-grid" : "/" },
+  ];
+
+  return (
+    <>
+      <div className="editorial-ticker">
+        <div className="editorial-ticker-track">
+          {[...config.ticker, ...config.ticker].map((t, i) => (
+            <span className="editorial-ticker-item" key={i}>
+              <span className="editorial-ticker-tag">{t.tag}</span>
+              {t.text}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <header className="editorial-masthead">
+        <div className="editorial-masthead-inner">
+          <Link href="/" className="editorial-wordmark" aria-label={`${brand.name} home`} prefetch={false}>
+            fyi
+            <span>{suffix}</span>
+          </Link>
+          <SignatureMark kind={config.signatureMark} />
+          <nav className="editorial-nav">
+            {navLinks.map((link, i) => (
+              <Link key={`${link.label}-${i}`} href={link.href} data-active={pathname === link.href} prefetch={false}>
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="editorial-masthead-actions">
+            <SearchBox />
+            <NewsNotifications brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
+            {/* fyiNetflix has no light variant (fixed dark, like fyiFlyNow) —
+                showing a toggle with no visible effect would be the exact
+                misleading-toggle bug already fixed for fyiFlyNow earlier. */}
+            {config.mode !== "dark" && <ThemeToggle />}
+            <a className="editorial-subscribe-btn" href="/#newsletter">
+              Subscribe
+            </a>
+            <DomainSwitcher brands={brands} currentSlug={brand.slug} />
+          </div>
+        </div>
+
+        {/* Real per-brand topic browsing (K-Drama, Xbox/PC Gaming, Buyers
+            Guide, etc.) — dropped when this masthead replaced the old
+            generic nav-bar's <TopicsNav>, restored here as a second row so
+            the fixed mockup nav above doesn't have to fake it. */}
+        {brand.topics.length > 0 && (
+          <div className="editorial-topics-row">
+            <TopicsNav
+              topics={brand.topics}
+              extra={
+                BUYERS_GUIDES[brand.slug] && (
+                  <Link href="/buyers-guide" className="topic-link topic-link-guide" prefetch={false}>
+                    📘 Buyers Guide
+                  </Link>
+                )
+              }
+            />
+          </div>
+        )}
+      </header>
+    </>
+  );
+}

@@ -37,20 +37,6 @@
 
   --font-mono: "SF Mono", Menlo, Consolas, "Courier New", monospace;
 
-  /* Per-theme "OS chrome" colors that are solid fills or white-alpha
-     overlays rather than hue tints — those don't survive a light/dark
-     flip on their own, so they're tokenized here instead of hardcoded
-     in the theme blocks below. */
-  --win-chrome-bg: #1f2029;
-  --win-chrome-hover: rgba(255, 255, 255, 0.08);
-  --win-card-bg: rgba(255, 255, 255, 0.035);
-  --win-card-border: rgba(255, 255, 255, 0.09);
-  --cros-chrome-bg: #101116;
-  --cros-tab-bg: #1a1b26;
-  --cros-omnibox-bg: #23242f;
-  --netflix-chrome-bg: #000;
-  --netflix-card-bg: rgba(255, 255, 255, 0.05);
-
   /* Fixed, not tokenized per light/dark like the others above — a split-flap
      departure board is always a dark board with lit letters; there's no
      real "light mode" version of the physical object it's imitating. */
@@ -82,16 +68,6 @@
     --fg: #20222f;
     --comment: #5b6178;
 
-    --win-chrome-bg: #e4e6ef;
-    --win-chrome-hover: rgba(0, 0, 0, 0.06);
-    --win-card-bg: rgba(0, 0, 0, 0.02);
-    --win-card-border: rgba(0, 0, 0, 0.08);
-    --cros-chrome-bg: #dfe1e8;
-    --cros-tab-bg: #f4f5f9;
-    --cros-omnibox-bg: #eceef5;
-    --netflix-chrome-bg: #ffffff;
-    --netflix-card-bg: rgba(0, 0, 0, 0.035);
-
     --cat-mac: #8055ff;
     --cat-iphone: #ee0023;
     --cat-ipad: #007eb6;
@@ -118,16 +94,6 @@
   --border: #d8dbe8;
   --fg: #20222f;
   --comment: #5b6178;
-
-  --win-chrome-bg: #e4e6ef;
-  --win-chrome-hover: rgba(0, 0, 0, 0.06);
-  --win-card-bg: rgba(0, 0, 0, 0.02);
-  --win-card-border: rgba(0, 0, 0, 0.08);
-  --cros-chrome-bg: #dfe1e8;
-  --cros-tab-bg: #f4f5f9;
-  --cros-omnibox-bg: #eceef5;
-  --netflix-chrome-bg: #ffffff;
-  --netflix-card-bg: rgba(0, 0, 0, 0.035);
 
   --cat-mac: #8055ff;
   --cat-iphone: #ee0023;
@@ -178,28 +144,6 @@ a {
   min-height: calc(100vh - 41px);
   display: flex;
   flex-direction: column;
-}
-
-.chrome-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 24px;
-  background: var(--bg-alt);
-  border-bottom: 1px solid var(--border);
-}
-
-.chrome-bar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.chrome-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
 }
 
 .site-header {
@@ -1662,500 +1606,1166 @@ footer {
   color: var(--comment);
 }
 
-/* ---------- Windows 11 / Fluent theme, used only when fyiWin is active ---------- */
-/* Same blue accent as the rest of the site (#7aa2f7) — only the chrome/shape changes. */
+/* ---------- Shared "editorial ticker" template ----------
+   Used by fyiMac, fyiWin, fyiGoogle, fyiNetflix — replaces their old
+   OS-chrome-parody titlebars (traffic lights, taskbar, Chrome tabs, Netflix
+   titlebar) with one shared design: ticker → sticky masthead → hero →
+   news grid → rumor mill → compare table → update log → roadmap →
+   newsletter. One shared rule set here, reading --editorial-* custom
+   properties that each #site.theme-<brand> block below defines — same
+   "shared shape, per-brand tokens" approach already used for
+   .lakers-scoreboard/.dodgers-scoreboard.
 
-.win-titlebar {
-  display: flex;
+   Fonts are reused rather than loaded again: Oswald is already loaded for
+   the sports brands (--font-sports-display) and Work Sans/IBM Plex Mono are
+   already loaded for fyiCams (--font-cams-body/--font-cams-mono) — same
+   typefaces this template needs, so no new next/font calls.
+
+   fyiMac/fyiWin/fyiGoogle keep the site's light/dark toggle; unlike the
+   rest of the site (dark by default, light as the override), these three
+   default to the *light* "paper" look their mockups specify, with dark
+   values as the override — inverted on purpose, scoped only to these
+   brands via #site.theme-<brand>, so it doesn't affect the sitewide
+   default. fyiNetflix has no light variant at all (its mockup is dark-only,
+   same "fixed regardless of toggle" pattern as fyiFlyNow/Lakers/Dodgers). */
+
+.editorial-ticker {
+  background: var(--editorial-ticker-bg);
+  color: #fff;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.editorial-ticker-track {
+  display: inline-flex;
+  gap: 52px;
+  padding: 10px 0;
+  animation: editorial-ticker-scroll 32s linear infinite;
+}
+
+.editorial-ticker-item {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  font-weight: 500;
+  display: inline-flex;
   align-items: center;
-  height: 40px;
-  padding: 0 14px;
-  background: var(--win-chrome-bg);
-  border-bottom: 1px solid var(--border);
+  gap: 10px;
 }
 
-.win-logo {
-  display: grid;
-  grid-template-columns: 7px 7px;
-  grid-template-rows: 7px 7px;
-  gap: 2px;
-  margin-right: 10px;
-}
-
-.win-logo span {
-  background: var(--blue);
-}
-
-.win-titlebar .win-title {
-  font-size: 12px;
-  color: var(--fg);
-  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
-}
-
-/* Windows 11 taskbar system-tray look: small acrylic-card icon buttons,
-   reusing the same translucent Fluent tokens already applied to
-   .switcher-btn/.article-card elsewhere in this theme rather than
-   inventing a new color language. The fake min/max/close buttons this
-   used to sit left of were purely decorative (no click handlers) and were
-   removed so these functional icons could take the titlebar's right edge
-   instead — closer to how the real Windows 11 taskbar puts search and
-   notifications, not a window's own titlebar controls. */
-.win-titlebar-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: auto;
-}
-
-.win-titlebar-actions .search-trigger,
-.win-titlebar-actions .notify-bell,
-.win-titlebar-actions .theme-toggle {
-  width: 28px;
-  height: 28px;
-  font-size: 12px;
-  border-radius: 6px;
-  background: var(--win-card-bg);
-  border: 1px solid var(--win-card-border);
-}
-
-.win-titlebar-actions .search-trigger:hover,
-.win-titlebar-actions .notify-bell:hover,
-.win-titlebar-actions .theme-toggle:hover {
-  background: var(--win-chrome-hover);
-}
-
-/* Shape/color already comes from #site.theme-win .switcher-btn — just
-   compress it to fit the 40px bar. */
-.win-titlebar-actions .switcher-btn {
-  padding: 5px 10px;
-  font-size: 12px;
-}
-
-.win-titlebar-actions .search-form .search-input,
-.win-titlebar-actions .notify-popover {
-  background: color-mix(in srgb, var(--win-chrome-bg) 85%, transparent);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--win-card-border);
-  border-radius: 8px;
-}
-
-/* fyiMac uses fyiGoogle's font on purpose, per explicit request — not a
-   copy/paste mistake. Font only; fyiMac keeps its own card/color styling. */
-#site.theme-mac {
-  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
-  /* Every other brand has an outer titlebar (.win-titlebar etc.) above
-     #site, so the base #site rule subtracts its ~41px height from 100vh.
-     fyiMac no longer has one (the address bar was removed), so #site
-     itself should fill the full viewport instead of falling 41px short. */
-  min-height: 100vh;
-}
-
-#site.theme-mac .wordmark {
-  font-family: inherit;
-}
-
-#site.theme-mac .tagline,
-#site.theme-mac .switcher-btn,
-#site.theme-mac .brand-opt,
-#site.theme-mac .article-meta,
-#site.theme-mac .article-title,
-#site.theme-mac .article-dek,
-#site.theme-mac .article-body,
-#site.theme-mac .legal-body,
-#site.theme-mac .section-label,
-#site.theme-mac footer {
-  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
-}
-
-/* Native macOS toolbar icons: borderless circles with a soft hover fill,
-   instead of the generic bordered square — matches how Safari/Finder's
-   toolbar buttons look, not a boxy web widget. */
-#site.theme-mac .chrome-bar-actions .search-trigger,
-#site.theme-mac .chrome-bar-actions .notify-bell,
-#site.theme-mac .chrome-bar-actions .theme-toggle {
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-}
-
-#site.theme-mac .chrome-bar-actions .search-trigger:hover,
-#site.theme-mac .chrome-bar-actions .notify-bell:hover,
-#site.theme-mac .chrome-bar-actions .theme-toggle:hover {
-  /* Reuses fyiWin's hover tint token — it already flips the right way
-     (light fg tint in dark mode, dark fg tint in light mode) and a plain
-     toolbar-icon hover doesn't need its own mac-specific variable. */
-  background: var(--win-chrome-hover);
-}
-
-/* Notification Center-style "vibrancy" panel — translucent + blurred,
-   rather than a flat bordered card. */
-#site.theme-mac .chrome-bar-actions .search-form .search-input,
-#site.theme-mac .chrome-bar-actions .notify-popover {
-  background: color-mix(in srgb, var(--bg-alt) 75%, transparent);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-  border-radius: 14px;
-}
-
-#site.theme-mac .chrome-bar-actions .search-input {
-  width: 260px;
-}
-
-#site.theme-win {
-  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
-}
-
-#site.theme-win .wordmark {
-  font-family: inherit;
-  font-weight: 600;
-  letter-spacing: -0.2px;
-}
-
-#site.theme-win .tagline,
-#site.theme-win .switcher-btn,
-#site.theme-win .brand-opt,
-#site.theme-win .article-meta,
-#site.theme-win .article-title,
-#site.theme-win .article-dek,
-#site.theme-win .article-body,
-#site.theme-win .legal-body {
-  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
-}
-
-#site.theme-win .site-header {
-  padding: 22px 32px 14px;
-}
-
-#site.theme-win .switcher-btn {
-  border-radius: 6px;
-  background: var(--win-card-bg);
-  border: 1px solid var(--win-card-border);
-}
-
-#site.theme-win .article-card {
-  border: 1px solid var(--win-card-border);
-  border-radius: 8px;
-  background: var(--win-card-bg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-#site.theme-win .article-card:hover {
-  border-color: var(--blue);
-  background: rgba(122, 162, 247, 0.07);
-}
-
-#site.theme-win .article-card h2 {
-  font-weight: 600;
-  font-size: 17px;
-}
-
-#site.theme-win .article-card .category {
+.editorial-ticker-tag {
+  color: var(--accent);
   font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
 }
 
-#site.theme-win .section-label,
-#site.theme-win footer {
-  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+@keyframes editorial-ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
-/* ---------- Chrome OS / Material 3 theme, used only when fyiGoogle is active ---------- */
-/* Same blue accent (#7aa2f7) as the rest of the site — only the chrome/shape changes. */
-
-.cros-titlebar {
-  display: flex;
-  align-items: flex-end;
-  height: 40px;
-  padding: 8px 10px 0;
-  background: var(--cros-chrome-bg);
-  gap: 4px;
+.editorial-masthead {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--editorial-bg) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--editorial-ink);
 }
 
-.cros-tab {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--cros-tab-bg);
-  border-radius: 10px 10px 0 0;
-  padding: 7px 14px;
-  font-size: 12px;
-  color: var(--fg);
-}
-
-.cros-tab .favicon {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--blue);
-}
-
-.cros-tab .close-x {
-  margin-left: 10px;
-  color: var(--comment);
-  font-size: 11px;
-}
-
-.cros-omnibox {
-  margin: 0 10px 6px auto;
+.editorial-masthead-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--cros-omnibox-bg);
-  border-radius: 20px;
-  padding: 6px 16px;
-  font-size: 12px;
-  color: var(--comment);
-  max-width: 320px;
-  flex: 1;
+  gap: 20px;
+  height: 76px;
 }
 
-.cros-titlebar-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 6px;
+.editorial-wordmark {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--editorial-ink);
+  text-transform: uppercase;
+  flex-shrink: 0;
 }
 
-/* Scaled down from the usual 34px so these fit this bar's 40px height. */
-.cros-titlebar-actions .theme-toggle,
-.cros-titlebar-actions .search-trigger,
-.cros-titlebar-actions .notify-bell {
-  width: 26px;
-  height: 26px;
-  font-size: 12px;
-}
-
-/* Material "icon button": fully round, tinted instead of bordered — same
-   rgba(122,162,247) tint already used for .switcher-btn/.article-meta below. */
-.cros-titlebar-actions .search-trigger,
-.cros-titlebar-actions .notify-bell {
-  border: none;
-  border-radius: 50%;
-  background: rgba(122, 162, 247, 0.1);
-}
-
-.cros-titlebar-actions .search-trigger:hover,
-.cros-titlebar-actions .notify-bell:hover {
-  background: rgba(122, 162, 247, 0.18);
-}
-
-.cros-titlebar-actions .search-form .search-input {
-  border: none;
-  border-radius: 20px;
-  background: var(--cros-omnibox-bg);
-}
-
-.cros-titlebar-actions .notify-popover {
-  border: none;
-  border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
-}
-
-.cros-titlebar-actions .notify-subscribe {
+.editorial-wordmark span {
   background: var(--accent);
+  color: #fff;
+  padding: 1px 9px;
+  margin-left: 2px;
 }
 
-/* A little Google easter egg on the "you're subscribed" dot — the real
-   4-color brand palette (lives in GoogleCrossPromo.tsx, not used anywhere
-   else in this theme) as a tiny pinwheel instead of one flat accent dot. */
-.cros-titlebar-actions .notify-dot {
-  background: conic-gradient(#4285f4 0deg 90deg, #ea4335 90deg 180deg, #fbbc05 180deg 270deg, #34a853 270deg 360deg);
+.editorial-signature-mark {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
-#site.theme-google {
-  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
+.editorial-signature-mark span {
+  width: 12px;
+  height: 4px;
 }
 
-#site.theme-google .wordmark {
-  font-family: inherit;
-  font-weight: 500;
+.editorial-nav {
+  display: flex;
+  gap: 26px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  flex-wrap: wrap;
+  margin-right: auto;
 }
 
-#site.theme-google .tagline,
-#site.theme-google .switcher-btn,
-#site.theme-google .brand-opt,
-#site.theme-google .article-meta,
-#site.theme-google .article-title,
-#site.theme-google .article-dek,
-#site.theme-google .article-body,
-#site.theme-google .legal-body {
-  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
+.editorial-nav a {
+  color: var(--editorial-ink-soft);
 }
 
-#site.theme-google .site-header {
-  padding: 24px 32px 12px;
+.editorial-nav a[data-active="true"] {
+  color: var(--editorial-ink);
 }
 
-#site.theme-google .switcher-btn {
-  border-radius: 20px;
-  background: rgba(122, 162, 247, 0.1);
-  border: none;
-}
-
-#site.theme-google .article-card {
-  border: none;
-  border-radius: 16px;
-  background: rgba(122, 162, 247, 0.06);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 6px rgba(0, 0, 0, 0.2);
-}
-
-#site.theme-google .article-card:hover {
-  background: rgba(122, 162, 247, 0.11);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-
-#site.theme-google .article-card h2 {
-  font-weight: 500;
-}
-
-#site.theme-google .article-meta {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 3px 12px;
-  border-radius: 20px;
-  background: rgba(122, 162, 247, 0.14);
-  color: var(--blue);
-}
-
-#site.theme-google .article-card .category {
-  font-weight: 700;
-}
-
-#site.theme-google .section-label,
-#site.theme-google footer {
-  font-family: "Google Sans", "Roboto", system-ui, sans-serif;
-}
-
-/* ---------- Netflix theme, used only when fyiNetflix is active ---------- */
-/* Signature red (#e50914, this brand's accent_color) instead of the shared
-   blue everything else uses — the logo mark stays red in both light and
-   dark mode, same as the real thing. */
-
-.netflix-titlebar {
+.editorial-masthead-actions {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 40px;
-  padding: 0 16px;
-  background: var(--netflix-chrome-bg);
+  flex-shrink: 0;
 }
 
-.netflix-titlebar-actions {
+.editorial-subscribe-btn {
+  background: var(--accent);
+  color: #fff;
+  padding: 11px 22px;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.86rem;
+  white-space: nowrap;
+}
+
+.editorial-masthead-actions .search-trigger,
+.editorial-masthead-actions .notify-bell {
+  width: 34px;
+  height: 34px;
+  border-radius: 3px;
+  border: 1px solid var(--editorial-line);
+  background: var(--editorial-bg-alt);
+  color: var(--editorial-ink);
+}
+
+.editorial-masthead-actions .search-trigger:hover,
+.editorial-masthead-actions .notify-bell:hover {
+  border-color: var(--accent);
+}
+
+.editorial-masthead-actions .search-form .search-input,
+.editorial-masthead-actions .notify-popover {
+  border-radius: 3px;
+  border-color: var(--editorial-line);
+  background: var(--editorial-bg-alt);
+  color: var(--editorial-ink);
+}
+
+.editorial-masthead-actions .notify-popover-title {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  text-transform: uppercase;
+}
+
+.editorial-masthead-actions .notify-subscribe {
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+/* Real per-brand topic browsing, restored under the fixed mockup nav —
+   reuses the site's existing .topics-nav/.topic-link (see globals.css
+   ~line 466), just re-pointed at the editorial tokens so it reads as part
+   of this masthead instead of the old sitewide look. */
+.editorial-topics-row {
+  border-top: 1px solid var(--editorial-line);
+  padding: 10px 32px;
+}
+
+.editorial-topics-row .topics-nav {
+  padding: 0;
+  margin-bottom: 0;
+  max-width: 1240px;
+}
+
+.editorial-topics-row .topic-link {
+  --pill-color: var(--editorial-ink-soft);
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.editorial-topics-row .topic-link[data-active="true"] {
+  --pill-color: var(--editorial-ink);
+}
+
+.editorial-topics-row .topic-link-guide {
+  --pill-color: var(--accent);
+  border-left-color: var(--editorial-line);
+}
+
+@media (max-width: 900px) {
+  .editorial-masthead-inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 14px 20px;
+  }
+  .editorial-nav {
+    order: 3;
+    width: 100%;
+    gap: 16px;
+    font-size: 0.8rem;
+    margin-right: 0;
+  }
+}
+
+.editorial-homepage {
+  background: var(--editorial-bg);
+  color: var(--editorial-ink);
+}
+
+.editorial-homepage :where(h1, h2, h3, h4, p, ul, li, form, button) {
+  margin: 0;
+  padding: 0;
+}
+
+.editorial-homepage a {
+  /* No color:inherit here on purpose — every link in this template has its
+     own specific class that sets color explicitly (or wants the natural
+     inherited value), and a blanket single-class+element rule here would
+     outrank single-class overrides like .editorial-cta-primary/
+     .editorial-subscribe-btn on specificity, silently winning and making
+     button text invisible or low-contrast (hit this exact bug with the
+     primary hero CTA — white text on a white button — before removing
+     this). */
+  text-decoration: none;
+}
+
+.editorial-homepage .wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.editorial-rule {
+  border-bottom: 2px solid var(--editorial-ink);
+}
+
+.editorial-rule-inner {
+  border-bottom: 2px solid var(--editorial-ink);
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+}
+
+.editorial-section {
+  padding: 56px 0;
+}
+
+.editorial-band {
+  background: var(--editorial-bg-alt);
+}
+
+.editorial-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.editorial-section-head h2 {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+}
+
+.editorial-section-head a,
+.editorial-section-head span.editorial-log-sub {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.editorial-log-sub {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.68rem !important;
+  color: var(--editorial-stone) !important;
+  font-weight: 500 !important;
+}
+
+.editorial-empty {
+  color: var(--editorial-stone);
+  font-size: 0.9rem;
+}
+
+/* ---------- hero ---------- */
+.editorial-hero {
+  border-bottom: 2px solid var(--editorial-ink);
+}
+
+.editorial-hero-grid {
+  padding: 56px 0 48px;
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 0;
+}
+
+@media (max-width: 900px) {
+  .editorial-hero-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editorial-hero-left {
+  border-right: 1px solid var(--editorial-line);
+  padding-right: 44px;
+}
+
+@media (max-width: 900px) {
+  .editorial-hero-left {
+    border-right: none;
+    padding-right: 0;
+  }
+}
+
+.editorial-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  padding: 6px 12px;
+  margin-bottom: 22px;
+}
+
+.editorial-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+
+.editorial-hero h1 {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+  line-height: 1.08;
+  text-transform: uppercase;
+  margin: 0 0 18px;
+}
+
+.editorial-accent {
+  color: var(--accent);
+}
+
+.editorial-hero-dek {
+  font-size: 1.05rem;
+  color: var(--editorial-ink-soft);
+  max-width: 50ch;
+  margin-bottom: 28px;
+}
+
+.editorial-hero-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.editorial-cta-primary {
+  background: var(--editorial-ink);
+  color: var(--editorial-bg);
+  padding: 13px 24px;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.editorial-cta-secondary {
+  padding: 13px 22px;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid var(--editorial-ink);
+  background: transparent;
+}
+
+.editorial-hero-right {
+  padding-left: 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .editorial-hero-right {
+    padding-left: 0;
+    margin-top: 32px;
+  }
+}
+
+.editorial-top-stories-label {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--editorial-stone);
+  font-weight: 600;
+}
+
+.editorial-top-story-row {
+  display: block;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--editorial-line);
+}
+
+.editorial-top-story-tag {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  color: var(--accent);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.editorial-top-story-title {
+  font-size: 0.94rem;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ---------- news grid ---------- */
+.editorial-news-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1000px) {
+  .editorial-news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .editorial-news-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editorial-news-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editorial-news-thumb {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-left: auto;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--editorial-bg-alt),
+    var(--editorial-bg-alt) 10px,
+    var(--editorial-line) 10px,
+    var(--editorial-line) 20px
+  );
 }
 
-/* Scaled down from the usual 34px so these fit this bar's fixed 40px
-   height alongside the switcher button. */
-.netflix-titlebar-actions .theme-toggle,
-.netflix-titlebar-actions .search-trigger,
-.netflix-titlebar-actions .notify-bell {
-  width: 28px;
-  height: 28px;
-  font-size: 13px;
+.editorial-news-cat {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--editorial-ink);
+  color: var(--editorial-bg);
+  padding: 4px 9px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.netflix-titlebar-actions .switcher-btn {
-  padding: 6px 12px;
-  font-size: 12px;
+.editorial-news-card h3 {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.3;
 }
 
-.netflix-titlebar-actions .search-trigger,
-.netflix-titlebar-actions .notify-bell {
-  border-radius: 4px;
-  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+.editorial-news-card p {
+  font-size: 0.86rem;
+  color: var(--editorial-ink-soft);
 }
 
-.netflix-titlebar-actions .search-trigger:hover,
-.netflix-titlebar-actions .notify-bell:hover {
-  background: color-mix(in srgb, var(--accent) 12%, var(--bg-alt));
-  box-shadow: 0 4px 14px rgba(229, 9, 20, 0.3);
-  transform: scale(1.05);
+.editorial-news-meta {
+  font-size: 0.74rem;
+  color: var(--editorial-stone);
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
 }
 
-/* netflix.com's own search UX: the icon expands into a wide inline bar
-   instead of a small dropdown. */
-.netflix-titlebar-actions .search-form .search-input {
-  width: min(70vw, 340px);
-  border-radius: 4px;
-  border-color: var(--accent);
-  box-shadow: 0 4px 20px rgba(229, 9, 20, 0.35);
+/* ---------- rumor mill / renewal tracker ---------- */
+.editorial-confidence-row {
+  display: grid;
+  grid-template-columns: 130px 1fr auto;
+  gap: 22px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--editorial-line);
+}
+
+@media (max-width: 700px) {
+  .editorial-confidence-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.editorial-confidence-label {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--editorial-stone);
   font-weight: 700;
 }
 
-.netflix-titlebar-actions .notify-popover {
-  border: none;
-  border-radius: 4px;
-  box-shadow: 0 8px 28px rgba(229, 9, 20, 0.3);
+.editorial-confidence-track {
+  height: 5px;
+  background: var(--editorial-line);
+  margin-top: 6px;
 }
 
-.netflix-titlebar-actions .notify-dot {
-  box-shadow: 0 0 6px var(--accent);
+.editorial-confidence-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
 }
 
-.netflix-logo {
+.editorial-confidence-row h4 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.editorial-confidence-row p {
+  font-size: 0.84rem;
+  color: var(--editorial-ink-soft);
+}
+
+.editorial-arrow {
   color: var(--accent);
-  font-weight: 800;
-  font-size: 20px;
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: -1px;
+  font-size: 1.3rem;
 }
 
-.netflix-title {
-  font-size: 12px;
-  color: var(--fg);
+/* ---------- quick compare ---------- */
+.editorial-compare-table {
+  display: grid;
+  grid-template-columns: 1.2fr repeat(4, 1fr);
+  border-top: 2px solid var(--editorial-ink);
 }
 
-#site.theme-netflix {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+@media (max-width: 700px) {
+  .editorial-compare-table {
+    grid-template-columns: 1fr;
+    border-top: none;
+  }
 }
 
-#site.theme-netflix .wordmark {
+.editorial-compare-th {
+  padding: 12px 0;
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--editorial-stone);
+  text-align: center;
+}
+
+.editorial-compare-th:first-child {
+  text-align: left;
+}
+
+@media (max-width: 700px) {
+  .editorial-compare-th {
+    display: none;
+  }
+}
+
+.editorial-compare-row {
+  display: contents;
+}
+
+@media (max-width: 700px) {
+  .editorial-compare-row {
+    display: block;
+    border-top: 1px solid var(--editorial-line);
+    padding: 12px 0;
+  }
+}
+
+.editorial-compare-cell {
+  padding: 14px 0;
+  border-top: 1px solid var(--editorial-line);
+  text-align: center;
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.84rem;
+}
+
+@media (max-width: 700px) {
+  .editorial-compare-cell {
+    border-top: none;
+    padding: 3px 0;
+    text-align: left;
+  }
+}
+
+.editorial-compare-cell.model {
+  text-align: left;
   font-family: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.editorial-compare-score {
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 3px 9px;
+}
+
+/* ---------- update log / show status tracker ---------- */
+.editorial-log-table {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1fr 1fr;
+  border-top: 2px solid var(--editorial-ink);
+}
+
+@media (max-width: 700px) {
+  .editorial-log-table {
+    grid-template-columns: 1fr;
+    border-top: none;
+  }
+}
+
+.editorial-log-th {
+  padding: 12px 0;
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--editorial-stone);
+}
+
+@media (max-width: 700px) {
+  .editorial-log-th {
+    display: none;
+  }
+}
+
+.editorial-log-row {
+  display: contents;
+}
+
+@media (max-width: 700px) {
+  .editorial-log-row {
+    display: block;
+    border-top: 1px solid var(--editorial-line);
+    padding: 10px 0;
+  }
+}
+
+.editorial-log-cell {
+  padding: 13px 0;
+  border-top: 1px solid var(--editorial-line);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .editorial-log-cell {
+    border-top: none;
+    padding: 2px 0;
+  }
+}
+
+.editorial-log-cell.mono {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+.editorial-status-pill {
+  color: #fff;
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 3px 9px;
+  display: inline-block;
+}
+
+/* ---------- roadmap / coming this month ---------- */
+.editorial-roadmap-band {
+  padding: 44px 0;
+  background: var(--editorial-ink);
+  color: var(--editorial-bg);
+  border-bottom: 2px solid var(--editorial-ink);
+}
+
+.editorial-roadmap-band .editorial-section-head h2 {
+  color: var(--editorial-bg);
+}
+
+.editorial-roadmap-band .editorial-section-head a {
+  color: color-mix(in srgb, var(--accent) 60%, var(--editorial-bg));
+}
+
+.editorial-roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid color-mix(in srgb, var(--editorial-bg) 15%, transparent);
+}
+
+@media (max-width: 800px) {
+  .editorial-roadmap-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .editorial-roadmap-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editorial-roadmap-cell {
+  padding: 16px 20px 16px 0;
+  border-right: 1px solid color-mix(in srgb, var(--editorial-bg) 15%, transparent);
+}
+
+.editorial-roadmap-window {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  color: color-mix(in srgb, var(--accent) 55%, var(--editorial-bg));
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.editorial-roadmap-product {
+  font-weight: 700;
+  font-size: 0.98rem;
+  margin-top: 4px;
+}
+
+.editorial-roadmap-confidence {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--accent) 55%, var(--editorial-bg));
+  margin-top: 2px;
+}
+
+/* ---------- fantasy corner / injury report (fyiLakers/fyiDodgers only) ---------- */
+.editorial-fantasy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 700px) {
+  .editorial-fantasy-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editorial-fantasy-col {
+  border: 1px solid var(--editorial-line);
+  padding: 24px;
+}
+
+.editorial-fantasy-col h3 {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.editorial-fantasy-col.start h3 {
+  color: var(--accent);
+}
+
+.editorial-fantasy-col.sit h3 {
+  color: #8c6a2e;
+}
+
+.editorial-fantasy-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--editorial-line);
+  font-size: 0.9rem;
+}
+
+.editorial-fantasy-row:last-child {
+  border-bottom: none;
+}
+
+.editorial-fantasy-pos {
+  color: var(--editorial-stone);
+}
+
+.editorial-fantasy-note {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
   font-weight: 700;
 }
 
-#site.theme-netflix .tagline,
-#site.theme-netflix .switcher-btn,
-#site.theme-netflix .brand-opt,
-#site.theme-netflix .article-meta,
-#site.theme-netflix .article-title,
-#site.theme-netflix .article-dek,
-#site.theme-netflix .article-body,
-#site.theme-netflix .legal-body,
-#site.theme-netflix .section-label,
-#site.theme-netflix footer {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+.editorial-fantasy-col.start .editorial-fantasy-note {
+  color: var(--accent);
 }
 
-#site.theme-netflix .switcher-btn {
-  border-radius: 4px;
+.editorial-fantasy-col.sit .editorial-fantasy-note {
+  color: #c6841f;
 }
 
-#site.theme-netflix .article-card {
+.editorial-injury-table {
+  display: grid;
+  grid-template-columns: 1.3fr 0.8fr 0.8fr 1fr;
+  border-top: 2px solid var(--editorial-ink);
+}
+
+@media (max-width: 700px) {
+  .editorial-injury-table {
+    grid-template-columns: 1fr;
+    border-top: none;
+  }
+}
+
+/* ---------- newsletter ---------- */
+.editorial-newsletter-wrap {
+  padding: 56px 32px;
+}
+
+.editorial-newsletter-band {
+  background: var(--accent);
+  color: #fff;
+  padding: 52px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .editorial-newsletter-band {
+    grid-template-columns: 1fr;
+    padding: 36px 24px;
+  }
+}
+
+.editorial-newsletter-band h2 {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #fff;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.editorial-newsletter-band p {
+  color: color-mix(in srgb, #fff 85%, var(--accent));
+  font-size: 0.96rem;
+  max-width: 44ch;
+}
+
+.editorial-newsletter-form {
+  display: flex;
+  gap: 10px;
+}
+
+.editorial-newsletter-form input {
+  flex: 1;
+  padding: 13px 16px;
   border: none;
-  border-radius: 4px;
-  background: var(--netflix-card-bg);
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  font-size: 0.92rem;
+  font-family: var(--font-cams-body), "Work Sans", sans-serif;
 }
 
-#site.theme-netflix .article-card:hover {
-  background: color-mix(in srgb, var(--accent) 12%, var(--netflix-card-bg));
-  box-shadow: 0 8px 24px rgba(229, 9, 20, 0.25);
-  transform: scale(1.015);
-}
-
-#site.theme-netflix .article-card h2 {
+.editorial-newsletter-form button {
+  background: var(--editorial-ink);
+  color: var(--editorial-bg);
+  border: none;
+  padding: 13px 22px;
   font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
-#site.theme-netflix .article-card .category {
+.editorial-newsletter-form button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* ---------- footer ---------- */
+.editorial-footer {
+  border-top: 2px solid var(--editorial-ink);
+  padding: 44px 0 56px;
+  background: var(--editorial-bg);
+  color: var(--editorial-ink);
+}
+
+.editorial-footer-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.editorial-footer-wordmark {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
   font-weight: 700;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.editorial-footer-wordmark span {
+  background: var(--accent);
+  color: #fff;
+  padding: 1px 8px;
+  margin-left: 2px;
+}
+
+.editorial-footer-cols {
+  display: flex;
+  gap: 56px;
+  flex-wrap: wrap;
+}
+
+.editorial-footer-cols h5 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--editorial-stone);
+  margin: 0 0 14px;
+}
+
+.editorial-footer-cols a {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--editorial-ink-soft);
+  margin-bottom: 9px;
+}
+
+.editorial-footer-bottom {
+  max-width: 1240px;
+  margin: 36px auto 0;
+  padding: 24px 32px 0;
+  border-top: 1px solid var(--editorial-line);
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--editorial-stone);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ---------- per-brand tokens ---------- */
+
+.theme-mac {
+  --editorial-ticker-bg: #1d1d1f;
+  --editorial-bg: #f5f5f7;
+  --editorial-bg-alt: #ededef;
+  --editorial-ink: #1d1d1f;
+  --editorial-ink-soft: #5c5c5e;
+  --editorial-stone: #86868b;
+  --editorial-line: #d2d2d7;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-mac {
+    --editorial-bg: #141414;
+    --editorial-bg-alt: #1a1a1a;
+    --editorial-ink: #f5f5f5;
+    --editorial-ink-soft: #a3a3a3;
+    --editorial-stone: #8a8a8a;
+    --editorial-line: #3a3a3a;
+  }
+}
+
+:root[data-theme="dark"] .theme-mac {
+  --editorial-bg: #141414;
+  --editorial-bg-alt: #1a1a1a;
+  --editorial-ink: #f5f5f5;
+  --editorial-ink-soft: #a3a3a3;
+  --editorial-stone: #8a8a8a;
+  --editorial-line: #3a3a3a;
+}
+
+.theme-win {
+  --editorial-ticker-bg: #1b1b1f;
+  --editorial-bg: #f3f6fb;
+  --editorial-bg-alt: #e4ebf5;
+  --editorial-ink: #1b1b1f;
+  --editorial-ink-soft: #5b6470;
+  --editorial-stone: #8892a0;
+  --editorial-line: #d6dee8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-win {
+    --editorial-bg: #141414;
+    --editorial-bg-alt: #1a1a1a;
+    --editorial-ink: #f5f5f5;
+    --editorial-ink-soft: #a3a3a3;
+    --editorial-stone: #8a8a8a;
+    --editorial-line: #3a3a3a;
+  }
+}
+
+:root[data-theme="dark"] .theme-win {
+  --editorial-bg: #141414;
+  --editorial-bg-alt: #1a1a1a;
+  --editorial-ink: #f5f5f5;
+  --editorial-ink-soft: #a3a3a3;
+  --editorial-stone: #8a8a8a;
+  --editorial-line: #3a3a3a;
+}
+
+.theme-google {
+  --editorial-ticker-bg: #202124;
+  --editorial-bg: #f8f9fa;
+  --editorial-bg-alt: #eceef1;
+  --editorial-ink: #202124;
+  --editorial-ink-soft: #5f6368;
+  --editorial-stone: #80868b;
+  --editorial-line: #dadce0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-google {
+    --editorial-bg: #141414;
+    --editorial-bg-alt: #1a1a1a;
+    --editorial-ink: #f5f5f5;
+    --editorial-ink-soft: #a3a3a3;
+    --editorial-stone: #8a8a8a;
+    --editorial-line: #3a3a3a;
+  }
+}
+
+:root[data-theme="dark"] .theme-google {
+  --editorial-bg: #141414;
+  --editorial-bg-alt: #1a1a1a;
+  --editorial-ink: #f5f5f5;
+  --editorial-ink-soft: #a3a3a3;
+  --editorial-stone: #8a8a8a;
+  --editorial-line: #3a3a3a;
+}
+
+/* Fixed, dark-only — no light-mode override, same "this brand has one true
+   look" pattern as fyiFlyNow/Lakers/Dodgers. */
+.theme-netflix {
+  --editorial-ticker-bg: #000000;
+  --editorial-bg: #141414;
+  --editorial-bg-alt: #1a1a1a;
+  --editorial-ink: #f5f5f5;
+  --editorial-ink-soft: #a3a3a3;
+  --editorial-stone: #8a8a8a;
+  --editorial-line: #3a3a3a;
+}
+
+/* Netflix's own mockup swaps these two bands' treatment relative to
+   mac/win/google: since the whole site is already dark, an ink-colored
+   roadmap band would be nearly invisible against the page, so it uses the
+   accent red instead — and reserves solid black (not accent) for the
+   newsletter band, the opposite of the other three brands' pairing. */
+.theme-netflix .editorial-roadmap-band {
+  background: var(--accent);
+  color: #fff;
+}
+
+.theme-netflix .editorial-roadmap-band .editorial-section-head h2,
+.theme-netflix .editorial-roadmap-band .editorial-section-head a {
+  color: #fff;
+}
+
+.theme-netflix .editorial-roadmap-window,
+.theme-netflix .editorial-roadmap-confidence {
+  color: #ffd3d5;
+}
+
+.theme-netflix .editorial-roadmap-grid,
+.theme-netflix .editorial-roadmap-cell {
+  border-color: rgba(245, 245, 245, 0.25);
+}
+
+.theme-netflix .editorial-newsletter-band {
+  background: #000;
+}
+
+.theme-netflix .editorial-newsletter-band p {
+  color: var(--editorial-ink-soft);
+}
+
+.theme-mac,
+.theme-win,
+.theme-google,
+.theme-netflix {
+  font-family: var(--font-cams-body), "Work Sans", sans-serif;
+}
+
+.theme-mac .article-title,
+.theme-win .article-title,
+.theme-google .article-title,
+.theme-netflix .article-title,
+.theme-mac .section-label,
+.theme-win .section-label,
+.theme-google .section-label,
+.theme-netflix .section-label {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
+  text-transform: uppercase;
+}
+
+.theme-mac .article-meta,
+.theme-win .article-meta,
+.theme-google .article-meta,
+.theme-netflix .article-meta,
+.theme-mac .category,
+.theme-win .category,
+.theme-google .category,
+.theme-netflix .category {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+}
+
+.theme-mac .category,
+.theme-win .category,
+.theme-google .category,
+.theme-netflix .category {
+  color: var(--accent);
+}
+
+.theme-mac .article-card,
+.theme-win .article-card,
+.theme-google .article-card,
+.theme-netflix .article-card {
+  border-radius: 3px;
 }
 
 /* ---------- fyiFlyNow theme, used only when fyiFlyNow is active ---------- */
@@ -2414,93 +3024,65 @@ body.theme-flynow-body {
   font-weight: 700;
 }
 
-/* ---------- fyiLakers theme, used only when fyiLakers is active ---------- */
-/* Purple/gold from the provided logo kit (accent_color #4b1f73, plus the
-   --lakers-gold token above as a secondary trim color) instead of the
-   shared blue everything else uses. Condensed Oswald echoes the
-   "fyi LAKERS" logo lockup's headline lettering for the wordmark and
-   article titles; body copy stays a plain system sans for readability. */
+/* ---------- fyiLakers theme, used only when fyiLakers is active ----------
+   Editorial-ticker template (see the shared .editorial-* rules and the
+   mac/win/google/netflix theme blocks above) — purple/gold from the
+   provided logo kit (accent_color #4b1f73, --lakers-gold #fdb927 as the
+   secondary trim/pulse color). The chrome (ticker/masthead/hero/etc.) is
+   the shared template; what's still bespoke here is the real live-data
+   scoreboard widget below (kept, not part of the shared template) and its
+   token references, updated to flip with --editorial-* instead of the old
+   sitewide --bg/--fg/--border/--comment set. */
 
-.lakers-titlebar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 40px;
-  padding: 0 16px;
-  background: var(--lakers-chrome-bg);
-  border-bottom: 2px solid var(--lakers-gold);
+.theme-lakers {
+  --editorial-ticker-bg: #101418;
+  --editorial-bg: #f4f5f7;
+  --editorial-bg-alt: #e7e9ec;
+  --editorial-ink: #101418;
+  --editorial-ink-soft: #3a3f45;
+  --editorial-stone: #6b7280;
+  --editorial-line: #dadee3;
 }
 
-.lakers-titlebar-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-lakers {
+    --editorial-bg: #141414;
+    --editorial-bg-alt: #1a1a1a;
+    --editorial-ink: #f5f5f5;
+    --editorial-ink-soft: #a3a3a3;
+    --editorial-stone: #8a8a8a;
+    --editorial-line: #3a3a3a;
+  }
 }
 
-.lakers-titlebar-actions .theme-toggle,
-.lakers-titlebar-actions .search-trigger,
-.lakers-titlebar-actions .notify-bell {
-  width: 28px;
-  height: 28px;
-  font-size: 13px;
+:root[data-theme="dark"] .theme-lakers {
+  --editorial-bg: #141414;
+  --editorial-bg-alt: #1a1a1a;
+  --editorial-ink: #f5f5f5;
+  --editorial-ink-soft: #a3a3a3;
+  --editorial-stone: #8a8a8a;
+  --editorial-line: #3a3a3a;
 }
 
-.lakers-titlebar-actions .switcher-btn {
-  padding: 6px 12px;
-  font-size: 12px;
+.theme-lakers,
+.theme-lakers .article-title,
+.theme-lakers .section-label {
+  font-family: var(--font-cams-body), "Work Sans", sans-serif;
 }
 
-/* Scoreboard-card treatment for the popovers — gold top stripe + condensed
-   Oswald title, echoing .lakers-scoreboard/.lakers-game-row--live below. */
-.lakers-titlebar-actions .notify-popover {
-  border-top: 3px solid var(--lakers-gold);
-}
-
-.lakers-titlebar-actions .notify-popover-title {
-  font-family: var(--font-sports-display), Oswald, "Helvetica Neue", Arial, sans-serif;
-  letter-spacing: 0.04em;
+.theme-lakers .article-title,
+.theme-lakers .section-label {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
   text-transform: uppercase;
 }
 
-.lakers-titlebar-actions .notify-topic-row:hover {
-  background: color-mix(in srgb, var(--lakers-gold) 12%, transparent);
-  border-radius: 6px;
+.theme-lakers .category {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  color: var(--accent);
 }
 
-.lakers-titlebar-actions .notify-subscribe {
-  background: var(--lakers-gold);
-  color: var(--lakers-chrome-bg);
-}
-
-/* Reuses the scoreboard's own gold pulse instead of the generic accent dot. */
-.lakers-titlebar-actions .notify-dot {
-  background: var(--lakers-gold);
-  animation: lakers-pulse 1.8s ease-in-out infinite;
-}
-
-.lakers-jersey {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.lakers-badge {
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--lakers-chrome-bg);
-  background: var(--lakers-gold);
-  border-radius: 4px;
-  padding: 2px 6px;
-}
-
-.lakers-name {
-  font-family: var(--font-sports-display), Oswald, "Helvetica Neue", Arial, sans-serif;
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  color: #fff;
+.theme-lakers .article-card {
+  border-radius: 3px;
 }
 
 @keyframes lakers-pulse {
@@ -2513,81 +3095,15 @@ body.theme-flynow-body {
   }
 }
 
-#site.theme-lakers {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-#site.theme-lakers .wordmark {
-  font-family: var(--font-sports-display), Oswald, sans-serif;
-  font-weight: 600;
-}
-
-#site.theme-lakers .wordmark .suffix {
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-/* Night mode only: gold reads better than the purple accent against the
-   dark background, echoing the lakers-gold scoreboard trim. Light mode
-   keeps the purple --accent color, which has better contrast on white. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) #site.theme-lakers .wordmark .suffix {
-    color: var(--lakers-gold);
-  }
-}
-
-:root[data-theme="dark"] #site.theme-lakers .wordmark .suffix {
-  color: var(--lakers-gold);
-}
-
-#site.theme-lakers .article-title {
-  font-family: var(--font-sports-display), Oswald, sans-serif;
-  font-weight: 600;
-}
-
-#site.theme-lakers .site-header {
-  padding: 24px 32px 14px;
-}
-
-#site.theme-lakers .switcher-btn {
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--accent) 10%, var(--bg-alt));
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
-}
-
-#site.theme-lakers .article-card {
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--lakers-gold);
-  border-radius: 10px;
-  background: var(--bg-alt);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
-}
-
-#site.theme-lakers .article-card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--lakers-gold) 25%, transparent);
-  transform: translateY(-1px);
-}
-
-#site.theme-lakers .article-card h2 {
-  font-family: var(--font-sports-display), Oswald, sans-serif;
-  font-weight: 600;
-  font-size: 17px;
-}
-
-#site.theme-lakers .article-card .category {
-  font-weight: 700;
-}
-
 /* Homepage-only widget, see components/LakersScoreboard.tsx — mirrors
    .dodgers-scoreboard below, swapped to the lakers-gold accent instead of
    the dodgers-chrome-bg blue. */
 .lakers-scoreboard {
   margin-bottom: 28px;
   padding: 16px 18px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--editorial-line);
   border-radius: 10px;
-  background: var(--bg-alt);
+  background: var(--editorial-bg-alt);
 }
 
 .lakers-scoreboard .section-label {
@@ -2607,7 +3123,7 @@ body.theme-flynow-body {
    the full rationale (mirrored here for Lakers). */
 .lakers-game-row-wrap {
   padding: 8px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--editorial-line);
 }
 
 .lakers-game-row-wrap:last-child {
@@ -2639,12 +3155,12 @@ body.theme-flynow-body {
 }
 
 .lakers-game-matchup {
-  color: var(--fg);
+  color: var(--editorial-ink);
 }
 
 .lakers-game-meta {
   margin-left: auto;
-  color: var(--comment);
+  color: var(--editorial-ink-soft);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -2652,7 +3168,7 @@ body.theme-flynow-body {
 .lakers-game-odds {
   margin-top: 2px;
   font-size: 11.5px;
-  color: var(--comment);
+  color: var(--editorial-ink-soft);
 }
 
 /* ESPN/sportsbook-supplied responsible-gambling notice — shown once per
@@ -2660,10 +3176,10 @@ body.theme-flynow-body {
 .lakers-odds-disclaimer {
   margin: 10px 0 0;
   padding-top: 8px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--editorial-line);
   font-size: 10px;
   line-height: 1.5;
-  color: var(--comment);
+  color: var(--editorial-ink-soft);
 }
 
 .lakers-odds-disclaimer summary {
@@ -2673,7 +3189,7 @@ body.theme-flynow-body {
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--comment);
+  color: var(--editorial-ink-soft);
 }
 
 .lakers-odds-disclaimer summary::-webkit-details-marker {
@@ -2708,93 +3224,59 @@ body.theme-flynow-body {
   text-decoration: underline;
 }
 
-/* ---------- fyiDodgers theme, used only when fyiDodgers is active ---------- */
-/* Dodger blue from the provided logo kit (accent_color #005a9c) — a simpler
-   two-tone kit than fyiLakers, no secondary accent color, so contrast comes
-   from white instead of a second named token. Same condensed Oswald as
-   fyiLakers for the wordmark/article titles (see --font-sports-display in
-   layout.tsx — one shared font load for every sports-team brand). */
+/* ---------- fyiDodgers theme, used only when fyiDodgers is active ----------
+   Editorial-ticker template, same shape as fyiLakers above — Dodger blue
+   from the provided logo kit (accent_color #005a9c), no secondary accent
+   color (white stands in for it, same as the kept scoreboard widget
+   already did). */
 
-.dodgers-titlebar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 40px;
-  padding: 0 16px;
-  background: var(--dodgers-chrome-bg);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+.theme-dodgers {
+  --editorial-ticker-bg: #101418;
+  --editorial-bg: #f4f5f7;
+  --editorial-bg-alt: #e7e9ec;
+  --editorial-ink: #101418;
+  --editorial-ink-soft: #3a3f45;
+  --editorial-stone: #6b7280;
+  --editorial-line: #dadee3;
 }
 
-.dodgers-titlebar-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-dodgers {
+    --editorial-bg: #141414;
+    --editorial-bg-alt: #1a1a1a;
+    --editorial-ink: #f5f5f5;
+    --editorial-ink-soft: #a3a3a3;
+    --editorial-stone: #8a8a8a;
+    --editorial-line: #3a3a3a;
+  }
 }
 
-.dodgers-titlebar-actions .theme-toggle,
-.dodgers-titlebar-actions .search-trigger,
-.dodgers-titlebar-actions .notify-bell {
-  width: 28px;
-  height: 28px;
-  font-size: 13px;
+:root[data-theme="dark"] .theme-dodgers {
+  --editorial-bg: #141414;
+  --editorial-bg-alt: #1a1a1a;
+  --editorial-ink: #f5f5f5;
+  --editorial-ink-soft: #a3a3a3;
+  --editorial-stone: #8a8a8a;
+  --editorial-line: #3a3a3a;
 }
 
-.dodgers-titlebar-actions .switcher-btn {
-  padding: 6px 12px;
-  font-size: 12px;
+.theme-dodgers {
+  font-family: var(--font-cams-body), "Work Sans", sans-serif;
 }
 
-/* Mirrors the Lakers treatment above — blue top stripe (Dodgers has no
-   secondary accent, so white stands in the way .dodgers-badge already
-   uses white-on-blue) + condensed Oswald title. */
-.dodgers-titlebar-actions .notify-popover {
-  border-top: 3px solid var(--dodgers-chrome-bg);
-}
-
-.dodgers-titlebar-actions .notify-popover-title {
-  font-family: var(--font-sports-display), Oswald, "Helvetica Neue", Arial, sans-serif;
-  letter-spacing: 0.04em;
+.theme-dodgers .article-title,
+.theme-dodgers .section-label {
+  font-family: var(--font-sports-display), Oswald, sans-serif;
   text-transform: uppercase;
 }
 
-.dodgers-titlebar-actions .notify-topic-row:hover {
-  background: color-mix(in srgb, var(--dodgers-chrome-bg) 12%, transparent);
-  border-radius: 6px;
+.theme-dodgers .category {
+  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
+  color: var(--accent);
 }
 
-.dodgers-titlebar-actions .notify-subscribe {
-  background: var(--dodgers-chrome-bg);
-  color: #fff;
-}
-
-.dodgers-titlebar-actions .notify-dot {
-  background: var(--dodgers-chrome-bg);
-  animation: dodgers-pulse 1.8s ease-in-out infinite;
-}
-
-.dodgers-jersey {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.dodgers-badge {
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--dodgers-chrome-bg);
-  background: #fff;
-  border-radius: 4px;
-  padding: 2px 6px;
-}
-
-.dodgers-name {
-  font-family: var(--font-sports-display), Oswald, "Helvetica Neue", Arial, sans-serif;
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  color: #fff;
+.theme-dodgers .article-card {
+  border-radius: 3px;
 }
 
 @keyframes dodgers-pulse {
@@ -2807,68 +3289,15 @@ body.theme-flynow-body {
   }
 }
 
-#site.theme-dodgers {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-#site.theme-dodgers .wordmark {
-  font-family: var(--font-sports-display), Oswald, sans-serif;
-  font-weight: 600;
-}
-
-#site.theme-dodgers .wordmark .suffix {
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-#site.theme-dodgers .article-title {
-  font-family: var(--font-sports-display), Oswald, sans-serif;
-  font-weight: 600;
-}
-
-#site.theme-dodgers .site-header {
-  padding: 24px 32px 14px;
-}
-
-#site.theme-dodgers .switcher-btn {
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--accent) 10%, var(--bg-alt));
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
-}
-
-#site.theme-dodgers .article-card {
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--accent);
-  border-radius: 10px;
-  background: var(--bg-alt);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
-}
-
-#site.theme-dodgers .article-card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 25%, transparent);
-  transform: translateY(-1px);
-}
-
-#site.theme-dodgers .article-card h2 {
-  font-family: var(--font-sports-display), Oswald, sans-serif;
-  font-weight: 600;
-  font-size: 17px;
-}
-
-#site.theme-dodgers .article-card .category {
-  font-weight: 700;
-}
-
 /* Homepage-only widget, see components/DodgersScoreboard.tsx — live score
    (if a game's in progress) plus the next few games from the same
    3-day-ahead schedule fetch that feeds the titlebar's compact line. */
 .dodgers-scoreboard {
   margin-bottom: 28px;
   padding: 16px 18px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--editorial-line);
   border-radius: 10px;
-  background: var(--bg-alt);
+  background: var(--editorial-bg-alt);
 }
 
 .dodgers-scoreboard .section-label {
@@ -2890,7 +3319,7 @@ body.theme-flynow-body {
    a game's own matchup and odds lines. */
 .dodgers-game-row-wrap {
   padding: 8px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--editorial-line);
 }
 
 .dodgers-game-row-wrap:last-child {
@@ -2922,12 +3351,12 @@ body.theme-flynow-body {
 }
 
 .dodgers-game-matchup {
-  color: var(--fg);
+  color: var(--editorial-ink);
 }
 
 .dodgers-game-meta {
   margin-left: auto;
-  color: var(--comment);
+  color: var(--editorial-ink-soft);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -2935,7 +3364,7 @@ body.theme-flynow-body {
 .dodgers-game-odds {
   margin-top: 2px;
   font-size: 11.5px;
-  color: var(--comment);
+  color: var(--editorial-ink-soft);
 }
 
 /* ESPN/DraftKings-supplied responsible-gambling notice — shown once per
@@ -2943,10 +3372,10 @@ body.theme-flynow-body {
 .dodgers-odds-disclaimer {
   margin: 10px 0 0;
   padding-top: 8px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--editorial-line);
   font-size: 10px;
   line-height: 1.5;
-  color: var(--comment);
+  color: var(--editorial-ink-soft);
 }
 
 .dodgers-odds-disclaimer summary {
@@ -2956,7 +3385,7 @@ body.theme-flynow-body {
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--comment);
+  color: var(--editorial-ink-soft);
 }
 
 .dodgers-odds-disclaimer summary::-webkit-details-marker {
