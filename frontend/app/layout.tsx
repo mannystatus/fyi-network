@@ -1,7 +1,7 @@
 import Script from "next/script";
 import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
-import { Archivo_Black, Space_Grotesk, Inter, Oswald } from "next/font/google";
+import { Archivo_Black, Space_Grotesk, Inter, Oswald, Newsreader, Work_Sans, IBM_Plex_Mono } from "next/font/google";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { getCurrentBrand } from "../lib/api";
@@ -45,6 +45,29 @@ const sportsDisplay = Oswald({
   weight: ["500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-sports-display",
+  preload: false,
+});
+
+// fyiCams's editorial type system — Newsreader for headlines (with the
+// italic emphasis word the design uses in the hero), Work Sans for body/UI,
+// IBM Plex Mono for data labels/scores/tags and the wordmark itself.
+const camsDisplay = Newsreader({
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-cams-display",
+  preload: false,
+});
+const camsBody = Work_Sans({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-cams-body",
+  preload: false,
+});
+const camsMono = IBM_Plex_Mono({
+  weight: ["500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-cams-mono",
   preload: false,
 });
 
@@ -115,7 +138,7 @@ export default async function RootLayout({
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
       {gaId && <GoogleAnalytics gaId={gaId} />}
       <body
-        className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable} ${sportsDisplay.variable} ${
+        className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable} ${sportsDisplay.variable} ${camsDisplay.variable} ${camsBody.variable} ${camsMono.variable} ${
           brand.icon === "flynow" ? "theme-flynow-body" : ""
         }`}
         style={{ "--accent": brand.accent_color } as React.CSSProperties}

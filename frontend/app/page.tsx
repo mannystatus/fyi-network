@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { getArticles, getAllBrands, getCurrentBrand } from "../lib/api";
 import ArticleList from "../components/ArticleList";
+import CamsHomepage from "../components/CamsHomepage";
 import DodgersScoreboard from "../components/DodgersScoreboard";
 import FlyNowHomepage from "../components/FlyNowHomepage";
 import LakersScoreboard from "../components/LakersScoreboard";
 import LatestFromUs from "../components/LatestFromUs";
 import Pagination from "../components/Pagination";
 
-// fyiFlyNow's homepage is its own bespoke landing page (FlyNowHomepage.tsx,
-// not the standard article list every other brand uses below), so it gets
-// its own keyword-targeted title/description instead of falling back to
-// the layout's generic "{brand.name} | {tagline}" default.
+// fyiFlyNow and fyiCams both have their own bespoke landing pages (not the
+// standard article list every other brand uses below), so they get their
+// own keyword-targeted title/description instead of falling back to the
+// layout's generic "{brand.name} | {tagline}" default.
 export async function generateMetadata(): Promise<Metadata> {
   const brand = await getCurrentBrand();
   if (brand.icon === "flynow") {
@@ -18,6 +19,14 @@ export async function generateMetadata(): Promise<Metadata> {
       title: "Travel Guides, Flight & Airline News",
       description:
         "Daily flight and airline news, plus real travel guides for destinations abroad — pulled from travel creators who've actually made the trip.",
+      alternates: { canonical: "/" },
+    };
+  }
+  if (brand.icon === "cams") {
+    return {
+      title: "Camera News, Reviews & Buying Guides",
+      description:
+        "Data-driven camera coverage — gear announcements, hands-on scoring, and buying guides from people who actually shoot.",
       alternates: { canonical: "/" },
     };
   }
@@ -36,6 +45,11 @@ export default async function HomePage({
   if (brand.icon === "flynow") {
     const brands = await getAllBrands();
     return <FlyNowHomepage brands={brands} currentSlug={brand.slug} />;
+  }
+
+  if (brand.icon === "cams") {
+    const brands = await getAllBrands();
+    return <CamsHomepage brand={brand} brands={brands} />;
   }
 
   const { page: pageParam } = await searchParams;

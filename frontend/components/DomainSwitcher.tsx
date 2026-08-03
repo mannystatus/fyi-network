@@ -13,6 +13,7 @@ const ICONS: Record<Brand["icon"], string> = {
   flynow: "✈",
   lakers: "🏀",
   dodgers: "⚾",
+  cams: "📷",
 };
 
 export default function DomainSwitcher({

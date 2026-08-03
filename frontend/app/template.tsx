@@ -4,6 +4,7 @@ import DomainSwitcher from "../components/DomainSwitcher";
 import TopicsNav from "../components/TopicsNav";
 import FlyNowNavbar from "../components/FlyNowNavbar";
 import FlyNowTitlebar from "../components/FlyNowTitlebar";
+import CamsHeader from "../components/CamsHeader";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
 import SearchBox from "../components/SearchBox";
@@ -25,13 +26,19 @@ import GameDaySoftPrompt from "../components/GameDaySoftPrompt";
 const ICONS_MOVED = new Set(["mac", "win", "google", "netflix", "dodgers", "lakers"]);
 const ACTIONS_MOVED = new Set(["win", "netflix", "dodgers", "lakers"]);
 
+// Brands whose homepage is a fully bespoke component (FlyNowHomepage,
+// CamsHomepage) that supplies its own header/footer and skips the shared
+// #site chrome entirely — everywhere else on these brands (articles, etc.)
+// still goes through the normal Chrome below.
+const BARE_HOMEPAGE_BRANDS = new Set(["flynow", "cams"]);
+
 export default async function Template({ children }: { children: React.ReactNode }) {
   const [brand, brands] = await Promise.all([getCurrentBrand(), getAllBrands()]);
   const suffix = brand.name.replace("fyi", "");
 
-  // Only fyiFlyNow's homepage ever needs to hide the shared chrome, so every
-  // other brand can skip the client-side route check entirely.
-  if (brand.icon !== "flynow") {
+  // Only these brands' homepages ever need to hide the shared chrome, so
+  // every other brand can skip the client-side route check entirely.
+  if (!BARE_HOMEPAGE_BRANDS.has(brand.icon)) {
     return <Chrome brand={brand} brands={brands} suffix={suffix}>{children}</Chrome>;
   }
 
@@ -143,6 +150,7 @@ async function Chrome({
       {brand.icon === "flynow" && (
         <FlyNowTitlebar domain={brand.domain} brandSlug={brand.slug} brandName={brand.name} topics={brand.topics} />
       )}
+      {brand.icon === "cams" && <CamsHeader brand={brand} brands={brands} />}
 
       <div id="site" className={`theme-${brand.icon}`}>
         {brand.icon === "mac" && (
@@ -160,7 +168,7 @@ async function Chrome({
 
         {brand.icon === "flynow" ? (
           <FlyNowNavbar brands={brands} currentSlug={brand.slug} />
-        ) : (
+        ) : brand.icon === "cams" ? null : (
           <header className="nav-bar">
             <div className="nav-bar-inner">
               <div className="wordmark-col">

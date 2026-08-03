@@ -60,6 +60,12 @@ BRANDS = [
         tagline="Dodgers news. Decoded daily.",
         topics="Team News,Trade Rumors,Injury Report,Game Recaps,Prospects & Free Agency",
     ),
+    dict(
+        slug="fyicams", name="fyiCams", domain="fyicams.com",
+        accent_color="#0B5E52", icon="cams",  # teal, the exact hex from the provided brand kit
+        tagline="Data-driven camera coverage",
+        topics="News,New Gear,Buying Guides,Rumors",
+    ),
 ]
 
 brand_rows = {}

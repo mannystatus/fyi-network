@@ -79,6 +79,18 @@ function logoGlyph(icon) {
       <path d="M ${cx + r * 0.55} ${cy - r * 0.86} Q ${cx - r * 0.35} ${cy} ${cx + r * 0.55} ${cy + r * 0.86}" stroke="#c8102e" stroke-width="4" fill="none"/>
     `;
   }
+  if (icon === "cams") {
+    // Camera-body mark from the fyiCams brand kit (outlined body + lens
+    // ring + viewfinder hump), in the kit's "bright teal on ink" dark-mode
+    // variant since this banner's background is dark, same reasoning as
+    // flynow's coral/lakers' gold reading against the shared dark bg.
+    const w = 190, h = 130, x0 = cx - w / 2, y0 = cy - h / 2 + 10;
+    return `
+      <rect x="${x0 + w * 0.28}" y="${y0 - 22}" width="${w * 0.2}" height="22" fill="#3fbfa8"/>
+      <rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="none" stroke="#3fbfa8" stroke-width="8"/>
+      <circle cx="${cx}" cy="${cy + 4}" r="36" fill="none" stroke="#3fbfa8" stroke-width="8"/>
+    `;
+  }
   // netflix — same bold serif "N" the live site renders in .netflix-logo
   return `<text x="${cx}" y="${cy + 60}" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="800" font-size="200" fill="#e50914" letter-spacing="-6">N</text>`;
 }
@@ -116,6 +128,7 @@ const BRANDS = [
   { slug: "fyiflynow", suffix: "FlyNow", icon: "flynow", tagline: "Flight deals. Decoded daily." },
   { slug: "fyilakers", suffix: "Lakers", icon: "lakers", tagline: "Lakers news. Decoded daily." },
   { slug: "fyidodgers", suffix: "Dodgers", icon: "dodgers", tagline: "Dodgers news. Decoded daily." },
+  { slug: "fyicams", suffix: "Cams", icon: "cams", tagline: "Data-driven camera coverage." },
 ];
 
 mkdirSync(OUT_DIR, { recursive: true });

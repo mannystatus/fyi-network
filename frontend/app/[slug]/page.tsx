@@ -14,6 +14,8 @@ import GoogleCrossPromo from "../../components/GoogleCrossPromo";
 import NetflixCrossPromo from "../../components/NetflixCrossPromo";
 import LakersCrossPromo from "../../components/LakersCrossPromo";
 import DodgersCrossPromo from "../../components/DodgersCrossPromo";
+import CamsArticleSidebar from "../../components/CamsArticleSidebar";
+import { CAMS_REVIEWS } from "../../lib/camsReviews";
 import { AD_SLOTS } from "../../lib/analytics";
 import { extractFaq } from "../../lib/faq";
 import { extractFirstImageUrl } from "../../lib/ogImage";
@@ -106,6 +108,10 @@ export default async function ArticlePage({
     getCurrentBrand(),
   ]);
 
+  // Only fyiCams, and only when this article's slug has a matching
+  // hand-authored review (see lib/camsReviews.ts) — most articles won't.
+  const camsReview = brand.icon === "cams" ? CAMS_REVIEWS[slug] : undefined;
+
   const url = `${canonicalOrigin(brand.domain)}/${slug}`;
   const jsonLd = {
     "@context": "https://schema.org",
@@ -161,42 +167,57 @@ export default async function ArticlePage({
         <Link href="/">&larr; Latest</Link>
       </p>
 
-      <div className="article-header">
-        {article.image_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={article.image_url} alt="" className="article-banner" />
-        )}
-        {article.is_featured && <span className="featured-badge featured-badge-lg">★ Featured</span>}
-        {article.category && (
-          <span className="category" style={{ color: categoryColor(article.category) }}>
-            {article.category}
-          </span>
-        )}
-        <h1 className="article-title">{article.title}</h1>
-        {article.dek && <p className="article-dek">{article.dek}</p>}
-        <div className="article-meta">
-          {article.author}
-          {article.author && " · "}
-          {new Date(article.published_at).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
-          {" · "}
-          {readingTime(article.body_md)} min read
-        </div>
-        <ShareButtons title={article.title} />
-      </div>
-
-      <div className="article-body">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.body_md}</ReactMarkdown>
-      </div>
-
-      <AdSlot slot={AD_SLOTS.inArticle} />
-
       {(() => {
-        const CrossPromo = CROSS_PROMO[brand.slug];
-        return CrossPromo ? <CrossPromo /> : null;
+        const mainContent = (
+          <>
+            <div className="article-header">
+              {article.image_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={article.image_url} alt="" className="article-banner" />
+              )}
+              {article.is_featured && <span className="featured-badge featured-badge-lg">★ Featured</span>}
+              {article.category && (
+                <span className="category" style={{ color: categoryColor(article.category) }}>
+                  {article.category}
+                </span>
+              )}
+              <h1 className="article-title">{article.title}</h1>
+              {article.dek && <p className="article-dek">{article.dek}</p>}
+              <div className="article-meta">
+                {article.author}
+                {article.author && " · "}
+                {new Date(article.published_at).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                {" · "}
+                {readingTime(article.body_md)} min read
+              </div>
+              <ShareButtons title={article.title} />
+            </div>
+
+            <div className="article-body">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.body_md}</ReactMarkdown>
+            </div>
+
+            <AdSlot slot={AD_SLOTS.inArticle} />
+
+            {(() => {
+              const CrossPromo = CROSS_PROMO[brand.slug];
+              return CrossPromo ? <CrossPromo /> : null;
+            })()}
+          </>
+        );
+
+        return camsReview ? (
+          <div className="cams-article-grid">
+            <div>{mainContent}</div>
+            <CamsArticleSidebar review={camsReview} />
+          </div>
+        ) : (
+          mainContent
+        );
       })()}
 
       {related.length > 0 && (

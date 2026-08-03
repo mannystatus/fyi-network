@@ -86,6 +86,10 @@ QUERY_OVERRIDES = {
     ("fyidodgers", "Injury Report"): "Los Angeles Dodgers injury report",
     ("fyidodgers", "Game Recaps"): "Los Angeles Dodgers game recap",
     ("fyidodgers", "Prospects & Free Agency"): "Los Angeles Dodgers prospects OR free agency",
+    "News": "camera news OR mirrorless camera OR photography industry",
+    "New Gear": "new camera announcement OR new lens announcement",
+    "Buying Guides": "best camera OR camera buying guide",
+    "Rumors": "camera rumor OR camera leak",
 }
 
 
@@ -95,6 +99,30 @@ def _brand_lookup(mapping: dict, brand_slug: str, topic: str):
     if (brand_slug, topic) in mapping:
         return mapping[(brand_slug, topic)]
     return mapping.get(topic)
+
+# Shared by all four fyiCams topics below — bare "camera"/"lens"/"sensor"
+# match far too much unrelated news ("caught on camera" crime stories,
+# eyeglass lenses, phone chip sensors), so this requires either a specific
+# photography-gear term or a real camera-maker name instead.
+CAMERA_GEAR_KEYWORDS = [
+    "mirrorless",
+    "dslr",
+    "camera lens",
+    "camera body",
+    "full-frame camera",
+    "aps-c",
+    "megapixel",
+    "aperture",
+    "canon eos",
+    "nikon z",
+    "sony alpha",
+    "fujifilm",
+    "panasonic lumix",
+    "olympus om",
+    "leica",
+    "gopro",
+    "hasselblad",
+]
 
 # Bing News search occasionally returns loosely-related filler when a topic
 # has thin same-day coverage (e.g. a real-estate story with zero mention of
@@ -146,6 +174,14 @@ FILTER_KEYWORDS = {
     ("fyidodgers", "Injury Report"): ["dodgers"],
     ("fyidodgers", "Game Recaps"): ["dodgers"],
     ("fyidodgers", "Prospects & Free Agency"): ["dodgers"],
+    # Bare "camera"/"lens"/"sensor" are too generic on their own — "caught
+    # on camera" (surveillance/crime stories), "lens of history" (metaphor),
+    # and phone/chip "sensor" news all slip through a plain-word filter.
+    # Require an actual photography-gear term or a real camera-maker name.
+    "News": CAMERA_GEAR_KEYWORDS,
+    "New Gear": CAMERA_GEAR_KEYWORDS,
+    "Buying Guides": CAMERA_GEAR_KEYWORDS,
+    "Rumors": CAMERA_GEAR_KEYWORDS,
 }
 
 # A product keyword can show up in a story that has nothing to do with the
