@@ -5,9 +5,10 @@ import CamsHeader from "./CamsHeader";
 import CamsFooter from "./CamsFooter";
 import CamsNewsletterForm from "./CamsNewsletterForm";
 import { CAMS_REVIEWS } from "../lib/camsReviews";
-import { COMPARE_ROWS, VIDEO_REVIEWS, RUMORS, DEALS } from "../lib/camsHomeContent";
+import { COMPARE_ROWS, VIDEO_REVIEWS, DEALS } from "../lib/camsHomeContent";
 
 const LATEST_COUNT = 8;
+const RUMOR_COUNT = 5;
 
 function scoreColor(score: number) {
   return score >= 8.5 ? "#0B5E52" : "#C6841F";
@@ -40,9 +41,10 @@ function MosaicCard({ article, size, brand }: { article: ArticleListItem; size: 
 }
 
 export default async function CamsHomepage({ brand, brands }: { brand: Brand; brands: Brand[] }) {
-  const [latest, reviews] = await Promise.all([
+  const [latest, reviews, rumors] = await Promise.all([
     getArticles(undefined, LATEST_COUNT),
     Promise.resolve(Object.values(CAMS_REVIEWS)),
+    getArticles("Rumors", RUMOR_COUNT),
   ]);
   const leadReview = reviews[0];
 
@@ -206,12 +208,13 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
     /* ---------- RUMOR MILL ---------- */
     .cams-rumor-row { display: grid; grid-template-columns: 130px 1fr auto; gap: 24px; align-items: center; padding: 22px 0; border-bottom: 1px solid #E0DCD3; }
     @media (max-width: 700px) { .cams-rumor-row { grid-template-columns: 1fr; gap: 8px; } }
-    .cams-rumor-conf { font-family: var(--font-cams-mono), monospace; font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: #8C8779; font-weight: 700; }
-    .cams-rumor-bar-track { height: 5px; background: #E0DCD3; margin-top: 6px; }
-    .cams-rumor-bar-fill { display: block; height: 100%; background: #D9A23B; }
+    .cams-rumor-row:hover { background: rgba(20,18,15,.03); }
+    .cams-rumor-date { font-family: var(--font-cams-mono), monospace; font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: #8C8779; font-weight: 700; }
     .cams-rumor-title { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
     .cams-rumor-dek { font-size: .85rem; color: #4A463F; }
+    .cams-rumor-source { font-size: .78rem; color: #8C8779; margin-top: 4px; display: block; }
     .cams-rumor-arrow { color: #0B5E52; font-size: 1.3rem; }
+    .cams-rumor-empty { padding: 22px 0; font-size: .9rem; color: #8C8779; }
 
     /* ---------- DEALS ---------- */
     .cams-deals-note { font-family: var(--font-cams-mono), monospace; font-size: .64rem; color: #8C8779; }
@@ -415,23 +418,23 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
             <div className="cams-section-head">
               <h2>Rumors</h2>
             </div>
-            {RUMORS.map((r) => (
-              <div className="cams-rumor-row" key={r.title}>
-                <div>
-                  <div className="cams-rumor-conf">
-                    {r.label} · {r.pct}%
+            {rumors.length > 0 ? (
+              rumors.map((r) => (
+                <Link className="cams-rumor-row" href={`/${r.slug}`} key={r.slug} prefetch={false}>
+                  <div className="cams-rumor-date">
+                    {new Date(r.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                   </div>
-                  <div className="cams-rumor-bar-track">
-                    <span className="cams-rumor-bar-fill" style={{ width: `${r.pct}%` }} />
+                  <div>
+                    <div className="cams-rumor-title">{r.title}</div>
+                    {r.dek && <p className="cams-rumor-dek">{r.dek}</p>}
+                    {r.author && <span className="cams-rumor-source">via {r.author}</span>}
                   </div>
-                </div>
-                <div>
-                  <div className="cams-rumor-title">{r.title}</div>
-                  <p className="cams-rumor-dek">{r.dek}</p>
-                </div>
-                <span className="cams-rumor-arrow">→</span>
-              </div>
-            ))}
+                  <span className="cams-rumor-arrow">→</span>
+                </Link>
+              ))
+            ) : (
+              <p className="cams-rumor-empty">No rumors tracked right now — check back soon.</p>
+            )}
           </div>
         </section>
 

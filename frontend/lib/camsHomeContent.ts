@@ -1,8 +1,9 @@
 // Hardcoded v1 content for CamsHomepage's non-article sections (quick
-// compare, video reviews, rumor mill, deals). None of these content shapes
-// exist in the backend yet — see the add-brand plan's backend-scope note —
-// so this is hand-maintained config for now, same pattern as
-// buyersGuideRegistry.ts.
+// compare, video reviews, deals). None of these content shapes exist in
+// the backend yet — see the add-brand plan's backend-scope note — so this
+// is hand-maintained config for now, same pattern as buyersGuideRegistry.ts.
+// The rumor mill widget used to live here too but now reads real ingested
+// Rumors-category articles (see CamsHomepage.tsx) instead of fake copy.
 
 export const COMPARE_ROWS = [
   { model: "Flagship Mirrorless X2", sensor: "Full-frame 45MP", burst: "20 fps", price: "$3,199", score: "8.9" },
@@ -14,27 +15,6 @@ export const VIDEO_REVIEWS = [
   { title: "Flagship mirrorless: 30 days as a daily shooter", duration: "14:22", cat: "Video Review" },
   { title: "Budget zoom vs. the prime everyone recommends", duration: "9:47", cat: "Comparison" },
   { title: "Studio lighting on a $300 budget", duration: "11:03", cat: "Tutorial" },
-];
-
-export const RUMORS = [
-  {
-    label: "High confidence",
-    pct: 82,
-    title: "Flagship mirrorless refresh expected before year-end",
-    dek: "Two independent supply-chain sources point to the same launch window.",
-  },
-  {
-    label: "Medium confidence",
-    pct: 55,
-    title: "Budget APS-C body may drop the mechanical shutter entirely",
-    dek: "Would be the first in its class — cost savings unclear.",
-  },
-  {
-    label: "Low confidence",
-    pct: 34,
-    title: "Rumored collaboration lens still unconfirmed by either brand",
-    dek: "Filing exists, but nothing from official channels yet.",
-  },
 ];
 
 export const DEALS = [
