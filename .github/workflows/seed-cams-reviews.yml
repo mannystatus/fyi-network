@@ -1,0 +1,27 @@
+name: Seed fyiCams staff reviews
+
+# Publishes app/seed_cams_reviews.py's hand-written Staff Reviews articles
+# to production. Manual-only (no schedule) — this isn't recurring content
+# like ingest-news.yml, it's a one-time-per-edit publish step you re-run
+# after adding/editing entries in app/seed_cams_reviews.py and
+# frontend/lib/camsReviews.ts. Safe to rerun: already-published slugs are
+# skipped (see seed_cams_reviews.py), nothing gets duplicated.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m app.seed_cams_reviews
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

@@ -64,7 +64,10 @@ BRANDS = [
         slug="fyicams", name="fyiCams", domain="fyicams.com",
         accent_color="#0B5E52", icon="cams",  # teal, the exact hex from the provided brand kit
         tagline="Data-driven camera coverage",
-        topics="News,New Gear,Buying Guides,Rumors",
+        # Staff Reviews is editorial-only, same as fyiNetflix's — see
+        # MANUAL_ONLY_TOPICS in ingest_news.py, and app/seed_cams_reviews.py
+        # for how it actually gets populated.
+        topics="News,New Gear,Buying Guides,Rumors,Staff Reviews",
     ),
 ]
 
