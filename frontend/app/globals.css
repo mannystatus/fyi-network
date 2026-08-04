@@ -2847,6 +2847,25 @@ footer:not(.cams-footer):not(.editorial-footer) {
   color: var(--editorial-ink-soft);
 }
 
+/* The article page (and any other route rendered through the shared #site
+   chrome) reads the generic --bg/--fg set, not --editorial-*, so without
+   this it fell back to the sitewide default background instead of the
+   brand's own — a visible mismatch when clicking from the editorial
+   homepage (which reads --editorial-* directly) into an article. Aliasing
+   keeps a single source of truth: these still flip with the light/dark
+   toggle because --editorial-bg etc. already do (see the per-brand blocks
+   above). */
+#site.theme-mac,
+#site.theme-win,
+#site.theme-google,
+#site.theme-netflix {
+  --bg: var(--editorial-bg);
+  --bg-alt: var(--editorial-bg-alt);
+  --border: var(--editorial-line);
+  --fg: var(--editorial-ink);
+  --comment: var(--editorial-ink-soft);
+}
+
 .theme-mac,
 .theme-win,
 .theme-google,
@@ -3228,6 +3247,17 @@ body.theme-flynow-body .switcher-menu {
   --accent: var(--lakers-gold);
 }
 
+/* Same alias as #site.theme-mac/win/google/netflix above — the article
+   page reads generic --bg/--fg, not --editorial-*, so without this it
+   showed the sitewide default background instead of the team palette. */
+#site.theme-lakers {
+  --bg: var(--editorial-bg);
+  --bg-alt: var(--editorial-bg-alt);
+  --border: var(--editorial-line);
+  --fg: var(--editorial-ink);
+  --comment: var(--editorial-ink-soft);
+}
+
 .theme-lakers,
 .theme-lakers .article-title,
 .theme-lakers .section-label {
@@ -3426,6 +3456,17 @@ body.theme-flynow-body .switcher-menu {
   --editorial-ink-soft: #a3a3a3;
   --editorial-stone: #8a8a8a;
   --editorial-line: #3a3a3a;
+}
+
+/* Same alias as #site.theme-mac/win/google/netflix/lakers above — the
+   article page reads generic --bg/--fg, not --editorial-*, so without this
+   it showed the sitewide default background instead of the team palette. */
+#site.theme-dodgers {
+  --bg: var(--editorial-bg);
+  --bg-alt: var(--editorial-bg-alt);
+  --border: var(--editorial-line);
+  --fg: var(--editorial-ink);
+  --comment: var(--editorial-ink-soft);
 }
 
 .theme-dodgers {

@@ -457,6 +457,31 @@ def fetch_direct_rss(feed_url: str, source_name: str) -> list[dict]:
     return items
 
 
+_OG_IMAGE_RE = re.compile(
+    r'<meta[^>]+(?:property|name)=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
+    re.IGNORECASE,
+)
+# Same tag, attributes in the opposite order (content= before property=) —
+# publishers aren't consistent about which comes first.
+_OG_IMAGE_RE_REV = re.compile(
+    r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+(?:property|name)=["\']og:image["\']',
+    re.IGNORECASE,
+)
+
+
+def fetch_og_image(article_url: str) -> str | None:
+    """Fallback for feeds that carry no thumbnail of their own (direct-RSS
+    rumor blogs, Google News fallback): fetch the article page itself and
+    pull its social-share og:image, same size the publisher considers
+    presentable rather than whatever a feed happened to include."""
+    try:
+        html = _get(article_url).decode("utf-8", errors="ignore")
+    except Exception:
+        return None
+    match = _OG_IMAGE_RE.search(html) or _OG_IMAGE_RE_REV.search(html)
+    return unescape(match.group(1).strip()) or None if match else None
+
+
 def fetch_headlines(brand_slug: str, topic: str) -> list[dict]:
     try:
         items = fetch_bing(brand_slug, topic)
@@ -542,6 +567,8 @@ def ingest_brand(db, brand: Brand, per_topic: int) -> int:
             slug = slugify(item["title"])
             if slug in seen_slugs:
                 continue
+            if not item.get("image_url"):
+                item["image_url"] = fetch_og_image(item["link"])
             db.add(make_article(brand, topic, item))
             seen_slugs.add(slug)
             new_for_topic += 1
