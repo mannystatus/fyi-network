@@ -96,6 +96,22 @@ QUERY_OVERRIDES = {
     "Rumors": "mirrorless camera rumor OR Canon EOS rumor OR Sony Alpha rumor OR Nikon Z rumor OR Fujifilm rumor",
 }
 
+# Dedicated manufacturer rumor mills, pulled straight from their own RSS
+# feeds rather than through Bing News search — Bing News doesn't index these
+# small independent blogs at all (a `site:` filter in the Bing query just
+# returns zero hits), so search-based discovery can never surface them.
+# sonyrumors.com itself no longer resolves to a rumor site (parked/redirected
+# domain); sonyalpharumors.com ("SAR") is the actual long-running Sony rumor
+# outlet, hence the mismatched (site, source name) pairing below.
+DIRECT_RSS_FEEDS = {
+    ("fyicams", "Rumors"): [
+        ("https://leicarumors.com/feed/", "Leica Rumors"),
+        ("https://www.sonyalpharumors.com/feed/", "sonyalpharumors"),
+        ("https://www.fujirumors.com/feed/", "Fuji Rumors"),
+        ("https://nikonrumors.com/feed/", "Nikon Rumors"),
+    ],
+}
+
 
 def _brand_lookup(mapping: dict, brand_slug: str, topic: str):
     """(brand_slug, topic) takes priority over a plain-topic key, for the
@@ -232,12 +248,20 @@ CAMERA_TRADE_SOURCES = [
     "photography news", "british journal of photography", "amateur photographer",
 ]
 
+# Manufacturer-specific rumor mills — their headlines often name only a model
+# number ("A7V", "Z9 III") without the maker's full brand phrase that
+# CAMERA_GEAR_KEYWORDS requires, so a keyword match can't be relied on. A
+# source match here is trusted outright instead, same as CAMERA_TRADE_SOURCES.
+# Names must match the channel <title> each feed actually publishes — see
+# DIRECT_RSS_FEEDS below.
+CAMERA_RUMOR_SOURCES = ["leica rumors", "sonyalpharumors", "fuji rumors", "nikon rumors"]
+
 TRUSTED_SOURCES = {
     "K-Drama": ["soompi", "allkpop", "koreaboo", "korea herald", "koreajoongangdaily"],
     "News": CAMERA_TRADE_SOURCES,
     "New Gear": CAMERA_TRADE_SOURCES,
     "Buying Guides": CAMERA_TRADE_SOURCES,
-    "Rumors": CAMERA_TRADE_SOURCES,
+    "Rumors": CAMERA_TRADE_SOURCES + CAMERA_RUMOR_SOURCES,
 }
 
 # Editorial-only topics: no RSS query makes sense for these (there's no
@@ -403,14 +427,52 @@ def fetch_google_fallback(brand_slug: str, topic: str, when: str = "3d") -> list
     return items
 
 
+_HTML_TAG_RE = re.compile(r"<[^>]+>")
+
+
+def fetch_direct_rss(feed_url: str, source_name: str) -> list[dict]:
+    """A specific outlet's own RSS feed, for sources Bing News doesn't index
+    at all (see DIRECT_RSS_FEEDS) rather than one more query term to search
+    for."""
+    root = ET.fromstring(_get(feed_url))
+
+    items = []
+    for item in root.findall("./channel/item"):
+        title = unescape((item.findtext("title") or "").strip())
+        link = (item.findtext("link") or "").strip()
+        if not title or not link:
+            continue
+        raw_description = unescape((item.findtext("description") or "").strip())
+        description = clean_description(_HTML_TAG_RE.sub("", raw_description).strip())
+        items.append(
+            dict(
+                title=title,
+                link=link,
+                source=source_name,
+                description=description or None,
+                published_at=_parse_pub_date(item.findtext("pubDate")),
+                image_url=None,
+            )
+        )
+    return items
+
+
 def fetch_headlines(brand_slug: str, topic: str) -> list[dict]:
     try:
         items = fetch_bing(brand_slug, topic)
-        if items:
-            return items
+        if not items:
+            items = fetch_google_fallback(brand_slug, topic)
     except Exception as exc:
         print(f"    (bing fetch failed for {topic!r}: {exc} — falling back to Google News)", file=sys.stderr)
-    return fetch_google_fallback(brand_slug, topic)
+        items = fetch_google_fallback(brand_slug, topic)
+
+    for feed_url, source_name in _brand_lookup(DIRECT_RSS_FEEDS, brand_slug, topic) or []:
+        try:
+            items += fetch_direct_rss(feed_url, source_name)
+        except Exception as exc:
+            print(f"    (direct feed fetch failed for {source_name!r}: {exc})", file=sys.stderr)
+
+    return items
 
 
 def first_sentence(text: str, limit: int = 160) -> str:
