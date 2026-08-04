@@ -2,7 +2,7 @@ import Script from "next/script";
 import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { Archivo_Black, Space_Grotesk, Inter, Oswald, Newsreader, Work_Sans, IBM_Plex_Mono } from "next/font/google";
-import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 import "./globals.css";
 import { getCurrentBrand } from "../lib/api";
 import CookieBanner from "../components/CookieBanner";
@@ -136,30 +136,38 @@ export default async function RootLayout({
   return (
     <html lang="en" {...htmlThemeProps}>
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
-      {gaId && <GoogleAnalytics gaId={gaId} />}
       <body
         className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable} ${sportsDisplay.variable} ${camsDisplay.variable} ${camsBody.variable} ${camsMono.variable} ${
           brand.icon === "flynow" ? "theme-flynow-body" : brand.icon === "cams" ? "theme-cams-body" : ""
         }`}
         style={{ "--accent": brand.accent_color } as React.CSSProperties}
       >
-        {/* Google Consent Mode v2 default, set before AdSense (just below) so
-            it never fires with granted storage ahead of an explicit user
-            choice — required for EEA/UK traffic under Google's EU User
+        {/* Google Consent Mode v2 default, set before AdSense/GA (just below)
+            so neither ever fires with granted storage ahead of an explicit
+            user choice — required for EEA/UK traffic under Google's EU User
             Consent Policy. Mirrors the cookie set by CookieBanner's
             accept/reject handlers, so a returning visitor's choice applies
             from the very first paint instead of defaulting to denied again
             on every page load.
+            A plain native <script>, not next/script's <Script>, and
+            deliberately so: even with strategy="beforeInteractive", <Script>
+            never emits a literal <script> tag in the server-rendered HTML —
+            under the App Router it serializes itself into a self.__next_s
+            bootstrap call instead, invisible to anything that reads raw
+            HTML without running JS (see the gaId block below, which hit
+            exactly that with GA4's setup-wizard checker). A plain <script>
+            with dangerouslySetInnerHTML renders as real static markup and
+            still executes synchronously in document order, which is all
+            Consent Mode actually needs here.
             Deliberately a child of <body>, not <html> — <script> isn't a
-            valid child of <html> (only <head>/<body> are), and a
-            beforeInteractive Script renders literally in the initial HTML
-            (unlike GTM/GA above, which default to afterInteractive and get
-            injected post-hydration instead), so placing it under <html>
-            got silently reparented by the browser's HTML parser and broke
-            hydration (React error #418) — killing every click handler on
-            the page, including this banner's own Accept/Reject buttons. */}
-        <Script id="consent-default" strategy="beforeInteractive">
-          {`window.dataLayer = window.dataLayer || [];
+            valid child of <html> (only <head>/<body> are); placing it under
+            <html> got silently reparented by the browser's HTML parser and
+            broke hydration (React error #418) — killing every click handler
+            on the page, including this banner's own Accept/Reject buttons. */}
+        <script
+          id="consent-default"
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
             function gtag(){window.dataLayer.push(arguments);}
             gtag('consent', 'default', {
               ad_storage: '${adsGranted ? "granted" : "denied"}',
@@ -168,8 +176,36 @@ export default async function RootLayout({
               analytics_storage: '${adsGranted ? "granted" : "denied"}'
             });
             window.adsbygoogle = window.adsbygoogle || [];
-            window.adsbygoogle.push({ google_ad_client: '${ADSENSE_CLIENT_ID}', google_restrict_data_processing: ${!adsGranted} });`}
-        </Script>
+            window.adsbygoogle.push({ google_ad_client: '${ADSENSE_CLIENT_ID}', google_restrict_data_processing: ${!adsGranted} });`,
+          }}
+        />
+
+        {/* Also a plain native <script>/<script src>, not next/script's
+            <Script> — see the comment on consent-default above for why.
+            Matches Google's own "install manually" gtag.js snippet
+            verbatim so GA4's setup-wizard tag-detection check (a plain HTTP
+            fetch, no JS execution) can actually find it; confirmed live
+            that the tag already fired correctly for real visitors even
+            before this change (gtag.js loaded, a real page_view hit reached
+            google-analytics.com/g/collect) — this only fixes the checker,
+            not real data collection. Ordered after consent-default above so
+            gtag('config', ...), which sends that first hit, always runs
+            after consent state is set. */}
+        {gaId && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+            <script
+              id="ga-init"
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaId}');`,
+              }}
+            />
+          </>
+        )}
+
         <Script
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
