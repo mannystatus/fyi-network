@@ -1631,36 +1631,59 @@ footer {
 
 .switcher {
   position: relative;
-  font-family: var(--font-mono);
+  /* Was a hardcoded system-mono stack here, which fought every brand's
+     own nav typeface (Work Sans on the editorial/sports brands, the
+     Cams/FlyNow branded fonts on theirs) — inheriting lets it fall in
+     line with whatever font the surrounding header chrome already uses. */
+  font-family: inherit;
 }
 
+/* The editorial-template brands (Mac/Win/Google/Netflix/Lakers/Dodgers)
+   theme their chrome through separate --editorial-* tokens rather than
+   overriding these base --bg/--fg/--border/--comment vars (see the
+   "shared editorial ticker template" block below) — those base vars stay
+   pinned to whatever the global light/dark toggle is, independent of the
+   brand. Reading straight from --bg-alt etc. here meant the switcher
+   button and menu ignored the brand's own dark/light identity entirely
+   (e.g. a pale, off-brand bubble floating on fyiNetflix's black masthead
+   whenever the global toggle happened to be light). Falling back through
+   --editorial-* first — and, on fyiCams' bespoke homepage, through
+   body.theme-cams-body's own override of these same base vars below —
+   makes the switcher pick up whichever theme its container actually is.
+
+   The button itself is the .editorial-subscribe-btn / .cams-subscribe-btn
+   recipe (solid var(--accent) fill, white text, 11px/22px padding,
+   0.86rem) — not a lighter/neutral variant — so it reads as the same
+   button element as Subscribe, just with different content, rather than
+   an imported widget with its own style. font-weight is 400, not
+   Subscribe's 700 — two adjacent bold solid-fill buttons read as too
+   heavy/competing side by side. 3px is the shared sharp-corner convention
+   every brand but fyiFlyNow uses (Subscribe, search, notify-bell all
+   match); fyiFlyNow overrides to its own 2px "split-flap" corner below. */
 .switcher-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
-  color: var(--fg);
-  padding: 9px 16px;
-  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 11px 22px;
+  border-radius: 3px;
   font-family: inherit;
-  font-size: 13px;
+  font-weight: 400;
+  font-size: 0.86rem;
+  white-space: nowrap;
   cursor: pointer;
+  transition: opacity 0.15s ease;
 }
 
 .switcher-btn:hover {
-  border-color: var(--comment);
-}
-
-.switcher-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
+  opacity: 0.88;
 }
 
 .chevron {
-  color: var(--comment);
+  color: currentColor;
+  opacity: 0.7;
   margin-left: 2px;
   font-size: 11px;
 }
@@ -1669,9 +1692,9 @@ footer {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  background: var(--editorial-bg-alt, var(--bg-alt));
+  border: 1px solid var(--editorial-line, var(--border));
+  border-radius: 3px;
   padding: 6px;
   min-width: 200px;
   /* Above .nav-bar's sticky z-index (30) so the dropdown list isn't
@@ -1687,15 +1710,15 @@ footer {
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
-  border-radius: 6px;
+  border-radius: 2px;
   font-size: 13px;
-  color: var(--fg);
+  color: var(--editorial-ink, var(--fg));
   cursor: pointer;
   text-decoration: none;
 }
 
 .brand-opt:hover {
-  background: var(--bg);
+  background: var(--editorial-bg, var(--bg));
 }
 
 .brand-opt .icon {
@@ -1706,7 +1729,7 @@ footer {
 .brand-opt .current-tag {
   margin-left: auto;
   font-size: 11px;
-  color: var(--comment);
+  color: var(--editorial-ink-soft, var(--comment));
 }
 
 /* ---------- Shared "editorial ticker" template ----------
@@ -2156,90 +2179,52 @@ footer {
   margin-top: 4px;
 }
 
-/* ---------- news grid ---------- */
-.editorial-news-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+/* ---------- news mosaic (PetaPixel-style lead grid) ---------- */
+/* Same pattern as fyiCams' .cams-mosaic/.cams-story-list — one large card
+   + two stacked smaller ones with the headline set directly over the photo
+   on a dark scrim, then a plain divided list for the rest. Built entirely
+   on the --editorial-*/--accent tokens each .theme-<brand> block already
+   defines, so this one set of rules covers Mac/Win/Google/Netflix/Lakers/
+   Dodgers without a per-brand copy — same reasoning as the switcher fix. */
+.editorial-mosaic { display: grid; grid-template-columns: 1.6fr 1fr; gap: 4px; margin-bottom: 4px; }
+@media (max-width: 900px) { .editorial-mosaic { grid-template-columns: 1fr; } }
+.editorial-mosaic-side { display: flex; flex-direction: column; gap: 4px; }
+.editorial-mosaic-card { position: relative; display: block; overflow: hidden; background: var(--editorial-ink); }
+.editorial-mosaic-card.large { aspect-ratio: 5/4; }
+.editorial-mosaic-card.small { flex: 1; min-height: 160px; }
+.editorial-mosaic-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.editorial-mosaic-card:hover .editorial-mosaic-img { transform: scale(1.03); }
+.editorial-mosaic-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.5) 38%, rgba(0, 0, 0, 0) 68%);
 }
+.editorial-mosaic-cat {
+  position: absolute; top: 14px; left: 14px; background: var(--accent); color: #fff; padding: 5px 10px;
+  font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.editorial-mosaic-body { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 20px; }
+.editorial-mosaic-body h3 {
+  font-family: var(--font-sports-display), Oswald, sans-serif; font-weight: 700; color: #fff; line-height: 1.22;
+  font-size: 1.06rem;
+}
+.editorial-mosaic-card.large .editorial-mosaic-body h3 { font-size: clamp(1.3rem, 2.1vw, 1.8rem); }
+.editorial-mosaic-source { display: block; margin-top: 8px; font-family: var(--font-cams-mono), monospace; font-size: 0.68rem; color: rgba(255, 255, 255, 0.75); }
 
-@media (max-width: 1000px) {
-  .editorial-news-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.editorial-story-list { border-top: 1px solid var(--editorial-line); }
+.editorial-story-row { display: grid; grid-template-columns: 108px 1fr; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--editorial-line); }
+@media (max-width: 560px) { .editorial-story-row { grid-template-columns: 1fr; } }
+.editorial-story-row-thumb {
+  aspect-ratio: 1/1; overflow: hidden;
+  background: repeating-linear-gradient(45deg, var(--editorial-bg-alt), var(--editorial-bg-alt) 10px, var(--editorial-line) 10px, var(--editorial-line) 20px);
 }
-
-@media (max-width: 560px) {
-  .editorial-news-grid {
-    grid-template-columns: 1fr;
-  }
+.editorial-story-row-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.editorial-story-eyebrow {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--font-cams-mono), monospace;
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--editorial-stone); font-weight: 700; margin-bottom: 6px;
 }
-
-.editorial-news-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.editorial-news-thumb {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: repeating-linear-gradient(
-    45deg,
-    var(--editorial-bg-alt),
-    var(--editorial-bg-alt) 10px,
-    var(--editorial-line) 10px,
-    var(--editorial-line) 20px
-  );
-}
-
-.editorial-news-thumb-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.editorial-news-cat {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: var(--editorial-ink);
-  color: var(--editorial-bg);
-  padding: 4px 9px;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* Lives below the thumb, not overlaid on it — these cards' thumbs are too
-   narrow to fit both the category tag and this badge side by side without
-   the two colliding. */
-.editorial-news-badge-inline {
-  align-self: flex-start;
-  margin-top: -4px;
-}
-
-.editorial-news-card h3 {
-  font-family: var(--font-sports-display), Oswald, sans-serif;
-  font-weight: 600;
-  font-size: 1.05rem;
-  line-height: 1.3;
-}
-
-.editorial-news-card p {
-  font-size: 0.86rem;
-  color: var(--editorial-ink-soft);
-}
-
-.editorial-news-meta {
-  font-size: 0.74rem;
-  color: var(--editorial-stone);
-  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
-}
+.editorial-story-eyebrow .cat { color: var(--accent); }
+.editorial-story-row h3 { font-family: var(--font-sports-display), Oswald, sans-serif; font-weight: 600; font-size: 1.08rem; line-height: 1.3; color: var(--editorial-ink); margin-bottom: 6px; }
+.editorial-story-row p { font-size: 0.86rem; color: var(--editorial-ink-soft); }
 
 /* ---------- rumor mill / renewal tracker ---------- */
 .editorial-confidence-row {
@@ -2619,6 +2604,7 @@ footer {
 
 .editorial-newsletter-form {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -2643,6 +2629,13 @@ footer {
 .editorial-newsletter-form button:disabled {
   opacity: 0.7;
   cursor: default;
+}
+
+.newsletter-form-error {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: #ffb3b3;
 }
 
 /* ---------- footer ---------- */
@@ -3148,8 +3141,17 @@ body.theme-flynow-body {
   font-family: var(--font-flynow-body), "Space Grotesk", sans-serif;
 }
 
-#site.theme-flynow .switcher-btn {
-  border-radius: 24px;
+/* body-scoped (not #site.theme-flynow) so this also reaches the bespoke
+   FlyNowHomepage, which skips the #site wrapper entirely (same reasoning
+   as body.theme-cams-body above) — otherwise this only ever applied on
+   fyiFlyNow's inner pages, not its own homepage.
+   2px, not a rounded pill: every other button on this brand (Subscribe,
+   search, notify-bell, the flap-nav letter tiles) uses the same sharp
+   "split-flap" 2px corner — this used to be 24px, which didn't match any
+   of them. */
+body.theme-flynow-body .switcher-btn,
+body.theme-flynow-body .switcher-menu {
+  border-radius: 2px;
 }
 
 #site.theme-flynow .article-card {
@@ -3739,6 +3741,20 @@ body.theme-flynow-body {
    app/reviews/[slug]/page.tsx's own <style> blocks instead (mirrors how
    FlyNowHomepage keeps its own styling out of this file). */
 
+/* Same tokens as #site.theme-cams below, but set on <body> (like
+   body.theme-flynow-body) so they also reach the bespoke CamsHomepage —
+   that page skips the #site wrapper entirely, so without this the
+   switcher (and anything else reading --bg/--bg-alt/etc.) fell back to
+   whatever the generic light/dark toggle happened to be instead of
+   fyiCams' own fixed-light paper/ink palette. */
+body.theme-cams-body {
+  --bg: #F7F5F1;
+  --bg-alt: #ffffff;
+  --border: #E0DCD3;
+  --fg: #14120F;
+  --comment: #8C8779;
+}
+
 #site.theme-cams {
   --bg: #F7F5F1;
   --bg-alt: #ffffff;
@@ -3852,26 +3868,14 @@ body.theme-flynow-body {
 }
 
 .cams-wordmark {
-  display: block;
   font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
   font-weight: 700;
   font-size: 1.15rem;
 }
 
-.cams-wordmark-sub {
-  display: block;
-  font-family: var(--font-cams-mono), "IBM Plex Mono", monospace;
-  font-weight: 500;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #8C8779;
-  margin-top: 2px;
-}
-
 .cams-nav {
   display: flex;
-  gap: 26px;
+  gap: 20px;
   font-size: 0.86rem;
   font-weight: 600;
   flex-wrap: wrap;
@@ -3907,6 +3911,15 @@ body.theme-flynow-body {
   font-weight: 700;
   font-size: 0.86rem;
   white-space: nowrap;
+}
+
+/* .switcher-btn's own text color is a plain #fff, same as every other
+   brand's Subscribe button — fyiCams' Subscribe uses off-white #F7F5F1
+   instead (matching its paper palette), so this matches that exactly.
+   body-scoped, not #site.theme-cams, so it also reaches the bespoke
+   CamsHomepage (same reasoning as body.theme-cams-body above). */
+body.theme-cams-body .switcher-btn {
+  color: #F7F5F1;
 }
 
 @media (max-width: 900px) {

@@ -42,7 +42,6 @@ export default function DomainSwitcher({
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span className="switcher-dot" />
         fyi network
         <span className="chevron">{open ? "⌃" : "⌄"}</span>
       </button>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Brand } from "../lib/api";
+import type { Brand, ArticleListItem } from "../lib/api";
 import { getArticles } from "../lib/api";
 import type { EditorialConfig } from "../lib/editorialConfig";
 import EditorialHeader from "./EditorialHeader";
@@ -11,6 +11,37 @@ import GameDaySoftPrompt from "./GameDaySoftPrompt";
 
 const NEWS_GRID_COUNT = 8;
 const TOP_STORIES_COUNT = 3;
+
+// PetaPixel-style mosaic card — same pattern as fyiCams' MosaicCard, reused
+// here for the 6 brands sharing this template. Headline sits directly over
+// the photo on a dark scrim instead of image-above/text-below; real-source
+// attribution (see "Credit real sources on article cards") stays visible
+// as a small caption under the headline.
+function EditorialMosaicCard({
+  article,
+  size,
+  brand,
+}: {
+  article: ArticleListItem;
+  size: "large" | "small";
+  brand: Brand;
+}) {
+  const source = article.is_featured ? brand.name : article.author;
+  return (
+    <Link className={`editorial-mosaic-card ${size}`} href={`/${article.slug}`} prefetch={false}>
+      {article.image_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={article.image_url} alt="" className="editorial-mosaic-img" />
+      ) : null}
+      <span className="editorial-mosaic-scrim" />
+      {article.category && <span className="editorial-mosaic-cat">{article.category}</span>}
+      <span className="editorial-mosaic-body">
+        <h3>{article.title}</h3>
+        {source && <span className="editorial-mosaic-source">fyi network · {source}</span>}
+      </span>
+    </Link>
+  );
+}
 
 export default async function EditorialHomepage({
   brand,
@@ -34,6 +65,71 @@ export default async function EditorialHomepage({
       <EditorialHeader brand={brand} brands={brands} config={config} />
 
       <main>
+        <section className="editorial-section editorial-rule" id="news-grid">
+          <div className="wrap">
+            <div className="editorial-section-head">
+              <h2>{config.newsGridTitle}</h2>
+              <Link href="/" prefetch={false}>
+                {config.newsGridCta}
+              </Link>
+            </div>
+            {articles.length > 0 ? (
+              <>
+                <div className="editorial-mosaic">
+                  {articles.slice(0, 1).map((a) => (
+                    <EditorialMosaicCard article={a} size="large" key={a.slug} brand={brand} />
+                  ))}
+                  {articles.length > 1 && (
+                    <div className="editorial-mosaic-side">
+                      {articles.slice(1, 3).map((a) => (
+                        <EditorialMosaicCard article={a} size="small" key={a.slug} brand={brand} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {articles.length > 3 && (
+                  <div className="editorial-story-list">
+                    {articles.slice(3).map((a) => {
+                      const source = a.is_featured ? brand.name : a.author;
+                      return (
+                        <Link className="editorial-story-row" href={`/${a.slug}`} key={a.slug} prefetch={false}>
+                          <div className="editorial-story-row-thumb">
+                            {a.image_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={a.image_url} alt="" />
+                            ) : null}
+                          </div>
+                          <div>
+                            <div className="editorial-story-eyebrow">
+                              {a.category && <span className="cat">{a.category}</span>}
+                              {a.category && <span>·</span>}
+                              <span>
+                                {new Date(a.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                              </span>
+                              {source && (
+                                <>
+                                  <span>·</span>
+                                  <span>fyi network · {source}</span>
+                                </>
+                              )}
+                            </div>
+                            <h3>{a.title}</h3>
+                            {a.dek && <p>{a.dek}</p>}
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="editorial-empty">
+                No posts yet — run `python -m app.ingest_news --brand {brand.slug}` to populate the feed.
+              </p>
+            )}
+          </div>
+        </section>
+
         <section className="editorial-hero">
           <div className="wrap editorial-hero-grid">
             <div className="editorial-hero-left">
@@ -84,47 +180,6 @@ export default async function EditorialHomepage({
             </div>
           </section>
         )}
-
-        <section className="editorial-section editorial-rule" id="news-grid">
-          <div className="wrap">
-            <div className="editorial-section-head">
-              <h2>{config.newsGridTitle}</h2>
-              <Link href="/" prefetch={false}>
-                {config.newsGridCta}
-              </Link>
-            </div>
-            {articles.length > 0 ? (
-              <div className="editorial-news-grid">
-                {articles.map((a) => {
-                  const source = a.is_featured ? brand.name : a.author;
-                  return (
-                    <Link className="editorial-news-card" href={`/${a.slug}`} key={a.slug} prefetch={false}>
-                      <div className="editorial-news-thumb" style={{ aspectRatio: config.posterAspect }}>
-                        {a.image_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={a.image_url} alt="" className="editorial-news-thumb-img" />
-                        ) : null}
-                        {a.category && <span className="editorial-news-cat">{a.category}</span>}
-                      </div>
-                      <span className="fyi-badge editorial-news-badge-inline">
-                        fyi network{source ? ` · ${source}` : ""}
-                      </span>
-                      <h3>{a.title}</h3>
-                      {a.dek && <p>{a.dek}</p>}
-                      <span className="editorial-news-meta">
-                        {new Date(a.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="editorial-empty">
-                No posts yet — run `python -m app.ingest_news --brand {brand.slug}` to populate the feed.
-              </p>
-            )}
-          </div>
-        </section>
 
         <section className="editorial-section editorial-band" id="rumor-mill">
           <div className="wrap">
@@ -311,12 +366,12 @@ export default async function EditorialHomepage({
                   : "One email, every weekday. Verified rumors, none of the noise."}
               </p>
             </div>
-            <EditorialNewsletterForm />
+            <EditorialNewsletterForm brandSlug={brand.slug} />
           </div>
         </div>
       </main>
 
-      <EditorialFooter brand={brand} config={config} />
+      <EditorialFooter brand={brand} brands={brands} config={config} />
     </div>
   );
 }

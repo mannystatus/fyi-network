@@ -8,6 +8,7 @@ import CamsHeader from "../components/CamsHeader";
 import CamsFooter from "../components/CamsFooter";
 import EditorialHeader from "../components/EditorialHeader";
 import EditorialFooter from "../components/EditorialFooter";
+import NetworkFooterLinks from "../components/NetworkFooterLinks";
 import { EDITORIAL_CONFIGS } from "../lib/editorialConfig";
 import ThemeToggle from "../components/ThemeToggle";
 import NewsNotifications from "../components/NewsNotifications";
@@ -132,11 +133,14 @@ async function Chrome({
             just the plain utility footer below — the branded footer only
             ever showed up on each brand's bespoke homepage. That made every
             non-homepage page read as the old pre-redesign site. fyiFlyNow
-            is excluded on purpose: it never got this redesign treatment. */}
+            never got a bespoke inner-page footer of its own, so it keeps
+            using the utility footer everywhere — that row now also carries
+            its Network links (below), so it isn't the one brand missing
+            them on every page but the homepage. */}
         {brand.icon !== "flynow" && EDITORIAL_CONFIGS[brand.icon] && (
-          <EditorialFooter brand={brand} config={EDITORIAL_CONFIGS[brand.icon]} />
+          <EditorialFooter brand={brand} brands={brands} config={EDITORIAL_CONFIGS[brand.icon]} />
         )}
-        {brand.icon === "cams" && <CamsFooter brandName={brand.name} />}
+        {brand.icon === "cams" && <CamsFooter brand={brand} brands={brands} />}
 
         <footer className={hasBespokeFooter ? "utility-footer" : undefined}>
           {!hasBespokeFooter && <span>&copy; fyi -m-w-g-n</span>}
@@ -144,6 +148,7 @@ async function Chrome({
             <SendTipForm brandName={brand.name} />
             {BUYERS_GUIDES[brand.slug] && <Link href="/buyers-guide">Buyers Guide</Link>}
             <Link href="/advertise">Advertise</Link>
+            {brand.icon === "flynow" && <NetworkFooterLinks brands={brands} currentSlug={brand.slug} />}
             {/* CamsFooter's own "About" column already links Terms/Privacy —
                 skip the duplicate here, everyone else's bespoke footer
                 (or, for fyiFlyNow, no bespoke footer at all) doesn't have them. */}

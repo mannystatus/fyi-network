@@ -1,5 +1,4 @@
 import SearchBox from "./SearchBox";
-import NewsNotifications from "./NewsNotifications";
 
 // Shared between the bare homepage and every other fyiFlyNow page (via
 // template.tsx's Chrome), same reasoning as FlyNowNavbar — one definition so
@@ -10,9 +9,6 @@ import NewsNotifications from "./NewsNotifications";
 // light/dark toggle would have no visible effect.
 export default function FlyNowTitlebar({
   domain,
-  brandSlug,
-  brandName,
-  topics,
 }: {
   domain: string;
   brandSlug: string;
@@ -27,7 +23,6 @@ export default function FlyNowTitlebar({
       </div>
       <div className="flynow-titlebar-actions">
         <SearchBox />
-        <NewsNotifications brandSlug={brandSlug} brandName={brandName} topics={topics} />
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Brand } from "../lib/api";
+import type { Brand, ArticleListItem } from "../lib/api";
 import { getArticles } from "../lib/api";
 import CamsHeader from "./CamsHeader";
 import CamsFooter from "./CamsFooter";
@@ -11,6 +11,32 @@ const LATEST_COUNT = 8;
 
 function scoreColor(score: number) {
   return score >= 8.5 ? "#0B5E52" : "#C6841F";
+}
+
+// PetaPixel-style mosaic card: headline set directly over the photo on a
+// dark scrim, rather than image-above/text-below — used for the top 3
+// "Latest stories" (one large + two stacked). Real-source attribution
+// (see the "Credit real sources on article cards" commit) stays visible
+// as a small caption under the headline, same info the old fyi-badge
+// pill carried, just restyled to sit on the image instead of below it.
+function MosaicCard({ article, size, brand }: { article: ArticleListItem; size: "large" | "small"; brand: Brand }) {
+  const review = CAMS_REVIEWS[article.slug];
+  const source = article.is_featured ? brand.name : article.author;
+  return (
+    <Link className={`cams-mosaic-card ${size}`} href={`/${article.slug}`} prefetch={false}>
+      {article.image_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={article.image_url} alt="" className="cams-mosaic-img" />
+      ) : null}
+      <span className="cams-mosaic-scrim" />
+      {article.category && <span className="cams-mosaic-cat">{article.category}</span>}
+      {review && <span className="cams-mosaic-score">{review.score.toFixed(1)}</span>}
+      <span className="cams-mosaic-body">
+        <h3>{article.title}</h3>
+        {source && <span className="cams-mosaic-source">fyi network · {source}</span>}
+      </span>
+    </Link>
+  );
 }
 
 export default async function CamsHomepage({ brand, brands }: { brand: Brand; brands: Brand[] }) {
@@ -61,27 +87,42 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
       color: #8C8779; font-weight: 600;
     }
     .cams-score-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid #E0DCD3; }
+    /* Squared-off score tag, not a circular "badge" — DPReview's spec-sheet
+       convention (a scored value reads as data, not a medal). */
     .cams-score-badge {
-      width: 44px; height: 44px; border-radius: 50%; color: #F7F5F1; display: flex; align-items: center;
-      justify-content: center; font-family: var(--font-cams-mono), monospace; font-weight: 700; font-size: .9rem;
+      min-width: 46px; height: 34px; padding: 0 8px; border-radius: 3px; color: #F7F5F1; display: flex; align-items: center;
+      justify-content: center; font-family: var(--font-cams-mono), monospace; font-weight: 700; font-size: .92rem;
       flex-shrink: 0;
     }
     .cams-score-title { font-size: .92rem; font-weight: 600; line-height: 1.3; }
     .cams-scores-empty { font-size: .85rem; color: #8C8779; padding: 14px 0; }
 
     /* ---------- COMPARE STRIP ---------- */
+    /* DPReview's spec-table convention: real grid lines (not just row
+       rules), a tinted header row, and a hover-highlight on each spec
+       row — reads as data to be scanned/compared, not just a list. */
     .cams-compare { background: #14120F; color: #F7F5F1; padding: 40px 0; }
     .cams-compare-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
     .cams-compare-head h2 { font-family: var(--font-cams-display), Newsreader, serif; font-weight: 700; font-size: 1.4rem; color: #fff; }
-    .cams-compare-table { display: grid; grid-template-columns: 1.2fr repeat(4,1fr); border-top: 1px solid rgba(247,245,241,.15); }
-    @media (max-width: 700px) { .cams-compare-table { grid-template-columns: 1fr; border-top: none; } }
-    .cams-compare-th { padding: 12px 0; font-family: var(--font-cams-mono), monospace; font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: #8C8779; text-align: center; }
-    .cams-compare-th:first-child { text-align: left; }
+    .cams-compare-table { display: grid; grid-template-columns: 1.2fr repeat(4,1fr); border: 1px solid rgba(247,245,241,.15); }
+    @media (max-width: 700px) { .cams-compare-table { grid-template-columns: 1fr; border: none; } }
+    .cams-compare-th {
+      padding: 12px 0; font-family: var(--font-cams-mono), monospace; font-size: .66rem; text-transform: uppercase;
+      letter-spacing: .1em; color: #D9A23B; font-weight: 700; text-align: center; background: rgba(217,162,59,.08);
+      border-left: 1px solid rgba(247,245,241,.15);
+    }
+    .cams-compare-th:first-child { text-align: left; padding-left: 4px; border-left: none; }
     @media (max-width: 700px) { .cams-compare-th { display: none; } }
     .cams-compare-row { display: contents; }
     @media (max-width: 700px) { .cams-compare-row { display: block; border-top: 1px solid rgba(247,245,241,.15); padding: 12px 0; } }
-    .cams-compare-cell { padding: 14px 0; border-top: 1px solid rgba(247,245,241,.1); text-align: center; font-family: var(--font-cams-mono), monospace; font-size: .84rem; color: #D9D5CB; }
-    @media (max-width: 700px) { .cams-compare-cell { border-top: none; padding: 3px 0; text-align: left; } }
+    .cams-compare-row:hover .cams-compare-cell { background: rgba(247,245,241,.04); }
+    .cams-compare-cell {
+      padding: 14px 0; border-top: 1px solid rgba(247,245,241,.15); border-left: 1px solid rgba(247,245,241,.15);
+      text-align: center; font-family: var(--font-cams-mono), monospace; font-size: .84rem; color: #D9D5CB;
+      transition: background .1s ease;
+    }
+    .cams-compare-cell:first-child { border-left: none; padding-left: 4px; }
+    @media (max-width: 700px) { .cams-compare-cell { border-top: none; border-left: none; padding: 3px 0; text-align: left; } }
     .cams-compare-cell.model { text-align: left; font-family: inherit; font-weight: 600; font-size: .9rem; color: #fff; }
     .cams-compare-score { background: #3FBFA8; color: #14120F; font-weight: 700; padding: 3px 9px; border-radius: 3px; }
 
@@ -94,24 +135,57 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
     .cams-rule .cams-section-head { padding-bottom: 16px; border-bottom: 2px solid #14120F; margin-bottom: 34px; }
 
     /* ---------- LATEST STORIES ---------- */
-    .cams-story-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 26px; }
-    @media (max-width: 1000px) { .cams-story-grid { grid-template-columns: repeat(2,1fr); } }
-    @media (max-width: 560px) { .cams-story-grid { grid-template-columns: 1fr; } }
-    .cams-story-card { display: flex; flex-direction: column; gap: 12px; }
-    .cams-story-thumb {
-      aspect-ratio: 4/3; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
-      background: repeating-linear-gradient(45deg,#EDE9E2,#EDE9E2 10px,#E4E0D6 10px,#E4E0D6 20px);
+    /* Photo-mosaic lead (PetaPixel's hero grid: one large card + two
+       stacked smaller ones, headline set directly over the image on a
+       dark scrim) followed by a plain divided list for the rest
+       (PetaPixel's "THE LATEST" list: thin rules, small square thumb,
+       an eyebrow meta row above the headline) — DPReview's contribution
+       is the score badge on each card staying a bold squared-off tag
+       rather than a soft circle, matching its spec-sheet aesthetic. */
+    .cams-mosaic { display: grid; grid-template-columns: 1.6fr 1fr; gap: 4px; margin-bottom: 4px; }
+    @media (max-width: 900px) { .cams-mosaic { grid-template-columns: 1fr; } }
+    .cams-mosaic-side { display: flex; flex-direction: column; gap: 4px; }
+    .cams-mosaic-card {
+      position: relative; display: block; overflow: hidden; background: #14120F;
     }
-    .cams-story-thumb-img { width: 100%; height: 100%; object-fit: cover; }
-    .cams-story-thumb-cat { position: absolute; top: 10px; left: 10px; background: #14120F; color: #F7F5F1; padding: 4px 9px; font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-    .cams-story-thumb-badge { align-self: flex-start; margin-top: -4px; }
-    .cams-story-thumb-score {
-      position: absolute; bottom: 10px; right: 10px; color: #F7F5F1; width: 36px; height: 36px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-family: var(--font-cams-mono), monospace; font-weight: 700; font-size: .78rem;
+    .cams-mosaic-card.large { aspect-ratio: 5/4; }
+    .cams-mosaic-card.small { flex: 1; min-height: 160px; }
+    .cams-mosaic-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+    .cams-mosaic-card:hover .cams-mosaic-img { transform: scale(1.03); }
+    .cams-mosaic-scrim {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(20,18,15,.93) 0%, rgba(20,18,15,.6) 38%, rgba(20,18,15,0) 68%);
     }
-    .cams-story-card h3 { font-family: var(--font-cams-display), Newsreader, serif; font-weight: 600; font-size: 1.05rem; line-height: 1.32; color: #14120F; }
-    .cams-story-card p { font-size: .86rem; color: #4A463F; }
-    .cams-story-meta { font-size: .74rem; color: #8C8779; font-family: var(--font-cams-mono), monospace; }
+    .cams-mosaic-cat {
+      position: absolute; top: 14px; left: 14px; background: #0B5E52; color: #F7F5F1; padding: 5px 10px;
+      font-family: var(--font-cams-mono), monospace; font-size: .64rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    }
+    .cams-mosaic-score {
+      position: absolute; top: 14px; right: 14px; background: #D9A23B; color: #14120F; padding: 5px 9px;
+      font-family: var(--font-cams-mono), monospace; font-weight: 700; font-size: .74rem;
+    }
+    .cams-mosaic-body { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 20px; }
+    .cams-mosaic-body h3 {
+      font-family: var(--font-cams-display), Newsreader, serif; font-weight: 700; color: #fff; line-height: 1.22;
+      font-size: 1.06rem;
+    }
+    .cams-mosaic-card.large .cams-mosaic-body h3 { font-size: clamp(1.3rem, 2.1vw, 1.8rem); }
+    .cams-mosaic-source { display: block; margin-top: 8px; font-family: var(--font-cams-mono), monospace; font-size: .68rem; color: #CFC9BC; }
+
+    .cams-story-list { border-top: 1px solid #E0DCD3; }
+    .cams-story-row { display: grid; grid-template-columns: 108px 1fr; gap: 20px; padding: 22px 0; border-bottom: 1px solid #E0DCD3; }
+    @media (max-width: 560px) { .cams-story-row { grid-template-columns: 1fr; } }
+    .cams-story-row-thumb {
+      aspect-ratio: 1/1; overflow: hidden; background: repeating-linear-gradient(45deg,#EDE9E2,#EDE9E2 10px,#E4E0D6 10px,#E4E0D6 20px);
+    }
+    .cams-story-row-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .cams-story-eyebrow {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--font-cams-mono), monospace;
+      font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; color: #8C8779; font-weight: 700; margin-bottom: 6px;
+    }
+    .cams-story-eyebrow .cat { color: #0B5E52; }
+    .cams-story-row h3 { font-family: var(--font-cams-display), Newsreader, serif; font-weight: 700; font-size: 1.08rem; line-height: 1.3; color: #14120F; margin-bottom: 6px; }
+    .cams-story-row p { font-size: .86rem; color: #4A463F; }
     .cams-empty { color: #8C8779; font-size: .9rem; }
 
     /* ---------- VIDEO REVIEWS ---------- */
@@ -163,7 +237,7 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
     @media (max-width: 700px) { .cams-newsletter-band { grid-template-columns: 1fr; padding: 36px 24px; } }
     .cams-newsletter-band h2 { font-family: var(--font-cams-display), Newsreader, serif; font-weight: 700; font-size: 1.7rem; color: #fff; margin-bottom: 10px; }
     .cams-newsletter-band p { color: #CFE3DF; font-size: .96rem; max-width: 44ch; }
-    .cams-newsletter-form { display: flex; gap: 10px; }
+    .cams-newsletter-form { display: flex; flex-wrap: wrap; gap: 10px; }
     .cams-newsletter-form input { flex: 1; padding: 13px 16px; border: none; font-size: .92rem; font-family: var(--font-cams-body), sans-serif; }
     .cams-newsletter-form button { background: #D9A23B; color: #14120F; border: none; padding: 13px 22px; font-weight: 700; font-size: .9rem; cursor: pointer; }
     .cams-newsletter-form button:disabled { opacity: .7; cursor: default; }
@@ -172,6 +246,75 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
       <CamsHeader brand={brand} brands={brands} />
 
       <main>
+        <section className="cams-section cams-rule">
+          <div className="wrap">
+            <div className="cams-section-head">
+              <h2>Latest stories</h2>
+              <Link href="/reviews" prefetch={false}>
+                View all →
+              </Link>
+            </div>
+            {latest.length > 0 ? (
+              <>
+                <div className="cams-mosaic">
+                  {latest.slice(0, 1).map((a) => (
+                    <MosaicCard article={a} size="large" key={a.slug} brand={brand} />
+                  ))}
+                  {latest.length > 1 && (
+                    <div className="cams-mosaic-side">
+                      {latest.slice(1, 3).map((a) => (
+                        <MosaicCard article={a} size="small" key={a.slug} brand={brand} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {latest.length > 3 && (
+                  <div className="cams-story-list">
+                    {latest.slice(3).map((a) => {
+                      const source = a.is_featured ? brand.name : a.author;
+                      return (
+                        <Link className="cams-story-row" href={`/${a.slug}`} key={a.slug} prefetch={false}>
+                          <div className="cams-story-row-thumb">
+                            {a.image_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={a.image_url} alt="" />
+                            ) : null}
+                          </div>
+                          <div>
+                            <div className="cams-story-eyebrow">
+                              {a.category && <span className="cat">{a.category}</span>}
+                              {a.category && <span>·</span>}
+                              <span>
+                                {new Date(a.published_at).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })}
+                              </span>
+                              {source && (
+                                <>
+                                  <span>·</span>
+                                  <span>fyi network · {source}</span>
+                                </>
+                              )}
+                            </div>
+                            <h3>{a.title}</h3>
+                            {a.dek && <p>{a.dek}</p>}
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="cams-empty">
+                No posts yet — run `python -m app.ingest_news --brand fyicams` to populate the feed.
+              </p>
+            )}
+          </div>
+        </section>
+
         <section className="cams-hero">
           <div className="wrap cams-hero-grid">
             <div className="cams-hero-left">
@@ -242,57 +385,6 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        <section className="cams-section cams-rule">
-          <div className="wrap">
-            <div className="cams-section-head">
-              <h2>Latest stories</h2>
-              <Link href="/reviews" prefetch={false}>
-                View all →
-              </Link>
-            </div>
-            {latest.length > 0 ? (
-              <div className="cams-story-grid">
-                {latest.map((a) => {
-                  const review = CAMS_REVIEWS[a.slug];
-                  const source = a.is_featured ? brand.name : a.author;
-                  return (
-                    <Link className="cams-story-card" href={`/${a.slug}`} key={a.slug} prefetch={false}>
-                      <div className="cams-story-thumb">
-                        {a.image_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={a.image_url} alt="" className="cams-story-thumb-img" />
-                        ) : null}
-                        {a.category && <span className="cams-story-thumb-cat">{a.category}</span>}
-                        {review && (
-                          <span className="cams-story-thumb-score" style={{ background: scoreColor(review.score) }}>
-                            {review.score.toFixed(1)}
-                          </span>
-                        )}
-                      </div>
-                      <span className="fyi-badge cams-story-thumb-badge">
-                        fyi network{source ? ` · ${source}` : ""}
-                      </span>
-                      <h3>{a.title}</h3>
-                      {a.dek && <p>{a.dek}</p>}
-                      <div className="cams-story-meta">
-                        {new Date(a.published_at).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="cams-empty">
-                No posts yet — run `python -m app.ingest_news --brand fyicams` to populate the feed.
-              </p>
-            )}
           </div>
         </section>
 
@@ -387,12 +479,12 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
               <h2>Get the morning roundup</h2>
               <p>One email, every weekday. Scored reviews, verified rumors, none of the noise.</p>
             </div>
-            <CamsNewsletterForm />
+            <CamsNewsletterForm brandSlug={brand.slug} />
           </div>
         </div>
       </main>
 
-      <CamsFooter brandName={brand.name} />
+      <CamsFooter brand={brand} brands={brands} />
     </div>
   );
 }

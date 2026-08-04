@@ -86,10 +86,14 @@ QUERY_OVERRIDES = {
     ("fyidodgers", "Injury Report"): "Los Angeles Dodgers injury report",
     ("fyidodgers", "Game Recaps"): "Los Angeles Dodgers game recap",
     ("fyidodgers", "Prospects & Free Agency"): "Los Angeles Dodgers prospects OR free agency",
-    "News": "camera news OR mirrorless camera OR photography industry",
-    "New Gear": "new camera announcement OR new lens announcement",
-    "Buying Guides": "best camera OR camera buying guide",
-    "Rumors": "camera rumor OR camera leak",
+    # Bare "camera"/"lens" queries return mostly surveillance/wildlife/dashcam
+    # and smartphone-camera noise (Bing's ranking treats "camera" as a very
+    # common word). Anchoring the query itself on real ILC gear terms and
+    # manufacturer names cuts through that before FILTER_KEYWORDS even runs.
+    "News": "mirrorless camera OR DSLR camera OR Canon EOS OR Sony Alpha OR Nikon Z OR Fujifilm X camera",
+    "New Gear": "new mirrorless camera announcement OR new camera lens OR Canon EOS OR Sony Alpha OR Nikon Z",
+    "Buying Guides": "best mirrorless camera OR best DSLR camera guide",
+    "Rumors": "mirrorless camera rumor OR Canon EOS rumor OR Sony Alpha rumor OR Nikon Z rumor OR Fujifilm rumor",
 }
 
 
@@ -111,8 +115,10 @@ CAMERA_GEAR_KEYWORDS = [
     "camera body",
     "full-frame camera",
     "aps-c",
-    "megapixel",
-    "aperture",
+    # "megapixel"/"aperture" deliberately excluded — smartphone marketing
+    # copy uses both just as often as real camera-gear coverage does (a
+    # phone's "200MP camera" leak matched "megapixel" and slipped a phone
+    # story onto a dedicated-camera site before this was narrowed).
     "canon eos",
     "nikon z",
     "sony alpha",
@@ -220,8 +226,18 @@ def is_english(text: str) -> bool:
 # says "confirmed for new drama", not "Korean drama confirmed") — the
 # FILTER_KEYWORDS check alone drops these as false negatives. A source match
 # here is accepted outright, skipping the keyword requirement.
+CAMERA_TRADE_SOURCES = [
+    "digital camera world", "digital photography review", "dpreview", "petapixel",
+    "fstoppers", "newsshooter", "kosmo foto", "redshark news", "imaging resource",
+    "photography news", "british journal of photography", "amateur photographer",
+]
+
 TRUSTED_SOURCES = {
     "K-Drama": ["soompi", "allkpop", "koreaboo", "korea herald", "koreajoongangdaily"],
+    "News": CAMERA_TRADE_SOURCES,
+    "New Gear": CAMERA_TRADE_SOURCES,
+    "Buying Guides": CAMERA_TRADE_SOURCES,
+    "Rumors": CAMERA_TRADE_SOURCES,
 }
 
 # Editorial-only topics: no RSS query makes sense for these (there's no

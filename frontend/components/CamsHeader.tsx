@@ -52,10 +52,7 @@ export default function CamsHeader({ brand, brands }: { brand: Brand; brands: Br
         <div className="cams-masthead-inner">
           <Link href="/" className="cams-wordmark-link" aria-label={`${brand.name} home`} prefetch={false}>
             <CamsLogoMark size={30} />
-            <span>
-              <span className="cams-wordmark">{brand.name}</span>
-              <span className="cams-wordmark-sub">{brand.tagline}</span>
-            </span>
+            <span className="cams-wordmark">{brand.name}</span>
           </Link>
           <nav className="cams-nav">
             {NAV_LINKS.map((link) => (

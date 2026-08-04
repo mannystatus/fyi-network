@@ -1,4 +1,5 @@
 import datetime as dt
+import re
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -199,3 +200,18 @@ class PushUnsubscribeIn(BaseModel):
 
 class PublicKeyOut(BaseModel):
     publicKey: str
+
+
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+class NewsletterSubscribeIn(BaseModel):
+    email: str
+
+    @field_validator("email")
+    @classmethod
+    def valid_email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not _EMAIL_RE.match(v):
+            raise ValueError("not a valid email address")
+        return v

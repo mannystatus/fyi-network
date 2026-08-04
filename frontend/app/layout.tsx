@@ -139,7 +139,7 @@ export default async function RootLayout({
       {gaId && <GoogleAnalytics gaId={gaId} />}
       <body
         className={`${flynowDisplay.variable} ${flynowBody.variable} ${flynowSans.variable} ${sportsDisplay.variable} ${camsDisplay.variable} ${camsBody.variable} ${camsMono.variable} ${
-          brand.icon === "flynow" ? "theme-flynow-body" : ""
+          brand.icon === "flynow" ? "theme-flynow-body" : brand.icon === "cams" ? "theme-cams-body" : ""
         }`}
         style={{ "--accent": brand.accent_color } as React.CSSProperties}
       >

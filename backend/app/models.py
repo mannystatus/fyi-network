@@ -195,6 +195,26 @@ class VisaRequirement(Base):
     )
 
 
+class NewsletterSubscriber(Base):
+    """
+    One row per accepted newsletter signup, from EditorialNewsletterForm /
+    CamsNewsletterForm (routers/newsletter.py). No ESP is wired up yet —
+    these rows are the whole subscriber list until one is; export/sync to
+    an ESP can be layered on top of this table later without touching the
+    capture path.
+    """
+    __tablename__ = "newsletter_subscribers"
+
+    id = Column(Integer, primary_key=True)
+    brand_slug = Column(String(32), nullable=False, index=True)
+    email = Column(String(320), nullable=False)
+    created_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("brand_slug", "email", name="uq_newsletter_subscriber_brand_email"),
+    )
+
+
 class SentGameAlert(Base):
     """
     Dedup record for game-day push alerts — app/send_game_alerts.py runs on
