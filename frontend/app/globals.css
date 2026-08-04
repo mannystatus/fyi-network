@@ -1343,7 +1343,13 @@ main {
   background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
-footer {
+/* :not()'d against the bespoke CamsFooter/EditorialFooter — those set their
+   own max-width/display/layout on the <footer> element itself, and this
+   bare tag selector would otherwise still win (tag selectors apply
+   regardless of class) wherever a bespoke footer's own rule doesn't
+   redeclare a given property, squeezing its whole layout into this rule's
+   700px/flex-row box instead of the bespoke one. */
+footer:not(.cams-footer):not(.editorial-footer) {
   max-width: 700px;
   width: 100%;
   margin: 8px auto 0;
