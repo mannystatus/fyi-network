@@ -148,7 +148,7 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
     .cams-mosaic-card {
       position: relative; display: block; overflow: hidden; background: #14120F;
     }
-    .cams-mosaic-card.large { aspect-ratio: 5/4; }
+    .cams-mosaic-card.large { aspect-ratio: 5 / 4; }
     .cams-mosaic-card.small { flex: 1; min-height: 160px; }
     .cams-mosaic-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
     .cams-mosaic-card:hover .cams-mosaic-img { transform: scale(1.03); }
@@ -176,7 +176,7 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
     .cams-story-row { display: grid; grid-template-columns: 108px 1fr; gap: 20px; padding: 22px 0; border-bottom: 1px solid #E0DCD3; }
     @media (max-width: 560px) { .cams-story-row { grid-template-columns: 1fr; } }
     .cams-story-row-thumb {
-      aspect-ratio: 1/1; overflow: hidden; background: repeating-linear-gradient(45deg,#EDE9E2,#EDE9E2 10px,#E4E0D6 10px,#E4E0D6 20px);
+      aspect-ratio: 1 / 1; overflow: hidden; background: repeating-linear-gradient(45deg,#EDE9E2,#EDE9E2 10px,#E4E0D6 10px,#E4E0D6 20px);
     }
     .cams-story-row-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .cams-story-eyebrow {

@@ -2183,14 +2183,14 @@ footer {
 /* Same pattern as fyiCams' .cams-mosaic/.cams-story-list — one large card
    + two stacked smaller ones with the headline set directly over the photo
    on a dark scrim, then a plain divided list for the rest. Built entirely
-   on the --editorial-*/--accent tokens each .theme-<brand> block already
+   on the --editorial-* and --accent tokens each .theme-<brand> block already
    defines, so this one set of rules covers Mac/Win/Google/Netflix/Lakers/
    Dodgers without a per-brand copy — same reasoning as the switcher fix. */
 .editorial-mosaic { display: grid; grid-template-columns: 1.6fr 1fr; gap: 4px; margin-bottom: 4px; }
 @media (max-width: 900px) { .editorial-mosaic { grid-template-columns: 1fr; } }
 .editorial-mosaic-side { display: flex; flex-direction: column; gap: 4px; }
 .editorial-mosaic-card { position: relative; display: block; overflow: hidden; background: var(--editorial-ink); }
-.editorial-mosaic-card.large { aspect-ratio: 5/4; }
+.editorial-mosaic-card.large { aspect-ratio: 5 / 4; }
 .editorial-mosaic-card.small { flex: 1; min-height: 160px; }
 .editorial-mosaic-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
 .editorial-mosaic-card:hover .editorial-mosaic-img { transform: scale(1.03); }
@@ -2214,7 +2214,7 @@ footer {
 .editorial-story-row { display: grid; grid-template-columns: 108px 1fr; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--editorial-line); }
 @media (max-width: 560px) { .editorial-story-row { grid-template-columns: 1fr; } }
 .editorial-story-row-thumb {
-  aspect-ratio: 1/1; overflow: hidden;
+  aspect-ratio: 1 / 1; overflow: hidden;
   background: repeating-linear-gradient(45deg, var(--editorial-bg-alt), var(--editorial-bg-alt) 10px, var(--editorial-line) 10px, var(--editorial-line) 20px);
 }
 .editorial-story-row-thumb img { width: 100%; height: 100%; object-fit: cover; }
