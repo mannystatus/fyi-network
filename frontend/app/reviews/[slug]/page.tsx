@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getCurrentBrand } from "../../../lib/api";
 import { CAMS_REVIEWS } from "../../../lib/camsReviews";
+import { canonicalOrigin } from "../../../lib/url";
 
 // Brands other than fyiCams 404 here, same pattern as /buyers-guide.
 export async function generateMetadata({
@@ -14,10 +15,27 @@ export async function generateMetadata({
   const review = brand.icon === "cams" ? CAMS_REVIEWS[slug] : undefined;
   if (!review) return {};
 
+  const title = `${review.productName} Review — ${review.score.toFixed(1)}/10`;
+  const url = `${canonicalOrigin(brand.domain)}/reviews/${slug}`;
+
   return {
-    title: `${review.productName} Review — ${review.score.toFixed(1)}/10`,
+    title,
     description: review.verdict,
     alternates: { canonical: `/reviews/${slug}` },
+    openGraph: {
+      title,
+      description: review.verdict,
+      type: "article",
+      url,
+      siteName: brand.name,
+      images: review.imageUrl ? [{ url: review.imageUrl, width: 1200, height: 900, alt: review.productName }] : undefined,
+    },
+    twitter: {
+      card: review.imageUrl ? "summary_large_image" : "summary",
+      title,
+      description: review.verdict,
+      images: review.imageUrl ? [review.imageUrl] : undefined,
+    },
   };
 }
 
@@ -33,8 +51,56 @@ export default async function CamsReviewPage({
 
   const related = Object.values(CAMS_REVIEWS).filter((r) => r.slug !== slug).slice(0, 3);
 
+  const origin = canonicalOrigin(brand.domain);
+  const url = `${origin}/reviews/${slug}`;
+
+  // Google's review-snippet rich results (star rating in search) require a
+  // page whose primary content is a single review of a single product —
+  // this page is exactly that, one product per slug — so Review +
+  // itemReviewed/Product is the correct schema, not an aggregate rating.
+  const reviewJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    name: `${review.productName} Review`,
+    reviewBody: review.verdict,
+    itemReviewed: {
+      "@type": "Product",
+      name: review.productName,
+      image: review.imageUrl,
+      brand: { "@type": "Brand", name: review.productName.split(" ")[0] },
+    },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: review.score,
+      bestRating: 10,
+      worstRating: 1,
+    },
+    author: { "@type": "Organization", name: brand.name },
+    publisher: { "@type": "Organization", name: brand.name },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: origin },
+      { "@type": "ListItem", position: 2, name: "Reviews", item: `${origin}/reviews` },
+      { "@type": "ListItem", position: 3, name: review.productName, item: url },
+    ],
+  };
+
   return (
     <article className="cams-review-page">
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <style>{`
     .cams-review-page :where(h1, h2, h3, h4, p, ul, li) { margin: 0; padding: 0; }
 

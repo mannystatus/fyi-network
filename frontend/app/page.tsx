@@ -7,6 +7,7 @@ import FlyNowHomepage from "../components/FlyNowHomepage";
 import LatestFromUs from "../components/LatestFromUs";
 import Pagination from "../components/Pagination";
 import { EDITORIAL_CONFIGS } from "../lib/editorialConfig";
+import { canonicalOrigin } from "../lib/url";
 
 const EDITORIAL_METADATA: Record<string, { title: string; description: string }> = {
   mac: {
@@ -39,28 +40,49 @@ const EDITORIAL_METADATA: Record<string, { title: string; description: string }>
 // bespoke landing pages (not the standard article list every other brand
 // uses below), so they get their own keyword-targeted title/description
 // instead of falling back to the layout's generic "{brand.name} | {tagline}"
-// default.
+// default. openGraph/twitter need the same override — Next only inherits a
+// parent layout's metadata field wholesale when the page doesn't specify
+// that field at all, so omitting openGraph here (as before) meant every
+// brand's homepage shared previews (Slack/iMessage/Twitter) showed the
+// generic "{brand.name} / {tagline}" from layout.tsx instead of this
+// keyword-rich title, even though the <title> tag and meta description
+// were already correct.
 export async function generateMetadata(): Promise<Metadata> {
   const brand = await getCurrentBrand();
+  const url = canonicalOrigin(brand.domain);
+
   if (brand.icon === "flynow") {
+    const title = "Travel Guides, Flight & Airline News";
+    const description =
+      "Daily flight and airline news, plus real travel guides for destinations abroad — pulled from travel creators who've actually made the trip.";
     return {
-      title: "Travel Guides, Flight & Airline News",
-      description:
-        "Daily flight and airline news, plus real travel guides for destinations abroad — pulled from travel creators who've actually made the trip.",
+      title,
+      description,
       alternates: { canonical: "/" },
+      openGraph: { title, description, type: "website", url, siteName: brand.name },
+      twitter: { card: "summary_large_image", title, description },
     };
   }
   if (brand.icon === "cams") {
+    const title = "Camera News, Reviews & Buying Guides";
+    const description =
+      "Data-driven camera coverage — gear announcements, hands-on scoring, and buying guides from people who actually shoot.";
     return {
-      title: "Camera News, Reviews & Buying Guides",
-      description:
-        "Data-driven camera coverage — gear announcements, hands-on scoring, and buying guides from people who actually shoot.",
+      title,
+      description,
       alternates: { canonical: "/" },
+      openGraph: { title, description, type: "website", url, siteName: brand.name },
+      twitter: { card: "summary_large_image", title, description },
     };
   }
   const editorial = EDITORIAL_METADATA[brand.icon];
   if (editorial) {
-    return { ...editorial, alternates: { canonical: "/" } };
+    return {
+      ...editorial,
+      alternates: { canonical: "/" },
+      openGraph: { title: editorial.title, description: editorial.description, type: "website", url, siteName: brand.name },
+      twitter: { card: "summary_large_image", title: editorial.title, description: editorial.description },
+    };
   }
   return { alternates: { canonical: "/" } };
 }

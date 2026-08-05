@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getCurrentBrand, getArticles } from "../lib/api";
 import { canonicalOrigin } from "../lib/url";
+import { CAMS_REVIEWS } from "../lib/camsReviews";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const brand = await getCurrentBrand();
@@ -26,5 +27,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticEntries, ...articleEntries];
+  // fyiCams-only: individual product reviews (Sony, Leica, Nikon, DJI,
+  // Insta360, etc.) are the pages actually meant to rank for
+  // "<product name> review" searches — omitted here before, so Google had
+  // no sitemap signal that they exist or how important they are.
+  const reviewEntries: MetadataRoute.Sitemap =
+    brand.icon === "cams"
+      ? [
+          { url: `${base}/reviews`, changeFrequency: "weekly", priority: 0.7 },
+          ...Object.values(CAMS_REVIEWS).map((r) => ({
+            url: `${base}/reviews/${r.slug}`,
+            changeFrequency: "monthly" as const,
+            priority: 0.9,
+          })),
+        ]
+      : [];
+
+  return [...staticEntries, ...articleEntries, ...reviewEntries];
 }

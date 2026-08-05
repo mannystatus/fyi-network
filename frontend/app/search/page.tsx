@@ -18,6 +18,11 @@ export async function generateMetadata({
   return {
     title: query ? `Search: ${query}` : "Search",
     description: query ? `Search results for "${query}" on ${brand.name}.` : `Search ${brand.name} articles.`,
+    // Internal search-result pages are thin, near-duplicate content that
+    // Google explicitly advises against indexing — noindex keeps them out
+    // of search entirely rather than diluting the site's real pages, while
+    // `follow` still lets crawlers reach whatever articles they link to.
+    robots: { index: false, follow: true },
   };
 }
 

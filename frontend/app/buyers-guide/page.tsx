@@ -6,16 +6,22 @@ import { daysSince, formatAge, getVerdict } from "../../lib/buyersGuide";
 import { BUYERS_GUIDES } from "../../lib/buyersGuideRegistry";
 import AdSlot from "../../components/AdSlot";
 import { AD_SLOTS } from "../../lib/analytics";
+import { canonicalOrigin } from "../../lib/url";
 
 export async function generateMetadata(): Promise<Metadata> {
   const brand = await getCurrentBrand();
   const guide = BUYERS_GUIDES[brand.slug];
   if (!guide) return {};
 
+  const title = `${guide.storeName} Buyers Guide — Should You Buy One Right Now?`;
+  const url = `${canonicalOrigin(brand.domain)}/buyers-guide`;
+
   return {
-    title: `${guide.storeName} Buyers Guide — Should You Buy One Right Now?`,
+    title,
     description: guide.dek,
     alternates: { canonical: "/buyers-guide" },
+    openGraph: { title, description: guide.dek, type: "website", url, siteName: brand.name },
+    twitter: { card: "summary", title, description: guide.dek },
   };
 }
 
