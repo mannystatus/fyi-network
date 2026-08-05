@@ -189,19 +189,6 @@ class VisaRequirementOut(BaseModel):
     requirement: str
 
 
-class PushSubscribeIn(BaseModel):
-    endpoint: str
-    keys: dict[str, str]
-
-
-class PushUnsubscribeIn(BaseModel):
-    endpoint: str
-
-
-class PublicKeyOut(BaseModel):
-    publicKey: str
-
-
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 

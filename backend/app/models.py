@@ -115,24 +115,6 @@ class TipSubmission(Base):
     occurred_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
 
 
-class PushSubscription(Base):
-    """
-    A browser's Web Push subscription for game-day alerts (fyiDodgers,
-    fyiLakers). One backend serves every brand, so — unlike hackthedeal.com's
-    single-brand equivalent this mirrors — each row is scoped to the brand
-    that captured it; app/send_game_alerts.py only ever pushes to
-    subscriptions matching the brand whose game triggered the alert.
-    """
-    __tablename__ = "push_subscriptions"
-
-    id = Column(Integer, primary_key=True)
-    brand_slug = Column(String(32), nullable=False, index=True)
-    endpoint = Column(Text, nullable=False, unique=True)
-    p256dh = Column(String(255), nullable=False)
-    auth = Column(String(255), nullable=False)
-    created_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
-
-
 class TravelAdvisory(Base):
     """
     High-severity "don't go here" advisories for fyiFlyNow, sourced from
@@ -214,22 +196,3 @@ class NewsletterSubscriber(Base):
         UniqueConstraint("brand_slug", "email", name="uq_newsletter_subscriber_brand_email"),
     )
 
-
-class SentGameAlert(Base):
-    """
-    Dedup record for game-day push alerts — app/send_game_alerts.py runs on
-    a schedule (every ~15 min, see .github/workflows/game-alerts.yml) and
-    needs to know it already sent "starting soon" or "final" for a given
-    game so it doesn't re-notify every subscriber on every run.
-    """
-    __tablename__ = "sent_game_alerts"
-
-    id = Column(Integer, primary_key=True)
-    brand_slug = Column(String(32), nullable=False)
-    game_id = Column(String(64), nullable=False)
-    alert_type = Column(String(16), nullable=False)  # "starting_soon" | "final"
-    sent_at = Column(DateTime, default=dt.datetime.utcnow, nullable=False)
-
-    __table_args__ = (
-        UniqueConstraint("brand_slug", "game_id", "alert_type", name="uq_sent_game_alert"),
-    )

@@ -19,7 +19,6 @@ import AdSlot from "../components/AdSlot";
 import ChromeGate from "../components/ChromeGate";
 import { AD_SLOTS } from "../lib/analytics";
 import { BUYERS_GUIDES } from "../lib/buyersGuideRegistry";
-import GameDaySoftPrompt from "../components/GameDaySoftPrompt";
 
 // Brands whose homepage is a fully bespoke component (FlyNowHomepage,
 // CamsHomepage, EditorialHomepage) that supplies its own header/footer and
@@ -159,9 +158,6 @@ async function Chrome({
           </span>
         </footer>
       </div>
-
-      {brand.icon === "dodgers" && <GameDaySoftPrompt brandSlug={brand.slug} teamName="fyiDodgers" />}
-      {brand.icon === "lakers" && <GameDaySoftPrompt brandSlug={brand.slug} teamName="fyiLakers" />}
     </div>
   );
 }

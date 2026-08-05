@@ -2,14 +2,14 @@ name: Run backend script
 
 # Manual trigger for one-off diagnostic/maintenance scripts against
 # production — DATABASE_URL only exists as a secret here (and on Vercel),
-# not locally. Mirrors the same pattern as ingest-news.yml/game-alerts.yml,
-# just with the command left flexible instead of hardcoded.
+# not locally. Mirrors the same pattern as ingest-news.yml, just with the
+# command left flexible instead of hardcoded.
 
 on:
   workflow_dispatch:
     inputs:
       command:
-        description: "Command to run from the backend/ dir (e.g. python -m app.send_game_alerts)"
+        description: "Command to run from the backend/ dir (e.g. python -m app.ingest_news --all-brands)"
         required: true
 
 jobs:
@@ -27,6 +27,3 @@ jobs:
       - run: ${{ inputs.command }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
-          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
-          VAPID_CLAIM_EMAIL: ${{ secrets.VAPID_CLAIM_EMAIL }}

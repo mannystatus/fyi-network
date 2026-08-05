@@ -10,9 +10,9 @@ written travel guide. Writes straight into fyiflynow's "Travel Guides" topic
 two pipelines never collide on the same category. Re-running is safe:
 articles are deduped by slug per brand, same as ingest_news.py.
 
-Needs GEMINI_API_KEY set (exits cleanly, doing nothing, if it isn't — same
-pattern as send_game_alerts.py's VAPID-key check). Uses Google AI Studio's
-free tier, not a paid API. A video with no transcript available (captions
+Needs GEMINI_API_KEY set (exits cleanly, doing nothing, if it isn't). Uses
+Google AI Studio's free tier, not a paid API. A video with no transcript
+available (captions
 off, or YouTube blocking the request) is skipped with a warning rather than
 failing the whole run — this uses the unofficial youtube-transcript-api,
 which isn't Google-sanctioned and can be rate-limited more aggressively

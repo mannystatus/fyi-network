@@ -65,11 +65,9 @@ export type EditorialConfig = {
   ticker: { tag: string; text: string }[];
 
   // Sports-brand variant (fyiLakers/fyiDodgers): Fantasy Corner + Injury
-  // Report + the real live-data scoreboard replace Quick Compare/Update
-  // Log/Roadmap entirely — see EditorialHomepage.tsx's variant branch.
+  // Report replace Quick Compare/Update Log/Roadmap entirely — see
+  // EditorialHomepage.tsx's variant branch.
   variant?: "sports";
-  scoreboardBrand?: "lakers" | "dodgers";
-  gameDayTeamName?: string; // "fyiLakers" | "fyiDodgers", for GameDaySoftPrompt
   fantasyLabel?: string; // "This week"
   fantasyStart?: FantasyRow[];
   fantasySit?: FantasyRow[];
@@ -418,8 +416,6 @@ export const LAKERS_EDITORIAL: EditorialConfig = {
     { tag: "Rumor", text: "Coaching staff denies report of rotation shake-up" },
   ],
   variant: "sports",
-  scoreboardBrand: "lakers",
-  gameDayTeamName: "fyiLakers",
   fantasyLabel: "This week",
   fantasyStart: [
     { name: "Bench big", pos: "C", note: "Minutes up" },
@@ -504,8 +500,6 @@ export const DODGERS_EDITORIAL: EditorialConfig = {
     { tag: "Rumor", text: "Front office denies report of clubhouse tension" },
   ],
   variant: "sports",
-  scoreboardBrand: "dodgers",
-  gameDayTeamName: "fyiDodgers",
   fantasyLabel: "This week",
   fantasyStart: [
     { name: "Leadoff hitter", pos: "OF", note: "Hot streak" },

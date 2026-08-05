@@ -5,9 +5,6 @@ import type { EditorialConfig } from "../lib/editorialConfig";
 import EditorialHeader from "./EditorialHeader";
 import EditorialFooter from "./EditorialFooter";
 import EditorialNewsletterForm from "./EditorialNewsletterForm";
-import LakersScoreboard from "./LakersScoreboard";
-import DodgersScoreboard from "./DodgersScoreboard";
-import GameDaySoftPrompt from "./GameDaySoftPrompt";
 
 const NEWS_GRID_COUNT = 8;
 const TOP_STORIES_COUNT = 3;
@@ -167,19 +164,6 @@ export default async function EditorialHomepage({
             </div>
           </div>
         </section>
-
-        {/* Real live-data scoreboard (ESPN schedule fetch + 30s live-score
-            polling + SportsEvent JSON-LD) instead of a hardcoded "Upcoming
-            schedule" band — the mockup's version would just be fake data
-            duplicating what this already does for real. */}
-        {isSports && (
-          <section className="editorial-section editorial-rule editorial-scoreboard-section" id="scoreboard">
-            <div className="wrap">
-              {config.scoreboardBrand === "lakers" && <LakersScoreboard />}
-              {config.scoreboardBrand === "dodgers" && <DodgersScoreboard />}
-            </div>
-          </section>
-        )}
 
         <section className="editorial-section editorial-band" id="rumor-mill">
           <div className="wrap">
@@ -353,8 +337,6 @@ export default async function EditorialHomepage({
             </div>
           </section>
         )}
-
-        {isSports && <GameDaySoftPrompt brandSlug={brand.slug} teamName={config.gameDayTeamName ?? brand.name} />}
 
         <div className="wrap editorial-newsletter-wrap" id="newsletter">
           <div className="editorial-newsletter-band">
