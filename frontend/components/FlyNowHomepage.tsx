@@ -355,7 +355,7 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
               <h4>Legal</h4>
               <a href="/privacy">Privacy</a>
               <a href="/terms">Terms</a>
-              <a href="mailto:tips@fyiflynow.com?subject=Contact">Contact</a>
+              <Link href="/advertise">Contact / Advertising</Link>
             </div>
           </div>
         </div>

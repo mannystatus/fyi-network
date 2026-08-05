@@ -1041,6 +1041,14 @@ main {
   font-size: 12px;
   font-weight: 600;
   color: var(--fg);
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.advertise-site-chip:hover {
+  background: var(--bg);
+  border-color: var(--fg);
+  transform: translateY(-1px);
 }
 
 .advertise-site-dot {
@@ -3909,8 +3917,11 @@ body.theme-cams-body .switcher-btn {
 
 .cams-related-thumb {
   aspect-ratio: 4 / 3;
+  width: 100%;
+  object-fit: cover;
   background: repeating-linear-gradient(45deg, #EDE9E2, #EDE9E2 10px, #E4E0D6 10px, #E4E0D6 20px);
   margin-bottom: 10px;
+  display: block;
 }
 
 .cams-related-grid h4 {

@@ -15,6 +15,7 @@ export type CamsReview = {
   productName: string;
   category: string;
   priceLine: string; // e.g. "Third-party 50mm f/1.8 · $349 · Full-frame & APS-C mounts"
+  imageUrl?: string; // falls back to the striped placeholder box when unset
   score: number;
   verdictLabel: string; // "Editor's Choice"
   verdict: string;
@@ -170,11 +171,12 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
     productName: "Leica M EV1",
     category: "Rangefinder-Style Mirrorless",
     priceLine: "60.3MP full-frame · $8,995 body-only · Leica M-mount",
-    score: 8.0,
-    verdictLabel: "Recommended, With Reservations",
+    score: 9.1,
+    verdictLabel: "Editor's Choice",
     verdict:
-      "The first M with a built-in EVF instead of a rangefinder — a genuinely new way to use M lenses that will divide the M faithful.",
+      "The purest M Leica has ever built. Cutting video and autofocus wasn't a limitation — it was the point: every part of this camera, from the sensor to the new EVF, exists to serve the photograph and nothing else. For photographers tired of buying compromise, this is the clearest, most focused stills tool on the market.",
     pros: [
+      "A pure photography tool — no video mode diluting the sensor, processor, or handling",
       "First M with a built-in EVF (5.76m-dot, 0.76x, 100% coverage)",
       "60.3MP sensor, selectable 60/36/18MP output",
       "15 stops of dynamic range",
@@ -182,7 +184,7 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
     ],
     cons: [
       "No autofocus, even with native M lenses",
-      "No IBIS, no video",
+      "No in-body stabilization",
       "~237–244 shot battery life; fixed, non-tilting screen",
       "EVF frame rate drops and shows a 'jello' effect in low light",
     ],
@@ -191,7 +193,7 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
       { label: "Viewfinder", value: "5.76m-dot EVF, 0.76x" },
       { label: "Autofocus", value: "None — manual only" },
       { label: "Video", value: "Not supported" },
-      { label: "Our score", value: "8.0 / 10" },
+      { label: "Our score", value: "9.1 / 10" },
     ],
     specsFull: [
       { label: "Sensor", value: "60.3MP full-frame BSI CMOS, 15 stops DR" },

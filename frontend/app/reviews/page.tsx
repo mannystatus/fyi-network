@@ -35,7 +35,11 @@ export default async function CamsReviewsIndexPage() {
         <div className="cams-related-grid">
           {reviews.map((r) => (
             <Link href={`/reviews/${r.slug}`} key={r.slug} prefetch={false}>
-              <div className="cams-related-thumb" />
+              {r.imageUrl ? (
+                <img src={r.imageUrl} alt={r.productName} className="cams-related-thumb" />
+              ) : (
+                <div className="cams-related-thumb" />
+              )}
               <h4>{r.productName}</h4>
               <p className="cams-reviews-index-dek">{r.verdict}</p>
             </Link>

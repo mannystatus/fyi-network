@@ -34,6 +34,7 @@ export default function EditorialFooter({
             <Link href="/">News</Link>
             <Link href="/#rumor-mill">{config.navSecondaryLabel}</Link>
             {config.showCompare && <Link href="/#compare">Compare</Link>}
+            <Link href="/advertise">Contact / Advertising</Link>
           </div>
           <div>
             <h5>Network</h5>

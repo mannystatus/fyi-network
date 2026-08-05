@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getCurrentBrand, getAllBrands } from "../../lib/api";
-import { canonicalDomain } from "../../lib/url";
+import { canonicalDomain, canonicalOrigin } from "../../lib/url";
 import { EXTERNAL_SITES } from "../../lib/externalSites";
 import AdvertiseForm from "../../components/AdvertiseForm";
 
@@ -36,15 +36,19 @@ export default async function AdvertisePage() {
         <p className="advertise-sites-title">Our sites</p>
         <ul className="advertise-sites-list">
           {brands.map((b) => (
-            <li key={b.slug} className="advertise-site-chip">
-              <span className="advertise-site-dot" style={{ background: b.accent_color }} />
-              {b.name} · {canonicalDomain(b.domain)}
+            <li key={b.slug}>
+              <a href={canonicalOrigin(b.domain)} className="advertise-site-chip">
+                <span className="advertise-site-dot" style={{ background: b.accent_color }} />
+                {b.name} · {canonicalDomain(b.domain)}
+              </a>
             </li>
           ))}
           {EXTERNAL_SITES.map((s) => (
-            <li key={s.url} className="advertise-site-chip">
-              <span className="advertise-site-dot" style={{ background: "var(--comment)" }} />
-              {s.name} · {s.url.replace(/^https?:\/\//, "")}
+            <li key={s.url}>
+              <a href={s.url} target="_blank" rel="noopener noreferrer" className="advertise-site-chip">
+                <span className="advertise-site-dot" style={{ background: "var(--comment)" }} />
+                {s.name} · {s.url.replace(/^https?:\/\//, "")}
+              </a>
             </li>
           ))}
         </ul>

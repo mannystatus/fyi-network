@@ -43,7 +43,7 @@ export default async function CamsReviewPage({
        theme-cams block instead of here — this page-specific block only has
        styling unique to the single-review template. */
 
-    .cams-review-head { display: grid; grid-template-columns: 1.3fr .7fr; gap: 48px; border-bottom: 2px solid #14120F; padding-bottom: 40px; margin-bottom: 40px; }
+    .cams-review-head { display: grid; grid-template-columns: 1.3fr .7fr; align-items: start; gap: 48px; border-bottom: 2px solid #14120F; padding-bottom: 40px; margin-bottom: 40px; }
     @media (max-width: 800px) { .cams-review-head { grid-template-columns: 1fr; } }
     .cams-review-eyebrow { font-family: var(--font-cams-mono), monospace; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #0B5E52; font-weight: 700; }
     .cams-review-head h1 { font-family: var(--font-cams-display), Newsreader, serif; font-weight: 700; font-size: clamp(1.9rem, 3vw, 2.6rem); line-height: 1.12; margin: 10px 0 16px; }
@@ -53,7 +53,7 @@ export default async function CamsReviewPage({
     .cams-review-scoreline-sub { font-family: var(--font-cams-mono), monospace; font-size: .62rem; text-transform: uppercase; letter-spacing: .06em; color: #8C8779; text-align: center; margin-top: 6px; }
     .cams-review-verdict-label { font-weight: 700; font-size: 1rem; }
     .cams-review-verdict-text { font-size: .88rem; color: #4A463F; margin-top: 6px; }
-    .cams-review-photo { aspect-ratio: 4/3; background: repeating-linear-gradient(45deg,#EDE9E2,#EDE9E2 12px,#E4E0D6 12px,#E4E0D6 24px); display: flex; align-items: center; justify-content: center; font-family: var(--font-cams-mono), monospace; font-size: .7rem; color: #8C8779; }
+    .cams-review-photo { aspect-ratio: 4/3; width: 100%; object-fit: cover; background: repeating-linear-gradient(45deg,#EDE9E2,#EDE9E2 12px,#E4E0D6 12px,#E4E0D6 24px); display: flex; align-items: center; justify-content: center; font-family: var(--font-cams-mono), monospace; font-size: .7rem; color: #8C8779; }
 
     .cams-review-proscons { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px; }
     @media (max-width: 700px) { .cams-review-proscons { grid-template-columns: 1fr; } }
@@ -116,7 +116,11 @@ export default async function CamsReviewPage({
             </div>
           </div>
         </div>
-        <div className="cams-review-photo">PRODUCT SHOT — 4:3</div>
+        {review.imageUrl ? (
+          <img src={review.imageUrl} alt={review.productName} className="cams-review-photo" />
+        ) : (
+          <div className="cams-review-photo">PRODUCT SHOT — 4:3</div>
+        )}
       </div>
 
       <div className="cams-review-proscons">
@@ -188,7 +192,11 @@ export default async function CamsReviewPage({
           <div className="cams-related-grid">
             {related.map((r) => (
               <Link href={`/reviews/${r.slug}`} key={r.slug} prefetch={false}>
-                <div className="cams-related-thumb" />
+                {r.imageUrl ? (
+                  <img src={r.imageUrl} alt={r.productName} className="cams-related-thumb" />
+                ) : (
+                  <div className="cams-related-thumb" />
+                )}
                 <h4>{r.productName}</h4>
               </Link>
             ))}
