@@ -6,6 +6,7 @@ import CamsScoreGate from "./CamsScoreGate";
 // CAMS_REVIEWS entry (see app/[slug]/page.tsx) — an article without an
 // in-depth review just doesn't get this sidebar, no placeholder shown.
 export default function CamsArticleSidebar({ review, brandSlug }: { review: CamsReview; brandSlug: string }) {
+  const isPending = review.verdictLabel === "Coming Soon";
   return (
     <aside className="cams-article-sidebar">
       <div className="cams-article-sidebar-head">Key specs</div>
@@ -13,7 +14,13 @@ export default function CamsArticleSidebar({ review, brandSlug }: { review: Cams
         <div className="cams-article-sidebar-row" key={row.label}>
           <span>{row.label}</span>
           <span>
-            {row.label === "Our score" ? <CamsScoreGate brandSlug={brandSlug}>{row.value}</CamsScoreGate> : row.value}
+            {row.label !== "Our score" ? (
+              row.value
+            ) : isPending ? (
+              "Coming Soon"
+            ) : (
+              <CamsScoreGate brandSlug={brandSlug}>{row.value}</CamsScoreGate>
+            )}
           </span>
         </div>
       ))}

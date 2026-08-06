@@ -37,7 +37,11 @@ function MosaicCard({ article, size, brand }: { article: ArticleListItem; size: 
       {article.category && <span className="cams-mosaic-cat">{article.category}</span>}
       {review && (
         <span className="cams-mosaic-score">
-          <CamsScoreGate brandSlug={brand.slug}>{review.score.toFixed(1)}</CamsScoreGate>
+          {review.verdictLabel === "Coming Soon" ? (
+            "—"
+          ) : (
+            <CamsScoreGate brandSlug={brand.slug}>{review.score.toFixed(1)}</CamsScoreGate>
+          )}
         </span>
       )}
       <span className="cams-mosaic-body">
@@ -372,8 +376,15 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
               {reviews.length > 0 ? (
                 reviews.map((r) => (
                   <Link className="cams-score-row" href={`/reviews/${r.slug}`} key={r.slug} prefetch={false}>
-                    <span className="cams-score-badge" style={{ background: scoreColor(r.score) }}>
-                      <CamsScoreGate brandSlug={brand.slug}>{r.score.toFixed(1)}</CamsScoreGate>
+                    <span
+                      className="cams-score-badge"
+                      style={{ background: r.verdictLabel === "Coming Soon" ? "#8C8779" : scoreColor(r.score) }}
+                    >
+                      {r.verdictLabel === "Coming Soon" ? (
+                        "—"
+                      ) : (
+                        <CamsScoreGate brandSlug={brand.slug}>{r.score.toFixed(1)}</CamsScoreGate>
+                      )}
                     </span>
                     <span className="cams-score-title">{r.productName}</span>
                   </Link>

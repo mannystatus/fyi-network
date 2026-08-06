@@ -17,7 +17,10 @@ export async function generateMetadata({
   const review = brand.icon === "cams" ? CAMS_REVIEWS[slug] : undefined;
   if (!review) return {};
 
-  const title = `${review.productName} Review — ${review.score.toFixed(1)}/10`;
+  const title =
+    review.verdictLabel === "Coming Soon"
+      ? `${review.productName} Review — Coming Soon`
+      : `${review.productName} Review — ${review.score.toFixed(1)}/10`;
   const url = `${canonicalOrigin(brand.domain)}/reviews/${slug}`;
 
   return {
@@ -51,6 +54,13 @@ export default async function CamsReviewPage({
   if (brand.icon !== "cams") notFound();
   const review = CAMS_REVIEWS[slug];
   if (!review) notFound();
+  // No real assessment exists yet for a "Coming Soon" review — publishing a
+  // numeric reviewRating in structured data (or a number anywhere on the
+  // page) when there's nothing behind it would be exactly the "markup
+  // doesn't match visible content" problem Google's structured-data
+  // guidelines warn against, so this drives both the JSON-LD below and
+  // every on-page score display.
+  const isPending = review.verdictLabel === "Coming Soon";
 
   const related = Object.values(CAMS_REVIEWS).filter((r) => r.slug !== slug).slice(0, 3);
 
@@ -74,12 +84,14 @@ export default async function CamsReviewPage({
       brand: { "@type": "Brand", name: review.productName.split(" ")[0] },
     },
     keywords: [review.productName, review.category, "review"].join(", "),
-    reviewRating: {
-      "@type": "Rating",
-      ratingValue: review.score,
-      bestRating: 10,
-      worstRating: 1,
-    },
+    ...(!isPending && {
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: review.score,
+        bestRating: 10,
+        worstRating: 1,
+      },
+    }),
     author: { "@type": "Organization", name: brand.name },
     publisher: { "@type": "Organization", name: brand.name },
   };
@@ -180,14 +192,12 @@ export default async function CamsReviewPage({
           <div className="cams-review-scoreline">
             <div>
               <div className="cams-review-scoreline-badge">
-                <CamsScoreGate brandSlug={brand.slug}>{review.score.toFixed(1)}</CamsScoreGate>
+                {isPending ? "—" : <CamsScoreGate brandSlug={brand.slug}>{review.score.toFixed(1)}</CamsScoreGate>}
               </div>
               <div className="cams-review-scoreline-sub">Our score</div>
             </div>
             <div>
-              <div className={`cams-review-verdict-label${review.verdictLabel === "Coming Soon" ? " pending" : ""}`}>
-                {review.verdictLabel}
-              </div>
+              <div className={`cams-review-verdict-label${isPending ? " pending" : ""}`}>{review.verdictLabel}</div>
               <p className="cams-review-verdict-text">{review.verdict}</p>
             </div>
           </div>
