@@ -48,6 +48,12 @@ export type EditorialConfig = {
   secondarySectionTitle: string;
   secondarySectionCta: string;
   confidenceRows: ConfidenceRow[];
+  // When set, the "rumor mill" section renders a real getArticles(rumorsTopic)
+  // list (this must exactly match one of the brand's Brand.topics entries)
+  // instead of the hand-authored confidenceRows below. Left unset for
+  // fyiNetflix, whose "Renewal Tracker" section is a genuinely different
+  // concept (not rumors) and stays hand-authored.
+  rumorsTopic?: string;
   showCompare: boolean;
   compareCol2Label: string;
   compareCol3Label: string;
@@ -90,6 +96,7 @@ export const MAC_EDITORIAL: EditorialConfig = {
   posterAspect: "4/3",
   secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
+  rumorsTopic: "Rumors",
   confidenceRows: [
     {
       label: "High confidence",
@@ -160,6 +167,7 @@ export const WIN_EDITORIAL: EditorialConfig = {
   posterAspect: "4/3",
   secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
+  rumorsTopic: "Rumors",
   confidenceRows: [
     {
       label: "High confidence",
@@ -230,6 +238,7 @@ export const GOOGLE_EDITORIAL: EditorialConfig = {
   posterAspect: "4/3",
   secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
+  rumorsTopic: "Rumors",
   confidenceRows: [
     {
       label: "High confidence",
@@ -358,8 +367,8 @@ export const LAKERS_EDITORIAL: EditorialConfig = {
   navSecondaryLabel: "Rumors",
   navLastLabel: "Injury Report",
   navItems: [
-    { label: "News", href: "/" },
-    { label: "Rumors", href: "/#rumor-mill" },
+    { label: "News", href: "/news" },
+    { label: "Rumors", href: `/topics/${encodeURIComponent("Trade Rumors")}` },
     { label: "Fantasy", href: "/#fantasy" },
     { label: "Schedule", href: "/#scoreboard" },
     { label: "Injury Report", href: "/#injury-report" },
@@ -374,6 +383,7 @@ export const LAKERS_EDITORIAL: EditorialConfig = {
   posterAspect: "4/3",
   secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
+  rumorsTopic: "Trade Rumors",
   confidenceRows: [
     {
       label: "High confidence",
@@ -442,8 +452,8 @@ export const DODGERS_EDITORIAL: EditorialConfig = {
   navSecondaryLabel: "Rumors",
   navLastLabel: "Injury Report",
   navItems: [
-    { label: "News", href: "/" },
-    { label: "Rumors", href: "/#rumor-mill" },
+    { label: "News", href: "/news" },
+    { label: "Rumors", href: `/topics/${encodeURIComponent("Trade Rumors")}` },
     { label: "Fantasy", href: "/#fantasy" },
     { label: "Schedule", href: "/#scoreboard" },
     { label: "Injury Report", href: "/#injury-report" },
@@ -458,6 +468,7 @@ export const DODGERS_EDITORIAL: EditorialConfig = {
   posterAspect: "4/3",
   secondarySectionTitle: "Rumors",
   secondarySectionCta: "Track record →",
+  rumorsTopic: "Trade Rumors",
   confidenceRows: [
     {
       label: "High confidence",

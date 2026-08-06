@@ -45,8 +45,11 @@ export default function EditorialHeader({
 
   const navLinks = [
     ...(config.navItems ?? [
-      { label: "News", href: "/" },
-      { label: config.navSecondaryLabel, href: "/#rumor-mill" },
+      { label: "News", href: "/news" },
+      {
+        label: config.navSecondaryLabel,
+        href: config.rumorsTopic ? `/topics/${encodeURIComponent(config.rumorsTopic)}` : "/#rumor-mill",
+      },
       { label: "Reviews", href: "/" },
       ...(config.showCompare ? [{ label: "Compare", href: "/#compare" }] : []),
       { label: config.navLastLabel, href: config.navLastLabel === "New This Week" ? "/#news-grid" : "/" },

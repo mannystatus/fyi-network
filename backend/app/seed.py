@@ -16,19 +16,19 @@ BRANDS = [
         slug="fyimac", name="fyiMac", domain="fyimac.com",
         accent_color="#0071e3", icon="mac",  # Apple's own site blue — reads well in light and dark
         tagline="Apple news. Decoded daily.",
-        topics="Mac,iPhone,iPad,Apple Watch,Apple TV+,Services",
+        topics="Mac,iPhone,iPad,Apple Watch,Apple TV+,Services,Rumors",
     ),
     dict(
         slug="fyiwin", name="fyiWin", domain="fyiwin.com",
         accent_color="#0078d4", icon="win",  # Microsoft's Fluent/Windows 11 accent blue
         tagline="Windows news. Decoded daily.",
-        topics="Windows 11,Hardware,Copilot,Xbox,PC Gaming",
+        topics="Windows 11,Hardware,Copilot,Xbox,PC Gaming,Rumors",
     ),
     dict(
         slug="fyigoogle", name="fyiGoogle", domain="fyigoogle.com",
         accent_color="#34a853", icon="google",  # Google's own brand green — was blue, too close to fyiWin's
         tagline="Google news. Decoded daily.",
-        topics="Pixel,Chrome,Android,YouTube",
+        topics="Pixel,Chrome,Android,YouTube,Rumors",
     ),
     dict(
         slug="fyinetflix", name="fyiNetflix", domain="fyinetflix.com",

@@ -2,12 +2,14 @@ import Link from "next/link";
 import type { Brand, ArticleListItem } from "../lib/api";
 import { getArticles } from "../lib/api";
 import type { EditorialConfig } from "../lib/editorialConfig";
+import ArticleList from "./ArticleList";
 import EditorialHeader from "./EditorialHeader";
 import EditorialFooter from "./EditorialFooter";
 import EditorialNewsletterForm from "./EditorialNewsletterForm";
 
 const NEWS_GRID_COUNT = 8;
 const TOP_STORIES_COUNT = 3;
+const RUMORS_COUNT = 5;
 
 // PetaPixel-style mosaic card — same pattern as fyiCams' MosaicCard, reused
 // here for the 6 brands sharing this template. Headline sits directly over
@@ -29,7 +31,10 @@ function EditorialMosaicCard({
       {article.image_url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={article.image_url} alt="" className="editorial-mosaic-img" />
-      ) : null}
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={`/icons/${brand.slug}-512.png`} alt="" className="editorial-mosaic-fallback" />
+      )}
       <span className="editorial-mosaic-scrim" />
       {article.category && <span className="editorial-mosaic-cat">{article.category}</span>}
       <span className="editorial-mosaic-body">
@@ -49,7 +54,10 @@ export default async function EditorialHomepage({
   brands: Brand[];
   config: EditorialConfig;
 }) {
-  const articles = await getArticles(undefined, NEWS_GRID_COUNT);
+  const [articles, rumors] = await Promise.all([
+    getArticles(undefined, NEWS_GRID_COUNT),
+    config.rumorsTopic ? getArticles(config.rumorsTopic, RUMORS_COUNT) : Promise.resolve([]),
+  ]);
   const topStories = articles.slice(0, TOP_STORIES_COUNT);
   const isSports = config.variant === "sports";
 
@@ -66,7 +74,7 @@ export default async function EditorialHomepage({
           <div className="wrap">
             <div className="editorial-section-head">
               <h2>{config.newsGridTitle}</h2>
-              <Link href="/" prefetch={false}>
+              <Link href="/news" prefetch={false}>
                 {config.newsGridCta}
               </Link>
             </div>
@@ -94,7 +102,14 @@ export default async function EditorialHomepage({
                             {a.image_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={a.image_url} alt="" />
-                            ) : null}
+                            ) : (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={`/icons/${brand.slug}-512.png`}
+                                alt=""
+                                className="editorial-story-row-fallback"
+                              />
+                            )}
                           </div>
                           <div>
                             <div className="editorial-story-eyebrow">
@@ -144,7 +159,10 @@ export default async function EditorialHomepage({
                 <Link className="editorial-cta-primary" href={articles[0] ? `/${articles[0].slug}` : "/"} prefetch={false}>
                   {config.heroCtaLabel ?? "Read today's roundup"}
                 </Link>
-                <a className="editorial-cta-secondary" href="#rumor-mill">
+                <a
+                  className="editorial-cta-secondary"
+                  href={config.rumorsTopic ? `/topics/${encodeURIComponent(config.rumorsTopic)}` : "#rumor-mill"}
+                >
                   {config.navSecondaryLabel === "Renewal Tracker" ? "Renewal tracker" : "Rumors"} →
                 </a>
               </div>
@@ -169,25 +187,40 @@ export default async function EditorialHomepage({
           <div className="wrap">
             <div className="editorial-section-head editorial-rule-inner">
               <h2>{config.secondarySectionTitle}</h2>
-              <a href="#rumor-mill">{config.secondarySectionCta}</a>
+              {config.rumorsTopic ? (
+                <Link href={`/topics/${encodeURIComponent(config.rumorsTopic)}`} prefetch={false}>
+                  View all →
+                </Link>
+              ) : (
+                <a href="#rumor-mill">{config.secondarySectionCta}</a>
+              )}
             </div>
-            {config.confidenceRows.map((r) => (
-              <div className="editorial-confidence-row" key={r.title}>
-                <div>
-                  <span className="editorial-confidence-label">
-                    {r.label} · {r.pct}%
-                  </span>
-                  <div className="editorial-confidence-track">
-                    <span className="editorial-confidence-fill" style={{ width: `${r.pct}%` }} />
+            {config.rumorsTopic ? (
+              <ArticleList
+                articles={rumors}
+                brandName={brand.name}
+                brandSlug={brand.slug}
+                emptyMessage={`No ${config.rumorsTopic.toLowerCase()} coverage yet.`}
+              />
+            ) : (
+              config.confidenceRows.map((r) => (
+                <div className="editorial-confidence-row" key={r.title}>
+                  <div>
+                    <span className="editorial-confidence-label">
+                      {r.label} · {r.pct}%
+                    </span>
+                    <div className="editorial-confidence-track">
+                      <span className="editorial-confidence-fill" style={{ width: `${r.pct}%` }} />
+                    </div>
                   </div>
+                  <div>
+                    <h4>{r.title}</h4>
+                    <p>{r.dek}</p>
+                  </div>
+                  <span className="editorial-arrow">→</span>
                 </div>
-                <div>
-                  <h4>{r.title}</h4>
-                  <p>{r.dek}</p>
-                </div>
-                <span className="editorial-arrow">→</span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </section>
 
