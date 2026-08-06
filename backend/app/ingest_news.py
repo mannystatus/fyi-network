@@ -202,6 +202,13 @@ FILTER_KEYWORDS = {
     ("fyidodgers", "Injury Report"): ["dodgers"],
     ("fyidodgers", "Game Recaps"): ["dodgers"],
     ("fyidodgers", "Prospects & Free Agency"): ["dodgers"],
+    # Brand-keyed, not bare "Rumors" — same collision as QUERY_OVERRIDES
+    # above: the bare "Rumors" entry below is fyiCams' camera-gear keyword
+    # list, which would reject every real Apple/Windows/Google rumor
+    # headline for not mentioning "mirrorless" or "DSLR".
+    ("fyimac", "Rumors"): ["apple", "iphone", "ipad", "mac", "macbook"],
+    ("fyiwin", "Rumors"): ["windows", "xbox", "microsoft", "surface"],
+    ("fyigoogle", "Rumors"): ["pixel", "android", "google"],
     # Bare "camera"/"lens"/"sensor" are too generic on their own — "caught
     # on camera" (surveillance/crime stories), "lens of history" (metaphor),
     # and phone/chip "sensor" news all slip through a plain-word filter.
