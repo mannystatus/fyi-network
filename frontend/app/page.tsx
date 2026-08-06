@@ -105,6 +105,82 @@ const EDITORIAL_SEO_KEYWORDS: Record<string, string[]> = {
     "fix iPhone battery drain",
     "best Mac apps",
   ],
+  dodgers: [
+    // News & Leaks
+    "Dodgers news",
+    "Dodgers rumors",
+    "trade rumors",
+    "roster updates",
+    "injury report",
+    "breaking Dodgers news",
+    // Game Analysis & Lineups
+    "Dodgers starting lineup today",
+    "score",
+    "highlights",
+    "game preview",
+    "pitch mix",
+    "box score",
+    // Deals & Tickets
+    "cheap Dodgers tickets",
+    "Dodgers promo schedule",
+    "bobblehead giveaway dates",
+    "Dodgers merchandise deals",
+    // Evergreen & History
+    "Dodgers farm system",
+    "top prospects",
+    "stadium guide",
+    "parking tips",
+    "Dodgers schedule 2026",
+  ],
+  lakers: [
+    // News & Leaks
+    "Lakers news",
+    "Lakers rumors",
+    "trade deadline targets",
+    "free agency leaks",
+    "roster updates",
+    // Game Analysis & Lineups
+    "Lakers starting 5",
+    "injury report",
+    "score",
+    "post game quotes",
+    "rotation analysis",
+    // Deals & Tickets
+    "Lakers ticket deals",
+    "Crypto.com Arena seating guide",
+    "Lakers jersey sales",
+    "court side tickets",
+    // Evergreen & History
+    "Lakers salary cap",
+    "future draft picks",
+    "head coach updates",
+    "Lakers stats",
+    "playoff picture",
+  ],
+  netflix: [
+    // New Releases & News
+    "new on Netflix this week",
+    "upcoming Netflix movies",
+    "series announcements",
+    "renewed shows",
+    "canceled shows",
+    // Reviews & Recommendations
+    "best movies on Netflix right now",
+    "top series to binge",
+    "secret categories",
+    "hidden gems",
+    // Deals & Subscriptions
+    "Netflix price plans",
+    "cheapest tier",
+    "account sharing rules",
+    "free trial",
+    "subscription deals",
+    // Troubleshooting & Hacks
+    "how to change Netflix password",
+    "fix error code",
+    "download movies offline",
+    "best audio settings",
+  ],
 };
 
 const EDITORIAL_METADATA: Record<string, { title: string; description: string }> = {
