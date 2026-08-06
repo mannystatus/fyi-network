@@ -70,6 +70,43 @@ const CAMS_SEO_KEYWORDS = [
   "hackthedeal.com",
 ];
 
+// Per-brand extra keyword targeting for the editorial-template homepages
+// (mac/win/google/netflix/lakers/dodgers) — same purpose as
+// CAMS_SEO_KEYWORDS above, keyed by icon since not every brand in
+// EDITORIAL_METADATA has its own list yet. Grouped by the requested
+// category/intent below only as organization for future edits — the
+// category/intent labels themselves aren't included as keywords, only the
+// actual phrases are (unlike CAMS_SEO_KEYWORDS, which also includes a few
+// full-sentence intent descriptions at the requester's explicit ask).
+const EDITORIAL_SEO_KEYWORDS: Record<string, string[]> = {
+  mac: [
+    // Apple News & Leaks
+    "apple news",
+    "apple rumors",
+    "leaks",
+    "WWDC updates",
+    "iOS updates",
+    "new apple releases 2026",
+    // Hardware & Devices
+    "iPhone rumors",
+    "MacBook Pro review",
+    "iPad Air deals",
+    "Apple Watch ultra specs",
+    "M-series chip analysis",
+    // Deals & Buying Guides
+    "best iPhone deals",
+    "refurbished Mac",
+    "Apple trade in value",
+    "cheap iPad sales",
+    "Black Friday Apple deals",
+    // Tutorials & Troubleshooting
+    "iOS tips and tricks",
+    "how to clean Mac storage",
+    "fix iPhone battery drain",
+    "best Mac apps",
+  ],
+};
+
 const EDITORIAL_METADATA: Record<string, { title: string; description: string }> = {
   mac: {
     title: "Apple News, Rumors & Buying Guides",
@@ -142,7 +179,7 @@ export async function generateMetadata(): Promise<Metadata> {
   if (editorial) {
     return {
       ...editorial,
-      keywords: buildKeywords(brand),
+      keywords: buildKeywords(brand, EDITORIAL_SEO_KEYWORDS[brand.icon] ?? []),
       alternates: { canonical: "/" },
       openGraph: { title: editorial.title, description: editorial.description, type: "website", url, siteName: brand.name },
       twitter: { card: "summary_large_image", title: editorial.title, description: editorial.description },
