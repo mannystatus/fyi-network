@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import Article, Brand
-from ..schemas import ArticleListItem, ArticleDetail, ArticleCreate, ArticleCreateResult
+from ..schemas import ArticleListItem, ArticleDetail, ArticleCreate, ArticleCreateResult, ArticleUpdate
 from ..deps import resolve_brand
 from ..auth import AdminScope, require_admin
 from ..slugs import slugify
@@ -128,6 +128,43 @@ def get_article(
     if not article:
         raise HTTPException(status_code=404, detail="Article not found for this brand")
     return article
+
+
+@router.patch("/{slug}", response_model=list[ArticleCreateResult])
+def update_article(
+    slug: str,
+    payload: ArticleUpdate,
+    db: Session = Depends(get_db),
+    brand_slugs: list[str] = Query(..., description="Which brands' copy of this slug to update"),
+    scope: AdminScope = Depends(require_admin),
+):
+    """Admin-gated — currently just clears/replaces an article's header image (see ArticleUpdate)."""
+    for brand_slug in brand_slugs:
+        scope.check_brand(brand_slug.strip().lower())
+
+    results: list[ArticleCreateResult] = []
+    for brand_slug in brand_slugs:
+        brand = db.query(Brand).filter(Brand.slug == brand_slug.strip().lower()).first()
+        if not brand:
+            results.append(ArticleCreateResult(brand_slug=brand_slug, status="brand_not_found"))
+            continue
+
+        article = db.query(Article).filter(Article.brand_id == brand.id, Article.slug == slug).first()
+        if not article:
+            results.append(ArticleCreateResult(brand_slug=brand_slug, status="not_found"))
+            continue
+
+        if payload.image_url is not None:
+            article.image_url = payload.image_url
+
+        results.append(
+            ArticleCreateResult(
+                brand_slug=brand_slug, status="updated", article_slug=slug, url=f"https://{brand.domain}/{slug}"
+            )
+        )
+
+    db.commit()
+    return results
 
 
 @router.delete("/{slug}")

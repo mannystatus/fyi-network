@@ -72,9 +72,16 @@ class ArticleCreate(BaseModel):
 
 class ArticleCreateResult(BaseModel):
     brand_slug: str
-    status: str  # "created" | "skipped_duplicate" | "brand_not_found"
+    status: str  # "created" | "skipped_duplicate" | "brand_not_found" | "updated" | "not_found"
     article_slug: str | None = None
     url: str | None = None
+
+
+class ArticleUpdate(BaseModel):
+    # "" clears the header image (article.image_url && ... on the frontend
+    # treats it as falsy); None means "leave as-is" — same convention as
+    # BrandUpdate.image_url above.
+    image_url: str | None = None
 
 
 class AdminScopeOut(BaseModel):
