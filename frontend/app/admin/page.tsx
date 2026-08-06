@@ -41,6 +41,23 @@ type CreateResult = {
   url: string | null;
 };
 
+type UpdateResult = {
+  brand_slug: string;
+  status: "updated" | "not_found" | "brand_not_found";
+  article_slug: string | null;
+  url: string | null;
+};
+
+type ArticleDetail = {
+  slug: string;
+  category: string | null;
+  title: string;
+  dek: string | null;
+  author: string | null;
+  image_url: string | null;
+  body_md: string;
+};
+
 type Scope = {
   is_superadmin: boolean;
   brand_slugs: string[];
@@ -151,6 +168,35 @@ export default function AdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [results, setResults] = useState<CreateResult[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [editSiteSlug, setEditSiteSlug] = useState("");
+  const [editArticleSlug, setEditArticleSlug] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
+  const [editLoadError, setEditLoadError] = useState<string | null>(null);
+  const [editLoaded, setEditLoaded] = useState(false);
+
+  const [editTitle, setEditTitle] = useState("");
+  const [editDek, setEditDek] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [editAuthor, setEditAuthor] = useState("");
+  const [editBodyMd, setEditBodyMd] = useState("");
+  const editBodyRef = useRef<HTMLTextAreaElement>(null);
+
+  const [editImageUrl, setEditImageUrl] = useState<string | null>(null);
+  const [editImageUploading, setEditImageUploading] = useState(false);
+  const [editImageError, setEditImageError] = useState<string | null>(null);
+
+  const [editBodyImageUploading, setEditBodyImageUploading] = useState(false);
+  const [editBodyImageError, setEditBodyImageError] = useState<string | null>(null);
+  const [editBodyDropActive, setEditBodyDropActive] = useState(false);
+
+  const [editSaving, setEditSaving] = useState(false);
+  const [editSaveError, setEditSaveError] = useState<string | null>(null);
+  const [editResults, setEditResults] = useState<UpdateResult[] | null>(null);
+
+  const [editDeleting, setEditDeleting] = useState(false);
+  const [editDeleteError, setEditDeleteError] = useState<string | null>(null);
+  const [editDeleted, setEditDeleted] = useState(false);
 
   const [bannerBrandSlug, setBannerBrandSlug] = useState("");
   const [bannerUploading, setBannerUploading] = useState(false);
@@ -345,6 +391,168 @@ export default function AdminPage() {
     if (!file) return; // not an image paste — let normal text paste happen
     e.preventDefault();
     insertBodyImage(file);
+  }
+
+  // GET /api/articles/{slug} is unauthenticated (same data any visitor's
+  // article page already fetches) — the admin key only gates the PATCH/
+  // DELETE below, so this is a plain fetch, not adminFetch. ?brand=
+  // bypasses the X-Brand-Slug-from-Host resolution the public site relies
+  // on (see backend/app/deps.py resolve_brand) since this is a direct
+  // browser->backend call, not routed through Next's per-domain middleware.
+  async function handleLoadArticle() {
+    const site = editSiteSlug.trim().toLowerCase();
+    const slug = editArticleSlug.trim();
+    if (!site || !slug) return;
+    setEditLoading(true);
+    setEditLoadError(null);
+    setEditLoaded(false);
+    setEditResults(null);
+    setEditDeleted(false);
+    try {
+      const res = await fetch(`${API_URL}/api/articles/${encodeURIComponent(slug)}?brand=${site}`);
+      if (res.status === 404) throw new Error("No article at that slug for this site.");
+      if (!res.ok) throw new Error(`Couldn't load article (${res.status}).`);
+      const data: ArticleDetail = await res.json();
+      setEditTitle(data.title);
+      setEditDek(data.dek ?? "");
+      setEditCategory(data.category ?? "");
+      setEditAuthor(data.author ?? "");
+      setEditBodyMd(data.body_md);
+      setEditImageUrl(data.image_url);
+      setEditLoaded(true);
+    } catch (err) {
+      setEditLoadError(err instanceof Error ? err.message : "Couldn't load article.");
+    } finally {
+      setEditLoading(false);
+    }
+  }
+
+  async function handleEditArticleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setEditImageError(null);
+    setEditImageUploading(true);
+    try {
+      const url = await uploadImage(file, adminKey);
+      setEditImageUrl(url);
+    } catch (err) {
+      setEditImageError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setEditImageUploading(false);
+    }
+  }
+
+  // Mirrors insertBodyImage above, targeting the edit form's own body
+  // textarea/state instead of the create form's.
+  async function insertEditBodyImage(file: File) {
+    const alt = window.prompt("Alt text for this image (optional, for accessibility/SEO):", "") ?? "";
+    setEditBodyImageError(null);
+    setEditBodyImageUploading(true);
+    try {
+      const url = await uploadImage(file, adminKey);
+      const markdown = `![${alt}](${url})`;
+      const el = editBodyRef.current;
+      const start = el?.selectionStart ?? editBodyMd.length;
+      const end = el?.selectionEnd ?? editBodyMd.length;
+      setEditBodyMd((prev) => prev.slice(0, start) + markdown + prev.slice(end));
+      requestAnimationFrame(() => {
+        if (!el) return;
+        const cursor = start + markdown.length;
+        el.focus();
+        el.setSelectionRange(cursor, cursor);
+      });
+    } catch (err) {
+      setEditBodyImageError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setEditBodyImageUploading(false);
+    }
+  }
+
+  function handleEditBodyImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file) insertEditBodyImage(file);
+  }
+
+  function handleEditBodyDragOver(e: React.DragEvent<HTMLTextAreaElement>) {
+    if (!e.dataTransfer.types.includes("Files")) return;
+    e.preventDefault();
+    setEditBodyDropActive(true);
+  }
+
+  function handleEditBodyDrop(e: React.DragEvent<HTMLTextAreaElement>) {
+    const file = Array.from(e.dataTransfer.files).find((f) => f.type.startsWith("image/"));
+    setEditBodyDropActive(false);
+    if (!file) return;
+    e.preventDefault();
+    insertEditBodyImage(file);
+  }
+
+  function handleEditBodyPaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const item = Array.from(e.clipboardData.items).find((i) => i.type.startsWith("image/"));
+    const file = item?.getAsFile();
+    if (!file) return;
+    e.preventDefault();
+    insertEditBodyImage(file);
+  }
+
+  async function handleSaveEdit() {
+    if (!editTitle.trim() || !editBodyMd.trim()) {
+      setEditSaveError("Title and body are required.");
+      return;
+    }
+    setEditSaving(true);
+    setEditSaveError(null);
+    setEditResults(null);
+    try {
+      const res = await adminFetch(
+        `/api/articles/${encodeURIComponent(editArticleSlug.trim())}?brand_slugs=${editSiteSlug}`,
+        adminKey,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: editTitle,
+            dek: editDek,
+            category: editCategory,
+            author: editAuthor,
+            body_md: editBodyMd,
+            image_url: editImageUrl ?? "",
+          }),
+        }
+      );
+      const data: UpdateResult[] = await res.json();
+      setEditResults(data);
+    } catch (err) {
+      setEditSaveError(err instanceof Error ? err.message : "Couldn't save changes.");
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  async function handleDeleteArticle() {
+    if (
+      !window.confirm(
+        `Permanently delete "${editTitle}" from ${editSiteSlug}? This can't be undone from here — you'd have to republish it from scratch.`
+      )
+    ) {
+      return;
+    }
+    setEditDeleting(true);
+    setEditDeleteError(null);
+    try {
+      await adminFetch(
+        `/api/articles/${encodeURIComponent(editArticleSlug.trim())}?brand_slugs=${editSiteSlug}`,
+        adminKey,
+        { method: "DELETE" }
+      );
+      setEditDeleted(true);
+      setEditLoaded(false);
+    } catch (err) {
+      setEditDeleteError(err instanceof Error ? err.message : "Couldn't delete article.");
+    } finally {
+      setEditDeleting(false);
+    }
   }
 
   async function handleBannerFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -719,6 +927,170 @@ export default function AdminPage() {
                 ))}
               </ul>
             </div>
+          )}
+
+          <div className="article-header">
+            <h2 className="article-title" style={{ fontSize: 20 }}>Edit an existing article</h2>
+            <p className="article-dek">
+              Fix a typo, swap an image, or correct a mistake after publishing — load it by site and slug below.
+            </p>
+          </div>
+
+          <div className="admin-field">
+            <label htmlFor="edit-site">Site</label>
+            <select
+              id="edit-site"
+              value={editSiteSlug}
+              onChange={(e) => {
+                setEditSiteSlug(e.target.value);
+                setEditLoaded(false);
+                setEditLoadError(null);
+              }}
+            >
+              <option value="">Select a site…</option>
+              {publishableBrands.map((b) => (
+                <option key={b.slug} value={b.slug}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="admin-field">
+            <label htmlFor="edit-slug">Article slug</label>
+            <input
+              id="edit-slug"
+              type="text"
+              value={editArticleSlug}
+              onChange={(e) => {
+                setEditArticleSlug(e.target.value);
+                setEditLoaded(false);
+                setEditLoadError(null);
+              }}
+              placeholder="e.g. dog-days-of-summer-for-us — the part of the URL after the domain"
+            />
+            <button
+              type="button"
+              onClick={handleLoadArticle}
+              disabled={editLoading || !editSiteSlug || !editArticleSlug.trim()}
+              style={{ marginTop: 6 }}
+            >
+              {editLoading ? "Loading…" : "Load"}
+            </button>
+            {editLoadError && <p className="admin-error">{editLoadError}</p>}
+          </div>
+
+          {editDeleted && (
+            <div className="admin-results">
+              <strong>Deleted.</strong> That article no longer exists on {editSiteSlug}.
+            </div>
+          )}
+
+          {editLoaded && (
+            <>
+              <div className="admin-field">
+                <label htmlFor="edit-title">Title</label>
+                <input id="edit-title" type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+              </div>
+
+              <div className="admin-field">
+                <label htmlFor="edit-dek">Dek (short subhead, optional)</label>
+                <input id="edit-dek" type="text" value={editDek} onChange={(e) => setEditDek(e.target.value)} />
+              </div>
+
+              <div className="admin-field">
+                <label htmlFor="edit-category">Category (optional)</label>
+                <input
+                  id="edit-category"
+                  type="text"
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                />
+              </div>
+
+              <div className="admin-field">
+                <label htmlFor="edit-author">Author</label>
+                <input id="edit-author" type="text" value={editAuthor} onChange={(e) => setEditAuthor(e.target.value)} />
+              </div>
+
+              <div className="admin-field">
+                <label htmlFor="edit-body">Body (Markdown)</label>
+                <textarea
+                  ref={editBodyRef}
+                  id="edit-body"
+                  value={editBodyMd}
+                  onChange={(e) => setEditBodyMd(e.target.value)}
+                  onDragOver={handleEditBodyDragOver}
+                  onDragLeave={() => setEditBodyDropActive(false)}
+                  onDrop={handleEditBodyDrop}
+                  onPaste={handleEditBodyPaste}
+                  rows={18}
+                  style={editBodyDropActive ? { outline: "2px dashed var(--blue)", outlineOffset: -2 } : undefined}
+                />
+                <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 8 }}>
+                  <label htmlFor="edit-body-image" style={{ fontSize: 12, color: "var(--comment)" }}>
+                    Insert image into body (or drag a file / paste one directly into the text above):
+                  </label>
+                  <input
+                    id="edit-body-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleEditBodyImageChange}
+                    disabled={editBodyImageUploading}
+                  />
+                  {editBodyImageUploading && <span style={{ fontSize: 12, color: "var(--comment)" }}>Uploading…</span>}
+                </div>
+                {editBodyImageError && <p className="admin-error">{editBodyImageError}</p>}
+              </div>
+
+              <div className="admin-field">
+                <label htmlFor="edit-image">This article&rsquo;s header image</label>
+                <input id="edit-image" type="file" accept="image/*" onChange={handleEditArticleImageChange} disabled={editImageUploading} />
+                {editImageUploading && <span style={{ fontSize: 12, color: "var(--comment)" }}>Uploading…</span>}
+                {editImageError && <p className="admin-error">{editImageError}</p>}
+                {editImageUrl && !editImageUploading && (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={editImageUrl} alt="Article image preview" style={{ maxWidth: 320, display: "block", marginTop: 8, borderRadius: 8 }} />
+                    <button type="button" onClick={() => setEditImageUrl(null)} style={{ marginTop: 6 }}>
+                      Remove image
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {editSaveError && <p className="admin-error">{editSaveError}</p>}
+              <button type="button" className="admin-submit" onClick={handleSaveEdit} disabled={editSaving}>
+                {editSaving ? "Saving…" : "Save changes"}
+              </button>
+
+              {editResults && (
+                <div className="admin-results">
+                  {editResults.map((r) => (
+                    <div key={r.brand_slug}>
+                      {r.status === "updated" && r.url ? (
+                        <>
+                          <strong>Saved.</strong>{" "}
+                          <a href={r.url} target="_blank" rel="noreferrer">
+                            {r.url}
+                          </a>
+                        </>
+                      ) : (
+                        <strong className="admin-error">Couldn&rsquo;t save — article not found.</strong>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="admin-field" style={{ marginTop: 24, borderTop: "1px solid var(--border)", paddingTop: 16 }}>
+                <label style={{ color: "var(--red)" }}>Danger zone</label>
+                {editDeleteError && <p className="admin-error">{editDeleteError}</p>}
+                <button type="button" onClick={handleDeleteArticle} disabled={editDeleting}>
+                  {editDeleting ? "Deleting…" : "Delete this article"}
+                </button>
+              </div>
+            </>
           )}
 
           {scope.is_superadmin && (

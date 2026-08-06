@@ -78,13 +78,32 @@ class ArticleCreateResult(BaseModel):
 
 
 class ArticleUpdate(BaseModel):
-    # None on either field means "leave as-is"; "" clears image_url
-    # (article.image_url && ... on the frontend treats it as falsy) — same
-    # convention as BrandUpdate.image_url above. body_md has no such "clear"
-    # state since a blank body isn't a valid article (see ArticleCreate's
-    # not_blank validator) — only a real replacement is meaningful there.
-    image_url: str | None = None
+    # None on any field means "leave as-is" — lets the /admin edit form only
+    # send what actually changed. "" clears dek/category/author/image_url
+    # (dek/category/author normalize "" to NULL in the router since those
+    # are genuinely-nullable columns, same as ArticleCreate; image_url
+    # stores "" literally — article.image_url && ... on the frontend treats
+    # it as falsy either way, but this matches BrandUpdate.image_url's
+    # already-shipped convention, no reason to diverge). title/body_md have
+    # no "clear" state since a blank article isn't valid (see
+    # ArticleCreate's not_blank validator) — only a real replacement is
+    # meaningful for those two. slug and brand_slugs are deliberately not
+    # editable here — changing either is really "create a new one", not an
+    # edit (slug changes break existing links; brand reassignment is a
+    # separate syndication decision).
+    title: str | None = None
+    dek: str | None = None
+    category: str | None = None
+    author: str | None = None
     body_md: str | None = None
+    image_url: str | None = None
+
+    @field_validator("title", "body_md")
+    @classmethod
+    def not_blank_if_provided(cls, v: str | None) -> str | None:
+        if v is not None and not v.strip():
+            raise ValueError("must not be blank")
+        return v
 
 
 class AdminScopeOut(BaseModel):

@@ -154,10 +154,18 @@ def update_article(
             results.append(ArticleCreateResult(brand_slug=brand_slug, status="not_found"))
             continue
 
-        if payload.image_url is not None:
-            article.image_url = payload.image_url
+        if payload.title is not None:
+            article.title = payload.title
+        if payload.dek is not None:
+            article.dek = payload.dek or None
+        if payload.category is not None:
+            article.category = payload.category or None
+        if payload.author is not None:
+            article.author = payload.author or None
         if payload.body_md is not None:
             article.body_md = payload.body_md
+        if payload.image_url is not None:
+            article.image_url = payload.image_url
 
         results.append(
             ArticleCreateResult(
