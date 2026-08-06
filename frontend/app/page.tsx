@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getArticles, getAllBrands, getCurrentBrand } from "../lib/api";
+import { buildKeywords } from "../lib/seo";
 import ArticleList from "../components/ArticleList";
 import CamsHomepage from "../components/CamsHomepage";
 import EditorialHomepage from "../components/EditorialHomepage";
@@ -58,6 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title,
       description,
+      keywords: buildKeywords(brand, ["flight deals", "travel guides"]),
       alternates: { canonical: "/" },
       openGraph: { title, description, type: "website", url, siteName: brand.name },
       twitter: { card: "summary_large_image", title, description },
@@ -70,6 +72,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title,
       description,
+      keywords: buildKeywords(brand, ["camera reviews", "camera news"]),
       alternates: { canonical: "/" },
       openGraph: { title, description, type: "website", url, siteName: brand.name },
       twitter: { card: "summary_large_image", title, description },
@@ -79,12 +82,13 @@ export async function generateMetadata(): Promise<Metadata> {
   if (editorial) {
     return {
       ...editorial,
+      keywords: buildKeywords(brand),
       alternates: { canonical: "/" },
       openGraph: { title: editorial.title, description: editorial.description, type: "website", url, siteName: brand.name },
       twitter: { card: "summary_large_image", title: editorial.title, description: editorial.description },
     };
   }
-  return { alternates: { canonical: "/" } };
+  return { keywords: buildKeywords(brand), alternates: { canonical: "/" } };
 }
 
 const PAGE_SIZE = 20;

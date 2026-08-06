@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getCurrentBrand } from "../../lib/api";
 import { CAMS_REVIEWS } from "../../lib/camsReviews";
 import { canonicalOrigin } from "../../lib/url";
+import { buildKeywords } from "../../lib/seo";
 
 const DESCRIPTION =
   "Sony, Leica, Nikon, DJI, and Insta360 gear — every camera fyiCams has tested, scored, and verified.";
@@ -16,6 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description: DESCRIPTION,
+    keywords: buildKeywords(brand, ["camera reviews", "lens reviews", ...Object.values(CAMS_REVIEWS).map((r) => r.productName)]),
     alternates: { canonical: "/reviews" },
     openGraph: {
       title,

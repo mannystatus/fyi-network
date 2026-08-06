@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getArticles, getCurrentBrand } from "../../lib/api";
 import ArticleList from "../../components/ArticleList";
 import Pagination from "../../components/Pagination";
+import { buildKeywords } from "../../lib/seo";
 
 // The bespoke per-brand homepages (EditorialHomepage/CamsHomepage) only ever
 // show a curated handful of articles — this is the actual "browse
@@ -17,6 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
+    keywords: buildKeywords(brand, ["news", "latest news"]),
     alternates: { canonical: "/news" },
     openGraph: { title, description, type: "website" },
     twitter: { title, description },

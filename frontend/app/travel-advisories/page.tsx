@@ -11,6 +11,7 @@ import {
 import { canonicalOrigin } from "../../lib/url";
 import PassportSelect from "../../components/PassportSelect";
 import TravelAdvisoryBanner from "../../components/TravelAdvisoryBanner";
+import { buildKeywords } from "../../lib/seo";
 
 // fyiFlyNow-only — every other brand 404s. Lives at its own URL (rather
 // than only as the homepage's TravelAdvisoryBanner teaser) so the full
@@ -34,6 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
+    keywords: buildKeywords(brand, ["travel advisories", "travel safety", "visa requirements"]),
     alternates: { canonical: "/travel-advisories" },
     openGraph: { title, description, type: "website", url, siteName: brand.name },
     twitter: { card: "summary", title, description },

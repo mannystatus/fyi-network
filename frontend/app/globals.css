@@ -980,6 +980,22 @@ main {
   padding-top: 8px;
 }
 
+.article-topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.article-topics-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--comment);
+}
+
 .latest-from-us--footer {
   margin-top: 32px;
   padding-top: 16px;

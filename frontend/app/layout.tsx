@@ -8,6 +8,7 @@ import { getCurrentBrand } from "../lib/api";
 import CookieBanner from "../components/CookieBanner";
 import { GTM_IDS, GA_IDS, ADSENSE_CLIENT_ID, SWG_PRODUCT_IDS } from "../lib/analytics";
 import { canonicalOrigin } from "../lib/url";
+import { buildKeywords } from "../lib/seo";
 
 // Only fyiFlyNow's theme references these (via --font-flynow-*) — self-hosted
 // by next/font so there's no extra external request for the other brands.
@@ -86,6 +87,10 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(canonicalOrigin(brand.domain)),
     title: { default: brand.name, template: `%s | ${brand.name}` },
     description: brand.tagline,
+    // Fallback for any route without its own generateMetadata — pages that
+    // set their own (article, topic, homepage, ...) override this with a
+    // more specific list instead of inheriting it verbatim.
+    keywords: buildKeywords(brand),
     other: { "google-adsense-account": ADSENSE_CLIENT_ID },
     icons: {
       icon: logoUrl,

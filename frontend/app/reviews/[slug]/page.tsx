@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getCurrentBrand } from "../../../lib/api";
 import { CAMS_REVIEWS } from "../../../lib/camsReviews";
 import { canonicalOrigin } from "../../../lib/url";
+import { buildKeywords } from "../../../lib/seo";
 
 // Brands other than fyiCams 404 here, same pattern as /buyers-guide.
 export async function generateMetadata({
@@ -21,6 +22,7 @@ export async function generateMetadata({
   return {
     title,
     description: review.verdict,
+    keywords: buildKeywords(brand, [review.productName, review.category, "review"]),
     alternates: { canonical: `/reviews/${slug}` },
     openGraph: {
       title,
@@ -67,8 +69,10 @@ export default async function CamsReviewPage({
       "@type": "Product",
       name: review.productName,
       image: review.imageUrl,
+      category: review.category,
       brand: { "@type": "Brand", name: review.productName.split(" ")[0] },
     },
+    keywords: [review.productName, review.category, "review"].join(", "),
     reviewRating: {
       "@type": "Rating",
       ratingValue: review.score,

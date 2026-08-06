@@ -7,6 +7,7 @@ import { BUYERS_GUIDES } from "../../lib/buyersGuideRegistry";
 import AdSlot from "../../components/AdSlot";
 import { AD_SLOTS } from "../../lib/analytics";
 import { canonicalOrigin } from "../../lib/url";
+import { buildKeywords } from "../../lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const brand = await getCurrentBrand();
@@ -19,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description: guide.dek,
+    keywords: buildKeywords(brand, ["buyers guide", "buying guide", guide.storeName]),
     alternates: { canonical: "/buyers-guide" },
     openGraph: { title, description: guide.dek, type: "website", url, siteName: brand.name },
     twitter: { card: "summary", title, description: guide.dek },

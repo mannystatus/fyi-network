@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getArticles, getCurrentBrand } from "../../lib/api";
 import ArticleList from "../../components/ArticleList";
 import Pagination from "../../components/Pagination";
+import { buildKeywords } from "../../lib/seo";
 
 const PAGE_SIZE = 20;
 
@@ -14,6 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
+    keywords: buildKeywords(brand, ["original reporting"]),
     alternates: { canonical: "/from-us" },
     openGraph: { title, description, type: "website" },
     twitter: { title, description },

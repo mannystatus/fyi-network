@@ -20,6 +20,7 @@ import { AD_SLOTS } from "../../lib/analytics";
 import { extractFaq } from "../../lib/faq";
 import { extractFirstImageUrl } from "../../lib/ogImage";
 import { canonicalDomain, canonicalOrigin } from "../../lib/url";
+import { buildKeywords } from "../../lib/seo";
 
 // Each brand cross-promotes exactly one sibling: fyiMac and fyiNetflix
 // both drive traffic to fyiFlyNow, while fyiWin -> fyiGoogle -> fyiNetflix
@@ -70,6 +71,7 @@ export async function generateMetadata({
   return {
     title: article.title,
     description,
+    keywords: buildKeywords(brand, [article.category]),
     alternates: { canonical: `/${slug}` },
     openGraph: {
       title: article.title,
@@ -113,6 +115,11 @@ export default async function ArticlePage({
   const camsReview = brand.icon === "cams" ? CAMS_REVIEWS[slug] : undefined;
 
   const url = `${canonicalOrigin(brand.domain)}/${slug}`;
+  const keywords = buildKeywords(brand, [article.category]);
+  // Sibling topics for the visible "related topics" chip row below — the
+  // article's own category first, then a few other brand topics so every
+  // article page links out to more topic hubs than just its own.
+  const relatedTopics = keywords.filter((k) => brand.topics.includes(k)).slice(0, 4);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
@@ -130,7 +137,32 @@ export default async function ArticlePage({
         extractFirstImageUrl(article.body_md, canonicalDomain(brand.domain)) ||
         `${canonicalOrigin(brand.domain)}/og/${brand.slug}.png`,
     ],
+    articleSection: article.category || undefined,
+    keywords: keywords.join(", "),
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: brand.name, item: canonicalOrigin(brand.domain) },
+      ...(article.category
+        ? [
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: article.category,
+              item: `${canonicalOrigin(brand.domain)}/topics/${encodeURIComponent(article.category)}`,
+            },
+          ]
+        : []),
+      {
+        "@type": "ListItem",
+        position: article.category ? 3 : 2,
+        name: article.title,
+        item: url,
+      },
+    ],
   };
 
   // Mirrors the visible "Frequently Asked Questions" section in body_md, if
@@ -155,6 +187,11 @@ export default async function ArticlePage({
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       {faqJsonLd && (
         <script
@@ -228,6 +265,23 @@ export default async function ArticlePage({
           mainContent
         );
       })()}
+
+      {relatedTopics.length > 0 && (
+        <div className="article-topics">
+          <span className="article-topics-label">Related topics:</span>
+          {relatedTopics.map((topic) => (
+            <Link
+              key={topic}
+              href={`/topics/${encodeURIComponent(topic)}`}
+              className="topic-link"
+              style={{ "--pill-color": categoryColor(topic) } as React.CSSProperties}
+              prefetch={false}
+            >
+              {topic}
+            </Link>
+          ))}
+        </div>
+      )}
 
       {related.length > 0 && (
         <div className="related-section">
