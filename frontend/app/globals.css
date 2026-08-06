@@ -3912,6 +3912,72 @@ body.theme-cams-body .switcher-btn {
   font-size: 0.86rem;
 }
 
+/* ---------- CamsScoreGate: shared by every review-score display
+   (homepage mosaic/score-list, review detail badge, article sidebar) ----------
+   The lock button intentionally has no color/font of its own — it inherits
+   from whatever badge/row it's standing in for, so it reads as "this number,
+   but locked" rather than a foreign element. The unlock form breaks out via
+   position:absolute so it doesn't have to fit inside tiny badge footprints. */
+.cams-score-gate {
+  position: relative;
+  display: inline-block;
+}
+
+.cams-score-gate-lock {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.cams-score-gate-form {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #F7F5F1;
+  border: 1px solid #E0DCD3;
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  white-space: nowrap;
+}
+
+.cams-score-gate-form input {
+  width: 150px;
+  font-size: 0.8rem;
+  padding: 6px 8px;
+  border: 1px solid #E0DCD3;
+  border-radius: 3px;
+  color: #14120F;
+  background: #fff;
+}
+
+.cams-score-gate-form button {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 3px;
+  background: #0B5E52;
+  color: #F7F5F1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cams-score-gate-error {
+  font-size: 0.72rem;
+  color: #B3261E;
+}
+
 /* ---------- shared across /reviews and /reviews/[slug] ---------- */
 .cams-review-page {
   font-family: var(--font-cams-body), "Work Sans", sans-serif;

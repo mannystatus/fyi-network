@@ -6,6 +6,7 @@ import CamsFooter from "./CamsFooter";
 import CamsNewsletterForm from "./CamsNewsletterForm";
 import { CAMS_REVIEWS } from "../lib/camsReviews";
 import { COMPARE_ROWS, VIDEO_REVIEWS, DEALS } from "../lib/camsHomeContent";
+import CamsScoreGate from "./CamsScoreGate";
 
 const LATEST_COUNT = 8;
 const RUMOR_COUNT = 5;
@@ -34,7 +35,11 @@ function MosaicCard({ article, size, brand }: { article: ArticleListItem; size: 
       )}
       <span className="cams-mosaic-scrim" />
       {article.category && <span className="cams-mosaic-cat">{article.category}</span>}
-      {review && <span className="cams-mosaic-score">{review.score.toFixed(1)}</span>}
+      {review && (
+        <span className="cams-mosaic-score">
+          <CamsScoreGate brandSlug={brand.slug}>{review.score.toFixed(1)}</CamsScoreGate>
+        </span>
+      )}
       <span className="cams-mosaic-body">
         <h3>{article.title}</h3>
         {source && <span className="cams-mosaic-source">fyi network · {source}</span>}
@@ -231,11 +236,12 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
     .cams-deals-note { font-family: var(--font-cams-mono), monospace; font-size: .64rem; color: #8C8779; }
     .cams-deal-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
     @media (max-width: 800px) { .cams-deal-grid { grid-template-columns: 1fr; } }
-    .cams-deal-card { border: 1px solid #E0DCD3; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-    .cams-deal-pct { align-self: flex-start; background: #0B5E52; color: #F7F5F1; font-family: var(--font-cams-mono), monospace; font-size: .68rem; font-weight: 700; padding: 3px 8px; }
-    .cams-deal-price { display: flex; align-items: baseline; gap: 8px; }
-    .cams-deal-now { font-family: var(--font-cams-mono), monospace; font-weight: 700; font-size: 1.15rem; }
-    .cams-deal-was { font-family: var(--font-cams-mono), monospace; font-size: .86rem; color: #8C8779; text-decoration: line-through; }
+    .cams-deal-card { border: 1px solid #E0DCD3; padding: 20px; display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: inherit; transition: border-color .15s ease; }
+    .cams-deal-card:hover { border-color: #0B5E52; }
+    .cams-deal-tag { align-self: flex-start; background: #0B5E52; color: #F7F5F1; font-family: var(--font-cams-mono), monospace; font-size: .68rem; font-weight: 700; padding: 3px 8px; }
+    .cams-deal-price { font-family: var(--font-cams-mono), monospace; font-weight: 700; font-size: 1.15rem; }
+    .cams-deal-note { font-size: .82rem; color: #4A463F; line-height: 1.4; }
+    .cams-deal-cta { font-family: var(--font-cams-mono), monospace; font-size: .74rem; font-weight: 700; color: #0B5E52; margin-top: auto; }
 
     /* ---------- PODCAST / COMMUNITY ---------- */
     .cams-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
@@ -367,7 +373,7 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
                 reviews.map((r) => (
                   <Link className="cams-score-row" href={`/reviews/${r.slug}`} key={r.slug} prefetch={false}>
                     <span className="cams-score-badge" style={{ background: scoreColor(r.score) }}>
-                      {r.score.toFixed(1)}
+                      <CamsScoreGate brandSlug={brand.slug}>{r.score.toFixed(1)}</CamsScoreGate>
                     </span>
                     <span className="cams-score-title">{r.productName}</span>
                   </Link>
@@ -460,14 +466,19 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
             </div>
             <div className="cams-deal-grid">
               {DEALS.map((d) => (
-                <div className="cams-deal-card" key={d.title}>
-                  <span className="cams-deal-pct">{d.pct}</span>
+                <a
+                  className="cams-deal-card"
+                  href={d.amazonUrl}
+                  target="_blank"
+                  rel="sponsored noopener noreferrer"
+                  key={d.title}
+                >
+                  <span className="cams-deal-tag">Gear pick</span>
                   <h4>{d.title}</h4>
-                  <div className="cams-deal-price">
-                    <span className="cams-deal-now">{d.now}</span>
-                    <span className="cams-deal-was">{d.was}</span>
-                  </div>
-                </div>
+                  <span className="cams-deal-price">{d.fromPrice}</span>
+                  <p className="cams-deal-note">{d.note}</p>
+                  <span className="cams-deal-cta">Check price on Amazon →</span>
+                </a>
               ))}
             </div>
           </div>

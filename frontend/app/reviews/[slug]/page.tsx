@@ -5,6 +5,7 @@ import { getCurrentBrand } from "../../../lib/api";
 import { CAMS_REVIEWS } from "../../../lib/camsReviews";
 import { canonicalOrigin } from "../../../lib/url";
 import { buildKeywords } from "../../../lib/seo";
+import CamsScoreGate from "../../../components/CamsScoreGate";
 
 // Brands other than fyiCams 404 here, same pattern as /buyers-guide.
 export async function generateMetadata({
@@ -177,7 +178,9 @@ export default async function CamsReviewPage({
           <p className="cams-review-priceline">{review.priceLine}</p>
           <div className="cams-review-scoreline">
             <div>
-              <div className="cams-review-scoreline-badge">{review.score.toFixed(1)}</div>
+              <div className="cams-review-scoreline-badge">
+                <CamsScoreGate brandSlug={brand.slug}>{review.score.toFixed(1)}</CamsScoreGate>
+              </div>
               <div className="cams-review-scoreline-sub">Our score</div>
             </div>
             <div>
