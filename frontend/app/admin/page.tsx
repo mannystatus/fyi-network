@@ -58,6 +58,14 @@ type ArticleDetail = {
   body_md: string;
 };
 
+type ArticleListItem = {
+  slug: string;
+  category: string | null;
+  title: string;
+  author: string | null;
+  published_at: string;
+};
+
 type Scope = {
   is_superadmin: boolean;
   brand_slugs: string[];
@@ -174,6 +182,10 @@ export default function AdminPage() {
   const [editLoading, setEditLoading] = useState(false);
   const [editLoadError, setEditLoadError] = useState<string | null>(null);
   const [editLoaded, setEditLoaded] = useState(false);
+
+  const [recentArticles, setRecentArticles] = useState<ArticleListItem[]>([]);
+  const [recentArticlesLoading, setRecentArticlesLoading] = useState(false);
+  const [recentArticlesError, setRecentArticlesError] = useState<string | null>(null);
 
   const [editTitle, setEditTitle] = useState("");
   const [editDek, setEditDek] = useState("");
@@ -393,16 +405,46 @@ export default function AdminPage() {
     insertBodyImage(file);
   }
 
+  // GET /api/articles (list) is also unauthenticated — same "no reason to
+  // gate read access to what's already public" as the single-article fetch
+  // below. featured_only restricts this to hand-authored pieces published
+  // through /admin (this one included), not the automated RSS-ingested
+  // briefs ingest_news.py writes — those aren't what someone would come
+  // here to fix.
+  async function fetchRecentArticles(site: string) {
+    setRecentArticlesLoading(true);
+    setRecentArticlesError(null);
+    try {
+      const res = await fetch(`${API_URL}/api/articles?brand=${site}&featured_only=true&limit=20`);
+      if (!res.ok) throw new Error(`${res.status}`);
+      setRecentArticles(await res.json());
+    } catch {
+      setRecentArticlesError("Couldn't load recent articles.");
+    } finally {
+      setRecentArticlesLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    setRecentArticles([]);
+    if (editSiteSlug) fetchRecentArticles(editSiteSlug);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editSiteSlug]);
+
   // GET /api/articles/{slug} is unauthenticated (same data any visitor's
   // article page already fetches) — the admin key only gates the PATCH/
   // DELETE below, so this is a plain fetch, not adminFetch. ?brand=
   // bypasses the X-Brand-Slug-from-Host resolution the public site relies
   // on (see backend/app/deps.py resolve_brand) since this is a direct
   // browser->backend call, not routed through Next's per-domain middleware.
-  async function handleLoadArticle() {
+  // Takes an optional slug so the recent-articles list below can jump
+  // straight to loading a picked article without a round-trip through the
+  // slug text input's own state.
+  async function handleLoadArticle(slugOverride?: string) {
     const site = editSiteSlug.trim().toLowerCase();
-    const slug = editArticleSlug.trim();
+    const slug = (slugOverride ?? editArticleSlug).trim();
     if (!site || !slug) return;
+    setEditArticleSlug(slug);
     setEditLoading(true);
     setEditLoadError(null);
     setEditLoaded(false);
@@ -523,6 +565,7 @@ export default function AdminPage() {
       );
       const data: UpdateResult[] = await res.json();
       setEditResults(data);
+      fetchRecentArticles(editSiteSlug); // title/category may have changed
     } catch (err) {
       setEditSaveError(err instanceof Error ? err.message : "Couldn't save changes.");
     } finally {
@@ -548,6 +591,7 @@ export default function AdminPage() {
       );
       setEditDeleted(true);
       setEditLoaded(false);
+      fetchRecentArticles(editSiteSlug);
     } catch (err) {
       setEditDeleteError(err instanceof Error ? err.message : "Couldn't delete article.");
     } finally {
@@ -971,7 +1015,7 @@ export default function AdminPage() {
             />
             <button
               type="button"
-              onClick={handleLoadArticle}
+              onClick={() => handleLoadArticle()}
               disabled={editLoading || !editSiteSlug || !editArticleSlug.trim()}
               style={{ marginTop: 6 }}
             >
@@ -979,6 +1023,36 @@ export default function AdminPage() {
             </button>
             {editLoadError && <p className="admin-error">{editLoadError}</p>}
           </div>
+
+          {editSiteSlug && (
+            <div className="admin-field">
+              <label>Recent articles on {publishableBrands.find((b) => b.slug === editSiteSlug)?.name ?? editSiteSlug}</label>
+              {recentArticlesLoading && <p style={{ color: "var(--comment)", fontSize: 13 }}>Loading…</p>}
+              {recentArticlesError && <p className="admin-error">{recentArticlesError}</p>}
+              {!recentArticlesLoading && !recentArticlesError && recentArticles.length === 0 && (
+                <p style={{ color: "var(--comment)", fontSize: 13 }}>No hand-authored articles on this site yet.</p>
+              )}
+              <ul className="admin-recent-articles">
+                {recentArticles.map((a) => (
+                  <li key={a.slug}>
+                    <button
+                      type="button"
+                      className={`admin-recent-article-row${editArticleSlug === a.slug && editLoaded ? " active" : ""}`}
+                      onClick={() => handleLoadArticle(a.slug)}
+                      disabled={editLoading}
+                    >
+                      <span className="admin-recent-article-title">{a.title}</span>
+                      <span className="admin-recent-article-meta">
+                        {a.category && `${a.category} · `}
+                        {new Date(a.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        {a.author && ` · ${a.author}`}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {editDeleted && (
             <div className="admin-results">

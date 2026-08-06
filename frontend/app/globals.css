@@ -3512,6 +3512,58 @@ body.theme-flynow-body .switcher-menu {
   color: var(--red);
 }
 
+.admin-recent-articles {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.admin-recent-articles li + li {
+  border-top: 1px solid var(--border);
+}
+
+.admin-recent-article-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  color: var(--fg);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-recent-article-row:hover:not(:disabled) {
+  background: var(--bg-alt);
+}
+
+.admin-recent-article-row.active {
+  background: var(--bg-alt);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.admin-recent-article-row:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.admin-recent-article-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin-recent-article-meta {
+  font-size: 12px;
+  color: var(--comment);
+}
+
 .pagination {
   display: flex;
   align-items: center;
