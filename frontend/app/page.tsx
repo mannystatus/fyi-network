@@ -10,6 +10,66 @@ import Pagination from "../components/Pagination";
 import { EDITORIAL_CONFIGS } from "../lib/editorialConfig";
 import { canonicalOrigin } from "../lib/url";
 
+// fyiCams homepage-specific keyword targeting — broader than the per-article/
+// per-topic keyword lists elsewhere (those stay scoped to that page's own
+// content; this is the site-wide term list meant to surface the homepage
+// for the full range of camera-gear search intent).
+const CAMS_SEO_KEYWORDS = [
+  "camera reviews",
+  "camera news",
+  "camera rumors",
+  "gear updates",
+  "firmware updates",
+  "new camera releases 2026",
+  "camera review",
+  "best mirrorless camera",
+  "full frame vs APSC",
+  "lens comparison",
+  "hands-on review",
+  "Sony Alpha news",
+  "Canon EOS R news",
+  "Fujifilm rumor",
+  "Nikon Z lens roadmap",
+  "DJI rumor",
+  "Leica News Rumor",
+  "Hassleblad News Rumor",
+  "Hassleblad X2D",
+  "mirrorless camera",
+  "cinema camera",
+  "action camera",
+  "vlogging camera",
+  "prime lens",
+  "china",
+  "europe",
+  "germany",
+  "japan",
+  "usa",
+  "leica stores",
+  "leica store",
+  "sammys camera",
+  "dji",
+  "insta360",
+  "x5",
+  "360 camera",
+  "video",
+  "software",
+  "hardware",
+  "adobe",
+  "lightroom",
+  "capture one",
+  "Breaking industry news, leaks, and announcement coverage",
+  "In-depth analysis, comparisons, and purchasing advice",
+  "Brand-loyal readers tracking specific ecosystems",
+  "Buyers exploring specific equipment types",
+  "deals",
+  "trade-ins",
+  "trades",
+  "trade",
+  "discount",
+  "web deals",
+  "hackthedeal.com",
+];
+
 const EDITORIAL_METADATA: Record<string, { title: string; description: string }> = {
   mac: {
     title: "Apple News, Rumors & Buying Guides",
@@ -72,7 +132,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title,
       description,
-      keywords: buildKeywords(brand, ["camera reviews", "camera news"]),
+      keywords: buildKeywords(brand, CAMS_SEO_KEYWORDS),
       alternates: { canonical: "/" },
       openGraph: { title, description, type: "website", url, siteName: brand.name },
       twitter: { card: "summary_large_image", title, description },
