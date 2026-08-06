@@ -11,18 +11,22 @@ not just a headline-and-link stub. Re-running is safe: articles are
 deduped by slug per brand, so already-seen headlines are skipped and only
 genuinely new ones get added.
 
-Bing is used instead of Google News RSS because Google's RSS <link> is a
-JS-resolved redirect through news.google.com — there's no real content or
-even a real URL to point to without executing JavaScript. Bing's RSS gives
-a direct 302 redirect to the publisher (recovered here without a network
-round trip, straight out of the link's own `url=` query param) and a real
-2-3 sentence description written by the publisher for syndication. If Bing
-is unreachable, this falls back to the old Google-News headline-only mode
-so ingestion still produces something rather than failing outright.
+Bing is preferred over Google News RSS because Google's RSS <link> is a
+JS-resolved redirect through news.google.com rather than a real HTTP 30x —
+Bing's RSS gives a direct 302 to the publisher (recovered here without a
+network round trip, straight out of the link's own `url=` query param) and
+a real 2-3 sentence description written by the publisher for syndication.
+If Bing is unreachable, or comes up empty for a topic, this falls back to
+Google News; resolve_google_news_url() then decodes that JS redirect via
+Google's own internal batchexecute endpoint (an undocumented,
+reverse-engineered technique — see its docstring) so the fallback path
+still ends up with a real publisher URL to fetch a thumbnail from and to
+link the reader to, instead of Google's own interstitial page.
 """
 import argparse
 import datetime as dt
 import hashlib
+import json
 import re
 import sys
 import urllib.parse
@@ -470,6 +474,64 @@ def fetch_direct_rss(feed_url: str, source_name: str) -> list[dict]:
     return items
 
 
+_GNEWS_ID_RE = re.compile(r'data-n-a-id="([^"]+)"')
+_GNEWS_TS_RE = re.compile(r'data-n-a-ts="([^"]+)"')
+_GNEWS_SG_RE = re.compile(r'data-n-a-sg="([^"]+)"')
+
+
+def resolve_google_news_url(redirect_url: str) -> str | None:
+    """
+    Decodes a Google News RSS <link> (https://news.google.com/rss/articles/...)
+    to the real publisher URL it points to. These aren't real HTTP redirects
+    — fetching one just 302s back to itself and serves an interstitial page
+    that JS-resolves client-side, so there was previously no way to get a
+    real URL out of a Google-fallback item at all (see fetch_google_fallback,
+    which stored image_url=None for exactly this reason). That interstitial
+    page embeds three signed tokens (data-n-a-id/-ts/-sg) which, POSTed to
+    Google's own internal batchexecute endpoint, resolve to the real URL —
+    the same undocumented, reverse-engineered technique several open-source
+    "google news url decoder" projects use. Google could change this format
+    at any time with no notice; any failure here (missing tokens, a changed
+    response shape, a network error) just returns None rather than raising,
+    same fail-soft contract as fetch_og_image below.
+    """
+    try:
+        html = _get(redirect_url).decode("utf-8", errors="ignore")
+        article_id = _GNEWS_ID_RE.search(html)
+        ts = _GNEWS_TS_RE.search(html)
+        sg = _GNEWS_SG_RE.search(html)
+        if not (article_id and ts and sg):
+            return None
+
+        inner = (
+            '["garturlreq",[["X","X",["X","X"],null,null,1,1,"US:en",null,1,'
+            "null,null,null,null,null,0,1],"
+            f'"X","X",1,[1,1,1],1,1,null,0,0,null,0],'
+            f'"{article_id.group(1)}",{ts.group(1)},"{sg.group(1)}"]'
+        )
+        payload = urllib.parse.urlencode({"f.req": json.dumps([[["Fbv4je", inner, None, "generic"]]])}).encode()
+        req = urllib.request.Request(
+            "https://news.google.com/_/DotsSplashUi/data/batchexecute",
+            data=payload,
+            headers={"content-type": "application/x-www-form-urlencoded;charset=UTF-8", "User-Agent": USER_AGENT},
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            body = resp.read().decode()
+
+        # Body is Google's ")]}'" XSSI-protection prefix, then one JSON
+        # array per line — the row we want starts with "wrb.fr" and its 3rd
+        # element is itself a JSON-encoded string (not a nested array),
+        # hence the second json.loads.
+        row = next((line for line in body.splitlines() if line.startswith('[["wrb.fr"')), None)
+        if not row:
+            return None
+        resolved = json.loads(json.loads(row)[0][2])
+        url = resolved[1]
+        return url if isinstance(url, str) and url.startswith("http") else None
+    except Exception:
+        return None
+
+
 _OG_IMAGE_RE = re.compile(
     r'<meta[^>]+(?:property|name)=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
     re.IGNORECASE,
@@ -594,6 +656,15 @@ def ingest_brand(db, brand: Brand, per_topic: int) -> int:
             slug = slugify(item["title"])
             if slug in seen_slugs:
                 continue
+            # Google-fallback items carry an unresolved news.google.com
+            # redirect as their link (see fetch_google_fallback) — resolve
+            # it to the real publisher URL first so both the og:image fetch
+            # below and the "Read the full story" link in the article body
+            # point at something real instead of Google's interstitial.
+            if urllib.parse.urlsplit(item["link"]).netloc == "news.google.com":
+                resolved = resolve_google_news_url(item["link"])
+                if resolved:
+                    item["link"] = resolved
             if not item.get("image_url"):
                 item["image_url"] = fetch_og_image(item["link"])
             db.add(make_article(brand, topic, item))
