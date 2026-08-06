@@ -78,10 +78,13 @@ class ArticleCreateResult(BaseModel):
 
 
 class ArticleUpdate(BaseModel):
-    # "" clears the header image (article.image_url && ... on the frontend
-    # treats it as falsy); None means "leave as-is" — same convention as
-    # BrandUpdate.image_url above.
+    # None on either field means "leave as-is"; "" clears image_url
+    # (article.image_url && ... on the frontend treats it as falsy) — same
+    # convention as BrandUpdate.image_url above. body_md has no such "clear"
+    # state since a blank body isn't a valid article (see ArticleCreate's
+    # not_blank validator) — only a real replacement is meaningful there.
     image_url: str | None = None
+    body_md: str | None = None
 
 
 class AdminScopeOut(BaseModel):

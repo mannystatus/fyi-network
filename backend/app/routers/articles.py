@@ -138,7 +138,7 @@ def update_article(
     brand_slugs: list[str] = Query(..., description="Which brands' copy of this slug to update"),
     scope: AdminScope = Depends(require_admin),
 ):
-    """Admin-gated — currently just clears/replaces an article's header image (see ArticleUpdate)."""
+    """Admin-gated — edits an existing article's header image and/or body (see ArticleUpdate)."""
     for brand_slug in brand_slugs:
         scope.check_brand(brand_slug.strip().lower())
 
@@ -156,6 +156,8 @@ def update_article(
 
         if payload.image_url is not None:
             article.image_url = payload.image_url
+        if payload.body_md is not None:
+            article.body_md = payload.body_md
 
         results.append(
             ArticleCreateResult(
