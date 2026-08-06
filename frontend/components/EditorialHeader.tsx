@@ -52,7 +52,17 @@ export default function EditorialHeader({
       },
       { label: "Reviews", href: "/" },
       ...(config.showCompare ? [{ label: "Compare", href: "/#compare" }] : []),
-      { label: config.navLastLabel, href: config.navLastLabel === "New This Week" ? "/#news-grid" : "/" },
+      {
+        label: config.navLastLabel,
+        href:
+          config.navLastLabel === "New This Week"
+            ? "/#news-grid"
+            : BUYERS_GUIDES[brand.slug]
+              ? "/buyers-guide"
+              : config.showCompare
+                ? "/#compare"
+                : "/",
+      },
     ]),
     ...(config.extraNavItems ?? []),
   ];
