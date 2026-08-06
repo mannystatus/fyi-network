@@ -84,21 +84,15 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
     priceLine: "44MP full-frame · $6,690 body-only · L-mount",
     imageUrl: "https://a1134mfa97i8kxjl.public.blob.vercel-storage.com/uploads/864f529d30d647a5a2de4da030729ca7-O2cig6ZzbAuSd8AdJbqS1YHQoqk6li.jpg",
     score: 8.8,
-    verdictLabel: "Highly Recommended",
-    verdict:
-      "Leica's fastest camera ever — a 44MP sensor with autofocus that finally justifies using it as a working camera, not just a beautiful second body.",
+    verdictLabel: "Coming Soon",
+    verdict: "Full review coming soon.",
     pros: [
       "44MP BSI sensor with 14 stops of dynamic range",
       "819-point hybrid AF with ML subject recognition",
       "40fps burst with full AF tracking",
       "8K open-gate, ProRes, and 4K/120p video",
     ],
-    cons: [
-      "Heavy for its class",
-      "Screen tilts but doesn't swivel",
-      "AF still trails Sony/Canon on raw tracking speed",
-      "Only 4 labeled buttons — touchscreen-heavy control layout",
-    ],
+    cons: [],
     specsShort: [
       { label: "Sensor", value: "44MP full-frame BSI" },
       { label: "Burst speed", value: "40 fps w/ AF tracking" },
@@ -131,7 +125,7 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
     category: "Rangefinder-Style Mirrorless",
     priceLine: "60.3MP full-frame · $8,995 body-only · Leica M-mount",
     imageUrl: "https://a1134mfa97i8kxjl.public.blob.vercel-storage.com/uploads/157cf8cdd9b5499ea9ae14a2c53d43c6-9e8yckFRmd8N9cOacWfbThUVRxdiMM.jpg",
-    score: 9.1,
+    score: 9.6,
     verdictLabel: "Editor's Choice",
     verdict:
       "The purest M Leica has ever built. Cutting video and autofocus wasn't a limitation — it was the point: every part of this camera, from the sensor to the new EVF, exists to serve the photograph and nothing else. For photographers tired of buying compromise, this is the clearest, most focused stills tool on the market.",
@@ -153,7 +147,7 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
       { label: "Viewfinder", value: "5.76m-dot EVF, 0.76x" },
       { label: "Autofocus", value: "None — manual only" },
       { label: "Video", value: "Not supported" },
-      { label: "Our score", value: "9.1 / 10" },
+      { label: "Our score", value: "9.6 / 10" },
     ],
     specsFull: [
       { label: "Sensor", value: "60.3MP full-frame BSI CMOS, 15 stops DR" },

@@ -123,6 +123,7 @@ export default async function CamsReviewPage({
     .cams-review-scoreline-badge { width: 76px; height: 76px; border-radius: 50%; background: #0B5E52; color: #F7F5F1; display: flex; align-items: center; justify-content: center; font-family: var(--font-cams-mono), monospace; font-weight: 700; font-size: 1.6rem; flex-shrink: 0; }
     .cams-review-scoreline-sub { font-family: var(--font-cams-mono), monospace; font-size: .62rem; text-transform: uppercase; letter-spacing: .06em; color: #8C8779; text-align: center; margin-top: 6px; }
     .cams-review-verdict-label { font-weight: 700; font-size: 1rem; }
+    .cams-review-verdict-label.pending { color: #B3261E; }
     .cams-review-verdict-text { font-size: .88rem; color: #4A463F; margin-top: 6px; }
     .cams-review-photo { aspect-ratio: 4/3; width: 100%; object-fit: cover; background: repeating-linear-gradient(45deg,#EDE9E2,#EDE9E2 12px,#E4E0D6 12px,#E4E0D6 24px); display: flex; align-items: center; justify-content: center; font-family: var(--font-cams-mono), monospace; font-size: .7rem; color: #8C8779; }
 
@@ -184,7 +185,9 @@ export default async function CamsReviewPage({
               <div className="cams-review-scoreline-sub">Our score</div>
             </div>
             <div>
-              <div className="cams-review-verdict-label">{review.verdictLabel}</div>
+              <div className={`cams-review-verdict-label${review.verdictLabel === "Coming Soon" ? " pending" : ""}`}>
+                {review.verdictLabel}
+              </div>
               <p className="cams-review-verdict-text">{review.verdict}</p>
             </div>
           </div>
