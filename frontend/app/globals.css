@@ -614,6 +614,22 @@ main {
   object-fit: cover;
 }
 
+/* Articles with no real thumbnail (most syndicated wire stories) show the
+   brand icon instead of a blank gap or a wrong/generic placeholder. */
+.article-card-thumb[data-fallback="true"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-alt);
+}
+
+.article-card-thumb[data-fallback="true"] img {
+  width: 46%;
+  height: 46%;
+  object-fit: contain;
+  opacity: 0.85;
+}
+
 .article-card-body {
   min-width: 0;
   flex: 1;
@@ -2206,6 +2222,12 @@ footer:not(.cams-footer):not(.editorial-footer) {
 .editorial-mosaic-card.small { flex: 1; min-height: 160px; }
 .editorial-mosaic-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
 .editorial-mosaic-card:hover .editorial-mosaic-img { transform: scale(1.03); }
+/* No real photo for this story (most syndicated wire stories) — brand icon
+   centered on the card's own dark background instead of a blank card. */
+.editorial-mosaic-fallback {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 30%; max-width: 96px; height: auto; opacity: 0.7;
+}
 .editorial-mosaic-scrim {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.5) 38%, rgba(0, 0, 0, 0) 68%);
@@ -2226,10 +2248,16 @@ footer:not(.cams-footer):not(.editorial-footer) {
 .editorial-story-row { display: grid; grid-template-columns: 108px 1fr; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--editorial-line); }
 @media (max-width: 560px) { .editorial-story-row { grid-template-columns: 1fr; } }
 .editorial-story-row-thumb {
-  aspect-ratio: 1 / 1; overflow: hidden;
+  position: relative; aspect-ratio: 1 / 1; overflow: hidden;
   background: repeating-linear-gradient(45deg, var(--editorial-bg-alt), var(--editorial-bg-alt) 10px, var(--editorial-line) 10px, var(--editorial-line) 20px);
 }
 .editorial-story-row-thumb img { width: 100%; height: 100%; object-fit: cover; }
+/* No real photo — brand icon centered over the diagonal-stripe swatch
+   instead of a real (but wrong-subject) photo standing in for one. */
+.editorial-story-row-fallback {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 42% !important; height: 42% !important; object-fit: contain; opacity: 0.75;
+}
 .editorial-story-eyebrow {
   display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--font-cams-mono), monospace;
   font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--editorial-stone); font-weight: 700; margin-bottom: 6px;

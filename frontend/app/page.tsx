@@ -129,6 +129,7 @@ export default async function HomePage({
       <ArticleList
         articles={articles}
         brandName={brand.name}
+        brandSlug={brand.slug}
         emptyMessage={
           page > 1
             ? "Nothing here — go back to page 1."

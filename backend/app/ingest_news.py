@@ -68,6 +68,12 @@ QUERY_OVERRIDES = {
     "Chrome": "Google Chrome browser",
     "Android": "Android OS",
     "YouTube": "YouTube",
+    # Brand-keyed, not bare "Rumors" — the bare key below is fyiCams' camera-
+    # rumor query, which would otherwise leak into these three tech brands
+    # via the plain-topic fallback in _brand_lookup.
+    ("fyimac", "Rumors"): "Apple rumor OR iPhone rumor OR Mac rumor OR iPad rumor OR Apple leak",
+    ("fyiwin", "Rumors"): "Windows 11 rumor OR Xbox rumor OR Microsoft rumor OR Surface rumor",
+    ("fyigoogle", "Rumors"): "Google Pixel rumor OR Android rumor OR Google leak",
     "New Releases": "Netflix new releases",
     "Netflix Originals": "Netflix original series OR movie",
     "Renewals & Cancellations": "Netflix renewed OR canceled series",

@@ -13,11 +13,14 @@ export default function ArticleList({
   articles,
   emptyMessage,
   brandName,
+  brandSlug,
 }: {
   articles: ArticleListItem[];
   emptyMessage: string;
   /** When set, our own hand-published articles show this instead of their author on the card. */
   brandName?: string;
+  /** Used for the /icons/{brandSlug}-512.png fallback thumbnail on articles with no image. */
+  brandSlug: string;
 }) {
   if (articles.length === 0) {
     return <p style={{ color: "var(--comment)" }}>{emptyMessage}</p>;
@@ -33,15 +36,13 @@ export default function ArticleList({
               href={`/${a.slug}`}
               className="article-card"
               data-featured={a.is_featured || undefined}
-              data-has-thumb={a.image_url ? "true" : undefined}
+              data-has-thumb="true"
               prefetch={false}
             >
-              {a.image_url && (
-                <div className="article-card-thumb">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={a.image_url} alt="" />
-                </div>
-              )}
+              <div className="article-card-thumb" data-fallback={a.image_url ? undefined : "true"}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={a.image_url || `/icons/${brandSlug}-512.png`} alt="" />
+              </div>
               <div className="article-card-body">
                 {a.is_featured && <span className="featured-badge">★ Featured</span>}
                 <div className="article-card-tags">

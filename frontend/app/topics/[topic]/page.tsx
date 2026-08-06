@@ -52,6 +52,7 @@ export default async function TopicPage({
       <ArticleList
         articles={articles}
         brandName={brand.name}
+        brandSlug={brand.slug}
         emptyMessage={page > 1 ? "Nothing here — go back to page 1." : `No articles yet for ${topicName}.`}
       />
       <Pagination page={page} hasMore={hasMore} basePath={`/topics/${encodeURIComponent(topicName)}`} />

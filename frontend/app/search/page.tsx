@@ -58,7 +58,12 @@ export default async function SearchPage({
       <p className="section-label">
         <Link href="/">&larr; Latest</Link> &nbsp;/&nbsp; Search: &ldquo;{query}&rdquo;
       </p>
-      <ArticleList articles={articles} brandName={brand.name} emptyMessage={`No articles found for "${query}".`} />
+      <ArticleList
+        articles={articles}
+        brandName={brand.name}
+        brandSlug={brand.slug}
+        emptyMessage={`No articles found for "${query}".`}
+      />
       <Pagination page={page} hasMore={hasMore} basePath="/search" query={query} />
       <LatestFromUs />
     </>
