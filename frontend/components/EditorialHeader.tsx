@@ -43,6 +43,15 @@ export default function EditorialHeader({
   const pathname = usePathname();
   const suffix = brand.name.replace("fyi", "");
 
+  // Neither brand has a real reviews content system (no Article is ever
+  // categorized "Reviews" — see ingest_news.py's category=topic, and no
+  // brand's configured topics list includes it), so both "Reviews" and
+  // navLastLabel ("Deals") point at the closest real stand-in: the Buyers
+  // Guide's buy/wait verdicts where one exists, else the Quick Compare
+  // table. Two differently-labeled nav items landing on the same page is
+  // intentional here, not a bug — there's nothing else real to point to.
+  const buyGuideOrCompareHref = BUYERS_GUIDES[brand.slug] ? "/buyers-guide" : config.showCompare ? "/#compare" : "/";
+
   const navLinks = [
     ...(config.navItems ?? [
       { label: "News", href: "/news" },
@@ -50,18 +59,11 @@ export default function EditorialHeader({
         label: config.navSecondaryLabel,
         href: config.rumorsTopic ? `/topics/${encodeURIComponent(config.rumorsTopic)}` : "/#rumor-mill",
       },
-      { label: "Reviews", href: "/" },
+      { label: "Reviews", href: buyGuideOrCompareHref },
       ...(config.showCompare ? [{ label: "Compare", href: "/#compare" }] : []),
       {
         label: config.navLastLabel,
-        href:
-          config.navLastLabel === "New This Week"
-            ? "/#news-grid"
-            : BUYERS_GUIDES[brand.slug]
-              ? "/buyers-guide"
-              : config.showCompare
-                ? "/#compare"
-                : "/",
+        href: config.navLastLabel === "New This Week" ? "/#news-grid" : buyGuideOrCompareHref,
       },
     ]),
     ...(config.extraNavItems ?? []),
