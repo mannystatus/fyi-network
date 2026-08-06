@@ -469,17 +469,31 @@ _OG_IMAGE_RE_REV = re.compile(
 )
 
 
+# Hosts whose og:image is Google's own generic share icon, not the
+# publisher's — a Google News redirect link (unresolved by fetch_google_fallback)
+# resolves to one of these instead of 404ing, so it slips past the "did we
+# get an image" check and ends up stored as the article thumbnail.
+_GENERIC_ICON_HOSTS = ("news.google.com", "lh3.googleusercontent.com", "gstatic.com")
+
+
 def fetch_og_image(article_url: str) -> str | None:
     """Fallback for feeds that carry no thumbnail of their own (direct-RSS
     rumor blogs, Google News fallback): fetch the article page itself and
     pull its social-share og:image, same size the publisher considers
     presentable rather than whatever a feed happened to include."""
+    if urllib.parse.urlsplit(article_url).netloc in _GENERIC_ICON_HOSTS:
+        return None
     try:
         html = _get(article_url).decode("utf-8", errors="ignore")
     except Exception:
         return None
     match = _OG_IMAGE_RE.search(html) or _OG_IMAGE_RE_REV.search(html)
-    return unescape(match.group(1).strip()) or None if match else None
+    if not match:
+        return None
+    image_url = unescape(match.group(1).strip())
+    if not image_url or urllib.parse.urlsplit(image_url).netloc in _GENERIC_ICON_HOSTS:
+        return None
+    return image_url
 
 
 def fetch_headlines(brand_slug: str, topic: str) -> list[dict]:
