@@ -36,7 +36,31 @@ const DOMAIN_TO_SLUG: Record<string, string> = {
 
 const DEFAULT_SLUG = "fyimac"; // fallback for bare localhost:3000 during dev
 
+// Aggressive SEO/scraping crawlers — not search engines (Googlebot, Bingbot,
+// DuckDuckBot, etc. are deliberately NOT on this list; we want those, they
+// drive the indexing this site's SEO work targets). Every hit from these
+// currently costs a full no-store Fluid SSR render (see lib/api.ts's
+// headers()-driven dynamic rendering), so rejecting them here at the Edge
+// (unbilled) instead of letting them reach a page render is a clean win.
+const BLOCKED_BOT_UA = [
+  "ahrefsbot",
+  "semrushbot",
+  "mj12bot",
+  "dotbot",
+  "blexbot",
+  "petalbot",
+];
+
+function isBlockedBot(userAgent: string): boolean {
+  const ua = userAgent.toLowerCase();
+  return BLOCKED_BOT_UA.some((bot) => ua.includes(bot));
+}
+
 export function middleware(request: NextRequest) {
+  if (isBlockedBot(request.headers.get("user-agent") || "")) {
+    return new NextResponse("Forbidden", { status: 403 });
+  }
+
   const host = request.headers.get("host") || "";
   const slug = DOMAIN_TO_SLUG[host] || DEFAULT_SLUG;
 

@@ -60,8 +60,13 @@ export type TravelAdvisory = {
   advisory_updated_at: string | null;
 };
 
-export const getCurrentBrand = (): Promise<Brand> => apiFetch("/api/brands/current");
-export const getAllBrands = (): Promise<Brand[]> => apiFetch("/api/brands");
+// Brand metadata (name/topics/accent color/etc.) changes rarely — every
+// page on every brand fetches this via template.tsx, so a longer window
+// than the 60s default cuts real backend round-trips per request without
+// hurting freshness (an admin image/tagline edit shows up within 5 min).
+const BRAND_REVALIDATE = 300;
+export const getCurrentBrand = (): Promise<Brand> => apiFetch("/api/brands/current", BRAND_REVALIDATE);
+export const getAllBrands = (): Promise<Brand[]> => apiFetch("/api/brands", BRAND_REVALIDATE);
 // Refreshed every 6h by the ingest job (see .github/workflows/travel-advisories.yml)
 // — a longer revalidate than the 60s default keeps this from hammering the
 // backend for data that can't have changed since the last ingest run.
