@@ -20,7 +20,7 @@ const TICKER_ITEMS = [
   { tag: "Firmware", text: "Subject-detection AF mode added via free update" },
 ];
 
-// Anchors, not real routes — Compare/Rumors/Video/Deals are homepage
+// Anchors, not real routes — Compare/Rumors/Deals are homepage
 // sections for v1 (see the add-brand plan's backend-scope note); Reviews
 // has its own small index page since CAMS_REVIEWS may hold more than one.
 const NAV_LINKS = [
@@ -28,7 +28,6 @@ const NAV_LINKS = [
   { label: "Reviews", href: "/reviews" },
   { label: "Rumors", href: "/#rumor-mill" },
   { label: "Compare", href: "/#compare" },
-  { label: "Video", href: "/#video" },
   { label: "Deals", href: "/#deals" },
 ];
 

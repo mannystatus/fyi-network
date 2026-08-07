@@ -16,12 +16,6 @@ export const COMPARE_ROWS = [
   { model: "Compact Travel Z", sensor: "1-inch 20MP", burst: "10 fps", price: "$899", score: "7.4" },
 ];
 
-export const VIDEO_REVIEWS = [
-  { title: "Flagship mirrorless: 30 days as a daily shooter", duration: "14:22", cat: "Video Review" },
-  { title: "Budget zoom vs. the prime everyone recommends", duration: "9:47", cat: "Comparison" },
-  { title: "Studio lighting on a $300 budget", duration: "11:03", cat: "Tutorial" },
-];
-
 // Real, named gear — each links out to Amazon via the affiliate tag above.
 // Deliberately no fabricated "was/now" discount claim: we have no live
 // pricing feed to verify an actual sale is happening, so `fromPrice` is an

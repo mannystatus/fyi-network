@@ -5,7 +5,7 @@ import CamsHeader from "./CamsHeader";
 import CamsFooter from "./CamsFooter";
 import CamsNewsletterForm from "./CamsNewsletterForm";
 import { CAMS_REVIEWS } from "../lib/camsReviews";
-import { COMPARE_ROWS, VIDEO_REVIEWS, DEALS } from "../lib/camsHomeContent";
+import { COMPARE_ROWS, DEALS } from "../lib/camsHomeContent";
 
 const LATEST_COUNT = 8;
 const RUMOR_COUNT = 5;
@@ -205,21 +205,6 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
     .cams-story-row p { font-size: .86rem; color: #4A463F; }
     .cams-empty { color: #8C8779; font-size: .9rem; }
 
-    /* ---------- VIDEO REVIEWS ---------- */
-    .cams-video-section { background: #EDE9E2; }
-    .cams-video-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
-    @media (max-width: 800px) { .cams-video-grid { grid-template-columns: 1fr; } }
-    .cams-video-card { display: flex; flex-direction: column; gap: 10px; }
-    .cams-video-thumb {
-      aspect-ratio: 16/9; position: relative; display: flex; align-items: center; justify-content: center;
-      background: repeating-linear-gradient(135deg,#DEDAD2,#DEDAD2 10px,#D2CCC0 10px,#D2CCC0 20px);
-    }
-    .cams-video-play { width: 52px; height: 52px; border-radius: 50%; background: rgba(20,18,15,.85); display: flex; align-items: center; justify-content: center; }
-    .cams-video-play-tri { width: 0; height: 0; border-style: solid; border-width: 8px 0 8px 14px; border-color: transparent transparent transparent #F7F5F1; margin-left: 3px; }
-    .cams-video-duration { position: absolute; bottom: 8px; right: 8px; background: #14120F; color: #F7F5F1; font-family: var(--font-cams-mono), monospace; font-size: .68rem; padding: 2px 6px; }
-    .cams-video-cat { font-family: var(--font-cams-mono), monospace; font-size: .64rem; text-transform: uppercase; letter-spacing: .06em; color: #0B5E52; font-weight: 700; }
-    .cams-video-card h4 { font-size: .98rem; font-weight: 600; line-height: 1.32; }
-
     /* ---------- RUMOR MILL ---------- */
     .cams-rumor-row { display: grid; grid-template-columns: 130px 1fr auto; gap: 24px; align-items: center; padding: 22px 0; border-bottom: 1px solid #E0DCD3; }
     @media (max-width: 700px) { .cams-rumor-row { grid-template-columns: 1fr; gap: 8px; } }
@@ -247,6 +232,7 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
     @media (max-width: 700px) { .cams-two-col { grid-template-columns: 1fr; } }
     .cams-info-card { border: 1px solid #E0DCD3; padding: 28px; display: flex; flex-direction: column; gap: 10px; }
     .cams-info-eyebrow { font-family: var(--font-cams-mono), monospace; font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: #8C8779; font-weight: 700; }
+    .cams-coming-soon-badge { display: inline-block; margin-left: 8px; padding: 2px 8px; background: #B3261E; color: #F7F5F1; border-radius: 3px; letter-spacing: .06em; }
     .cams-info-card h4 { font-family: var(--font-cams-display), Newsreader, serif; font-size: 1.2rem; font-weight: 700; }
     .cams-info-card p { font-size: .86rem; color: #4A463F; }
     .cams-info-card a { font-size: .84rem; font-weight: 700; color: #0B5E52; }
@@ -413,36 +399,6 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
           </div>
         </section>
 
-        <section className="cams-section cams-video-section" id="video">
-          <div className="wrap">
-            <div className="cams-section-head">
-              <h2>Video reviews</h2>
-              <a
-                className="cams-video-youtube-link"
-                href="https://www.youtube.com/@fyicams"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Watch on YouTube →
-              </a>
-            </div>
-            <div className="cams-video-grid">
-              {VIDEO_REVIEWS.map((v) => (
-                <div className="cams-video-card" key={v.title}>
-                  <div className="cams-video-thumb">
-                    <span className="cams-video-play">
-                      <span className="cams-video-play-tri" />
-                    </span>
-                    <span className="cams-video-duration">{v.duration}</span>
-                  </div>
-                  <span className="cams-video-cat">{v.cat}</span>
-                  <h4>{v.title}</h4>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <section className="cams-section cams-rule" id="rumor-mill">
           <div className="wrap">
             <div className="cams-section-head">
@@ -497,10 +453,12 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
         <section className="cams-section" id="podcast">
           <div className="wrap cams-two-col">
             <div className="cams-info-card">
-              <span className="cams-info-eyebrow">Podcast · Ep. 142</span>
-              <h4>Is the megapixel race actually over?</h4>
-              <p>Three editors debate whether sensor resolution still matters for working photographers.</p>
-              <a href="#podcast">Listen →</a>
+              <span className="cams-info-eyebrow">
+                Podcast <span className="cams-coming-soon-badge">Coming Soon</span>
+              </span>
+              <h4>Scored reviews and verified rumors — now in audio</h4>
+              <p>We're building a weekly show breaking down the gear news and reviews you read here. Subscribe to the newsletter to know the moment it launches.</p>
+              <a href="#newsletter">Get notified →</a>
             </div>
             <div className="cams-info-card">
               <span className="cams-info-eyebrow">Community</span>
