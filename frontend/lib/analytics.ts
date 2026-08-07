@@ -33,10 +33,5 @@ export const SWG_PRODUCT_IDS: Record<string, string> = {
 // "Ad space" placeholder instead of a live ad — see components/AdSlot.tsx.
 export const AD_SLOTS = {
   header: process.env.NEXT_PUBLIC_AD_SLOT_HEADER,
-  inFeed: process.env.NEXT_PUBLIC_AD_SLOT_IN_FEED,
-  // The in-feed unit is AdSense's "Fluid" native-in-feed format, which
-  // (unlike header/in-article's plain "auto" display format) requires this
-  // extra layout key from the same ad unit — the two only work as a pair.
-  inFeedLayoutKey: process.env.NEXT_PUBLIC_AD_LAYOUT_KEY_IN_FEED,
   inArticle: process.env.NEXT_PUBLIC_AD_SLOT_IN_ARTICLE,
 };

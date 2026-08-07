@@ -17,6 +17,7 @@ import DodgersCrossPromo from "../../components/DodgersCrossPromo";
 import CamsArticleSidebar from "../../components/CamsArticleSidebar";
 import { CAMS_REVIEWS } from "../../lib/camsReviews";
 import { AD_SLOTS } from "../../lib/analytics";
+import { isAggregatedBrief } from "../../lib/adEligibility";
 import { extractFaq } from "../../lib/faq";
 import { extractFirstImageUrl } from "../../lib/ogImage";
 import { canonicalDomain, canonicalOrigin } from "../../lib/url";
@@ -245,7 +246,9 @@ export default async function ArticlePage({
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.body_md}</ReactMarkdown>
             </div>
 
-            <AdSlot slot={AD_SLOTS.inArticle} />
+            {/* Keep ads off the ~44-word aggregated briefs — see
+                lib/adEligibility.ts for why. */}
+            {!isAggregatedBrief(article.body_md) && <AdSlot slot={AD_SLOTS.inArticle} />}
 
             {(() => {
               const CrossPromo = CROSS_PROMO[brand.slug];
