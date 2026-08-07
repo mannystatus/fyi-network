@@ -32,6 +32,6 @@ jobs:
       - run: python -m app.seed
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      - run: python -m app.ingest_news --all-brands --per-topic 3
+      - run: python -m app.ingest_news --all-brands --per-topic 8
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
