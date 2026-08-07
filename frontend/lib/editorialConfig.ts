@@ -27,10 +27,12 @@ export type EditorialConfig = {
   signatureMark: "rainbow" | "fourbar" | null;
   navSecondaryLabel: string;
   navLastLabel: string;
-  // Explicit nav override — only fyiLakers/fyiDodgers need this (their nav
-  // is News/Rumors/Fantasy/Schedule/Injury Report, not the
-  // News/Rumors/Reviews/Compare?/Deals shape every other brand shares).
-  // Everyone else falls back to the auto-assembled nav in EditorialHeader.
+  // Explicit nav override — fyiLakers/fyiDodgers need this (their nav is
+  // News/Rumors/Fantasy/Schedule/Injury Report, not the
+  // News/Rumors/Reviews/Compare?/Deals shape most other brands share), as
+  // does fyiNetflix (dropping the auto-assembled "Reviews" item, which has
+  // nothing real to link to — see NETFLIX_EDITORIAL below). Everyone else
+  // falls back to the auto-assembled nav in EditorialHeader.
   navItems?: { label: string; href: string }[];
   // Appended after the auto-assembled (or explicit) nav above — currently
   // only fyiMac, promoting Apple TV+/Services out of the topic-pill row
@@ -300,6 +302,19 @@ export const NETFLIX_EDITORIAL: EditorialConfig = {
   signatureMark: null,
   navSecondaryLabel: "Renewal Tracker",
   navLastLabel: "New This Week",
+  // Explicit override: the auto-assembled default nav below inserts a
+  // "Reviews" item pointing at the Buyers Guide/Compare stand-in, but
+  // fyiNetflix has neither — that link was a dead end to "/". It already has
+  // real editorial review content via the "Staff Reviews" topic (seeded in
+  // backend/app/seed.py, manual-only per MANUAL_ONLY_TOPICS in
+  // ingest_news.py), which shows up as a pill in the topics row below. Drop
+  // the redundant/broken top-nav item and let that pill be the one Reviews
+  // entry point.
+  navItems: [
+    { label: "News", href: "/news" },
+    { label: "Renewal Tracker", href: "/#rumor-mill" },
+    { label: "New This Week", href: "/#news-grid" },
+  ],
   heroEyebrow: "Updated every morning",
   heroPre: "Every Netflix story worth ",
   heroPost: " attention, verified before it trends.",

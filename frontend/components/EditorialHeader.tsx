@@ -43,13 +43,14 @@ export default function EditorialHeader({
   const pathname = usePathname();
   const suffix = brand.name.replace("fyi", "");
 
-  // Neither brand has a real reviews content system (no Article is ever
-  // categorized "Reviews" — see ingest_news.py's category=topic, and no
-  // brand's configured topics list includes it), so both "Reviews" and
-  // navLastLabel ("Deals") point at the closest real stand-in: the Buyers
-  // Guide's buy/wait verdicts where one exists, else the Quick Compare
-  // table. Two differently-labeled nav items landing on the same page is
-  // intentional here, not a bug — there's nothing else real to point to.
+  // No Article is ever categorized "Reviews" (see ingest_news.py's
+  // category=topic), so for brands using this auto-assembled nav, "Reviews"
+  // and navLastLabel ("Deals") point at the closest real stand-in: the
+  // Buyers Guide's buy/wait verdicts where one exists, else the Quick
+  // Compare table. Two differently-labeled nav items landing on the same
+  // page is intentional here, not a bug — there's nothing else real to
+  // point to. (fyiNetflix opts out of this via its own navItems override —
+  // it has real review content via the "Staff Reviews" topic pill instead.)
   const buyGuideOrCompareHref = BUYERS_GUIDES[brand.slug] ? "/buyers-guide" : config.showCompare ? "/#compare" : "/";
 
   const navLinks = [
