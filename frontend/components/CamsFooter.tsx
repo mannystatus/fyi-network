@@ -26,6 +26,9 @@ export default function CamsFooter({ brand, brands }: { brand: Brand; brands: Br
           <div className="cams-footer-col">
             <h5>Community</h5>
             <a href="/#podcast">Podcast</a>
+            <a href="https://www.youtube.com/@fyicams" target="_blank" rel="noopener noreferrer">
+              YouTube
+            </a>
             <Link href="/advertise">Contact / Advertising</Link>
           </div>
           <div className="cams-footer-col">

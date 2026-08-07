@@ -259,7 +259,7 @@ export default async function ArticlePage({
         return camsReview ? (
           <div className="cams-article-grid">
             <div>{mainContent}</div>
-            <CamsArticleSidebar review={camsReview} brandSlug={brand.slug} />
+            <CamsArticleSidebar review={camsReview} />
           </div>
         ) : (
           mainContent

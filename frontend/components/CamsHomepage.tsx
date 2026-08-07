@@ -6,7 +6,6 @@ import CamsFooter from "./CamsFooter";
 import CamsNewsletterForm from "./CamsNewsletterForm";
 import { CAMS_REVIEWS } from "../lib/camsReviews";
 import { COMPARE_ROWS, VIDEO_REVIEWS, DEALS } from "../lib/camsHomeContent";
-import CamsScoreGate from "./CamsScoreGate";
 
 const LATEST_COUNT = 8;
 const RUMOR_COUNT = 5;
@@ -37,11 +36,7 @@ function MosaicCard({ article, size, brand }: { article: ArticleListItem; size: 
       {article.category && <span className="cams-mosaic-cat">{article.category}</span>}
       {review && (
         <span className="cams-mosaic-score">
-          {review.verdictLabel === "Coming Soon" ? (
-            "—"
-          ) : (
-            <CamsScoreGate brandSlug={brand.slug}>{review.score.toFixed(1)}</CamsScoreGate>
-          )}
+          {review.verdictLabel === "Coming Soon" ? "—" : review.score.toFixed(1)}
         </span>
       )}
       <span className="cams-mosaic-body">
@@ -380,11 +375,7 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
                       className="cams-score-badge"
                       style={{ background: r.verdictLabel === "Coming Soon" ? "#8C8779" : scoreColor(r.score) }}
                     >
-                      {r.verdictLabel === "Coming Soon" ? (
-                        "—"
-                      ) : (
-                        <CamsScoreGate brandSlug={brand.slug}>{r.score.toFixed(1)}</CamsScoreGate>
-                      )}
+                      {r.verdictLabel === "Coming Soon" ? "—" : r.score.toFixed(1)}
                     </span>
                     <span className="cams-score-title">{r.productName}</span>
                   </Link>
@@ -426,6 +417,14 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
           <div className="wrap">
             <div className="cams-section-head">
               <h2>Video reviews</h2>
+              <a
+                className="cams-video-youtube-link"
+                href="https://www.youtube.com/@fyicams"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Watch on YouTube →
+              </a>
             </div>
             <div className="cams-video-grid">
               {VIDEO_REVIEWS.map((v) => (

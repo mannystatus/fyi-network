@@ -7,7 +7,6 @@ import { getCurrentBrand } from "../../../lib/api";
 import { CAMS_REVIEWS } from "../../../lib/camsReviews";
 import { canonicalOrigin } from "../../../lib/url";
 import { buildKeywords } from "../../../lib/seo";
-import CamsScoreGate from "../../../components/CamsScoreGate";
 
 // Brands other than fyiCams 404 here, same pattern as /buyers-guide.
 export async function generateMetadata({
@@ -94,7 +93,7 @@ export default async function CamsReviewPage({
         worstRating: 1,
       },
     }),
-    author: { "@type": "Organization", name: brand.name },
+    author: { "@type": "Person", name: review.author },
     publisher: { "@type": "Organization", name: brand.name },
   };
 
@@ -132,6 +131,7 @@ export default async function CamsReviewPage({
     @media (max-width: 800px) { .cams-review-head { grid-template-columns: 1fr; } }
     .cams-review-eyebrow { font-family: var(--font-cams-mono), monospace; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #0B5E52; font-weight: 700; }
     .cams-review-head h1 { font-family: var(--font-cams-display), Newsreader, serif; font-weight: 700; font-size: clamp(1.9rem, 3vw, 2.6rem); line-height: 1.12; margin: 10px 0 16px; }
+    .cams-review-byline { font-family: var(--font-cams-mono), monospace; font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; color: #8C8779; margin-bottom: 14px; }
     .cams-review-priceline { font-size: 1.05rem; color: #4A463F; max-width: 52ch; margin-bottom: 24px; }
     .cams-review-scoreline { display: flex; gap: 28px; }
     .cams-review-scoreline-badge { width: 76px; height: 76px; border-radius: 50%; background: #0B5E52; color: #F7F5F1; display: flex; align-items: center; justify-content: center; font-family: var(--font-cams-mono), monospace; font-weight: 700; font-size: 1.6rem; flex-shrink: 0; }
@@ -198,11 +198,12 @@ export default async function CamsReviewPage({
         <div>
           <span className="cams-review-eyebrow">Review · {review.category}</span>
           <h1>{review.productName}</h1>
+          <p className="cams-review-byline">By {review.author}</p>
           <p className="cams-review-priceline">{review.priceLine}</p>
           <div className="cams-review-scoreline">
             <div>
               <div className="cams-review-scoreline-badge">
-                {isPending ? "—" : <CamsScoreGate brandSlug={brand.slug}>{review.score.toFixed(1)}</CamsScoreGate>}
+                {isPending ? "—" : review.score.toFixed(1)}
               </div>
               <div className="cams-review-scoreline-sub">Our score</div>
             </div>

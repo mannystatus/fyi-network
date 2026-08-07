@@ -13,6 +13,7 @@ export type CamsComparisonRow = { spec: string; product: string; rivalA: string;
 export type CamsReview = {
   slug: string;
   productName: string;
+  author: string;
   category: string;
   priceLine: string; // e.g. "Third-party 50mm f/1.8 · $349 · Full-frame & APS-C mounts"
   imageUrl?: string; // falls back to the striped placeholder box when unset
@@ -34,6 +35,7 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
   "sony-a7r-vi-review": {
     slug: "sony-a7r-vi-review",
     productName: "Sony A7R VI",
+    author: "Manny Contreras",
     category: "High-Resolution Mirrorless",
     priceLine: "66.8MP stacked full-frame · $4,500 · Sony E-mount",
     imageUrl: "https://a1134mfa97i8kxjl.public.blob.vercel-storage.com/uploads/e2576a0d12e14764b9c8b21601bd7822-T0syYee7aFViRsdKOKp48pYIX3UV8v.jpg",
@@ -82,6 +84,7 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
   "leica-sl3-p-review": {
     slug: "leica-sl3-p-review",
     productName: "Leica SL3-P",
+    author: "Manny Contreras",
     category: "Full-Frame Mirrorless",
     priceLine: "44MP full-frame · $6,690 body-only · L-mount",
     imageUrl: "https://a1134mfa97i8kxjl.public.blob.vercel-storage.com/uploads/864f529d30d647a5a2de4da030729ca7-O2cig6ZzbAuSd8AdJbqS1YHQoqk6li.jpg",
@@ -124,8 +127,9 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
   "leica-m-ev1-review": {
     slug: "leica-m-ev1-review",
     productName: "Leica M EV1",
+    author: "Manny Contreras",
     category: "Rangefinder-Style Mirrorless",
-    priceLine: "60.3MP full-frame · $8,995 body-only · Leica M-mount",
+    priceLine: "60.3MP full-frame · $9,290 body-only · Leica M-mount",
     imageUrl: "https://a1134mfa97i8kxjl.public.blob.vercel-storage.com/uploads/157cf8cdd9b5499ea9ae14a2c53d43c6-9e8yckFRmd8N9cOacWfbThUVRxdiMM.jpg",
     score: 9.6,
     verdictLabel: "Editor's Choice",
@@ -160,11 +164,11 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
       { label: "ISO range", value: "ISO 64–50,000" },
       { label: "Battery life", value: "~237 shots (EVF) / ~244 shots (LCD)" },
       { label: "Storage", value: "64GB internal + 1x UHS-II SD slot" },
-      { label: "Price", value: "$8,995 body-only" },
+      { label: "Price", value: "$9,290 body-only" },
     ],
     rivalNames: ["Leica M11-P", "Leica M11 Monochrom"],
     comparisonRows: [
-      { spec: "Price", product: "$8,995", rivalA: "$9,195", rivalB: "$9,195" },
+      { spec: "Price", product: "$9,290", rivalA: "$10,400", rivalB: "$11,050" },
       { spec: "Resolution", product: "60.3MP", rivalA: "60MP", rivalB: "60MP (monochrome)" },
       { spec: "Viewfinder", product: "Built-in EVF", rivalA: "Optical rangefinder", rivalB: "Optical rangefinder" },
       { spec: "Autofocus", product: "None", rivalA: "None", rivalB: "None" },
@@ -210,6 +214,7 @@ If the rangefinder itself was ever the point for you, the M11-P remains the bett
   "nikon-zr-review": {
     slug: "nikon-zr-review",
     productName: "Nikon ZR",
+    author: "Manny Contreras",
     category: "Compact Cinema Camera",
     priceLine: "25MP full-frame · $2,200 · Nikon Z-mount",
     imageUrl: "https://a1134mfa97i8kxjl.public.blob.vercel-storage.com/uploads/17a9f80c3c1d4638945554f2c884da42-ejBsLnZRDHQuTHLVKeyO3qsKAtkPhe.jpg",
@@ -258,6 +263,7 @@ If the rangefinder itself was ever the point for you, the M11-P remains the bett
   "dji-osmo-action-6-review": {
     slug: "dji-osmo-action-6-review",
     productName: "DJI Osmo Action 6",
+    author: "Manny Contreras",
     category: "Action Camera",
     priceLine: "1/1.1\" sensor · $369–$439 · Variable f/2.0–f/4.0 aperture",
     imageUrl: "https://a1134mfa97i8kxjl.public.blob.vercel-storage.com/uploads/7c3eb7bb16b14d6ebab8a1ac1a0dd311-Yjm72JFYw6kyrToNr1kfQMB7ZmqCcJ.jpg",
@@ -304,6 +310,7 @@ If the rangefinder itself was ever the point for you, the M11-P remains the bett
   "dji-osmo-pocket-4p-review": {
     slug: "dji-osmo-pocket-4p-review",
     productName: "DJI Osmo Pocket 4P",
+    author: "Manny Contreras",
     category: "Dual-Lens Pocket Gimbal Camera",
     priceLine: "1\" + 1/1.28\" dual-lens · €599 official (~$1,000 import) · 3x optical zoom",
     imageUrl: "https://a1134mfa97i8kxjl.public.blob.vercel-storage.com/uploads/94020c9fe72a4b9aa0740885f9286055-RwD10rDr6UT6B4dj2el2iOgKW7lyBe.jpg",
@@ -354,6 +361,7 @@ If the rangefinder itself was ever the point for you, the M11-P remains the bett
   "insta360-luna-ultra-review": {
     slug: "insta360-luna-ultra-review",
     productName: "Insta360 Luna Ultra",
+    author: "Manny Contreras",
     category: "Dual-Lens Pocket Gimbal Camera",
     priceLine: "1\" dual Leica-tuned lenses · $769.99 · 8K/30, 4K/120",
     imageUrl: "https://a1134mfa97i8kxjl.public.blob.vercel-storage.com/uploads/dd6eb9c5d1684343bd0dd822babf67ca-Pn1KIUFqEQ8wJH3bE9j1hRh1bwvSQ8.jpg",
