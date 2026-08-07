@@ -26,7 +26,7 @@ function EditorialMosaicCard({
   size: "large" | "small";
   brand: Brand;
 }) {
-  const source = article.is_featured ? brand.name : article.author;
+  const source = article.author || brand.name;
   return (
     <Link className={`editorial-mosaic-card ${size}`} href={`/${article.slug}`} prefetch={false}>
       {article.image_url ? (
@@ -104,7 +104,7 @@ export default async function EditorialHomepage({
                 {articles.length > 3 && (
                   <div className="editorial-story-list">
                     {articles.slice(3).map((a) => {
-                      const source = a.is_featured ? brand.name : a.author;
+                      const source = a.author || brand.name;
                       return (
                         <Link className="editorial-story-row" href={`/${a.slug}`} key={a.slug} prefetch={false}>
                           <div className="editorial-story-row-thumb">

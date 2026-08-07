@@ -205,12 +205,10 @@ export default async function ArticlePage({
       </p>
 
       {(() => {
-        // Hand-authored fyi content (is_featured) credits the brand itself
-        // here, same swap ArticleList already does for its cards —
-        // otherwise this would show the admin key's own label instead of
-        // the actual outlet. Aggregated RSS briefs keep crediting their
-        // real source (article.author).
-        const source = article.is_featured ? brand.name : article.author;
+        // Real byline first (staff name on hand-authored pieces, outlet
+        // name on aggregated RSS briefs) — only fall back to the brand
+        // itself when an older featured article has no author set.
+        const source = article.author || brand.name;
         const mainContent = (
           <>
             <div className="article-header">

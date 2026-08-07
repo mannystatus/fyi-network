@@ -17,7 +17,7 @@ export default function ArticleList({
 }: {
   articles: ArticleListItem[];
   emptyMessage: string;
-  /** When set, our own hand-published articles show this instead of their author on the card. */
+  /** Fallback byline for articles with no author set. */
   brandName?: string;
   /** Used for the /icons/{brandSlug}-512.png fallback thumbnail on articles with no image. */
   brandSlug: string;
@@ -29,7 +29,7 @@ export default function ArticleList({
   return (
     <div>
       {articles.map((a, i) => {
-        const byline = a.is_featured && brandName ? brandName : a.author;
+        const byline = a.author || brandName;
         return (
           <Fragment key={a.slug}>
             <Link

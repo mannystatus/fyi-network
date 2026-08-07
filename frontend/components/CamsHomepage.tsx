@@ -23,7 +23,7 @@ function scoreColor(score: number) {
 // pill carried, just restyled to sit on the image instead of below it.
 function MosaicCard({ article, size, brand }: { article: ArticleListItem; size: "large" | "small"; brand: Brand }) {
   const review = CAMS_REVIEWS[article.slug];
-  const source = article.is_featured ? brand.name : article.author;
+  const source = article.author || brand.name;
   return (
     <Link className={`cams-mosaic-card ${size}`} href={`/${article.slug}`} prefetch={false}>
       {article.image_url ? (
@@ -277,7 +277,7 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
                 {latest.length > 3 && (
                   <div className="cams-story-list">
                     {latest.slice(3).map((a) => {
-                      const source = a.is_featured ? brand.name : a.author;
+                      const source = a.author || brand.name;
                       return (
                         <Link className="cams-story-row" href={`/${a.slug}`} key={a.slug} prefetch={false}>
                           <div className="cams-story-row-thumb">
