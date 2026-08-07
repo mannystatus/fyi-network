@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { getCurrentBrand } from "../../../lib/api";
 import { CAMS_REVIEWS } from "../../../lib/camsReviews";
 import { canonicalOrigin } from "../../../lib/url";
@@ -149,6 +151,14 @@ export default async function CamsReviewPage({
     .cams-review-box.pros .cams-review-box-row span { color: #0B5E52; font-weight: 700; }
     .cams-review-box.cons .cams-review-box-row span { color: #C6841F; font-weight: 700; }
 
+    .cams-review-body { margin-bottom: 48px; }
+    .cams-review-body h2 { font-family: var(--font-cams-display), Newsreader, serif; font-weight: 700; font-size: 1.25rem; margin: 32px 0 14px; }
+    .cams-review-body h2:first-child { margin-top: 0; }
+    .cams-review-body p { font-size: .96rem; line-height: 1.7; color: #2A2721; margin-bottom: 18px; }
+    .cams-review-body p:last-child { margin-bottom: 0; }
+    .cams-review-body em { color: #6B6659; }
+    .cams-review-body strong { font-weight: 700; }
+
     .cams-review-section { margin-bottom: 48px; }
     .cams-review-section h2 { font-family: var(--font-cams-display), Newsreader, serif; font-weight: 700; font-size: 1.4rem; margin-bottom: 20px; }
     .cams-spec-row { display: grid; grid-template-columns: 280px 1fr; border-top: 1px solid #E0DCD3; padding: 13px 0; }
@@ -230,6 +240,12 @@ export default async function CamsReviewPage({
         </div>
       </div>
 
+      {review.bodyIntroMd && (
+        <div className="cams-review-body">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{review.bodyIntroMd}</ReactMarkdown>
+        </div>
+      )}
+
       <section className="cams-review-section">
         <h2>Full specifications</h2>
         {review.specsFull.map((row) => (
@@ -239,6 +255,12 @@ export default async function CamsReviewPage({
           </div>
         ))}
       </section>
+
+      {review.bodyMainMd && (
+        <div className="cams-review-body">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{review.bodyMainMd}</ReactMarkdown>
+        </div>
+      )}
 
       <section className="cams-review-section">
         <h2>How it compares</h2>

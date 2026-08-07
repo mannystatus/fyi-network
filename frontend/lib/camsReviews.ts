@@ -26,6 +26,8 @@ export type CamsReview = {
   rivalNames: [string, string];
   comparisonRows: CamsComparisonRow[];
   sponsoredPrice?: string;
+  bodyIntroMd?: string; // long-form markdown, rendered before "Full specifications"
+  bodyMainMd?: string; // long-form markdown, rendered after "Full specifications"
 };
 
 export const CAMS_REVIEWS: Record<string, CamsReview> = {
@@ -128,19 +130,19 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
     score: 9.6,
     verdictLabel: "Editor's Choice",
     verdict:
-      "The purest M Leica has ever built. Cutting video and autofocus wasn't a limitation — it was the point: every part of this camera, from the sensor to the new EVF, exists to serve the photograph and nothing else. For photographers tired of buying compromise, this is the clearest, most focused stills tool on the market.",
+      "The M EV1 is a well-executed, genuinely useful evolution of the M system for a specific kind of photographer — just not for everyone who's ever loved an M camera. We'll keep shooting with it and update this review as we spend more time with different lens pairings.",
     pros: [
-      "A pure photography tool — no video mode diluting the sensor, processor, or handling",
-      "First M with a built-in EVF (5.76m-dot, 0.76x, 100% coverage)",
-      "60.3MP sensor, selectable 60/36/18MP output",
-      "15 stops of dynamic range",
-      "Best EVF battery life of any mirrorless in its class",
+      "Excellent 60MP sensor tuned specifically for M-mount glass",
+      "EVF dramatically improves framing accuracy with wide and fast lenses",
+      "Lighter and more streamlined than the M11-P",
+      "64GB internal storage as a genuine backup, not a gimmick",
+      "Full backward compatibility with seven decades of M lenses",
     ],
     cons: [
-      "No autofocus, even with native M lenses",
-      "No in-body stabilization",
-      "~237–244 shot battery life; fixed, non-tilting screen",
-      "EVF frame rate drops and shows a 'jello' effect in low light",
+      "Loses the rangefinder experience that defines the M line for many longtime users",
+      "Modest CIPA battery ratings",
+      "Single SD slot",
+      "Premium pricing, even by Leica standards, for a sensor available elsewhere for considerably less",
     ],
     specsShort: [
       { label: "Sensor", value: "60.3MP full-frame BSI" },
@@ -157,6 +159,7 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
       { label: "Stabilization", value: "None" },
       { label: "ISO range", value: "ISO 64–50,000" },
       { label: "Battery life", value: "~237 shots (EVF) / ~244 shots (LCD)" },
+      { label: "Storage", value: "64GB internal + 1x UHS-II SD slot" },
       { label: "Price", value: "$8,995 body-only" },
     ],
     rivalNames: ["Leica M11-P", "Leica M11 Monochrom"],
@@ -167,6 +170,42 @@ export const CAMS_REVIEWS: Record<string, CamsReview> = {
       { spec: "Autofocus", product: "None", rivalA: "None", rivalB: "None" },
       { spec: "Video", product: "None", rivalA: "None", rivalB: "None" },
     ],
+    bodyIntroMd: `*Full disclosure: fyiCams.com owns this unit. We've tried to keep this review as clear-eyed as we would for any camera that walked through our door — this isn't a paid placement, and we're not pulling punches where they're warranted.*
+
+## First Impressions
+
+There's a specific feeling that comes with opening a Leica box for the first time — whether that's the M EV1 or any other M-series body, it's hard to say, since this is the camera that made the connection for us. The weight of it, the cold brass-and-aluminum feel in hand, the almost total absence of plastic creak that you'd expect from a $9,000+ camera — it all adds up to something that feels less like unboxing electronics and more like being handed a well-made tool. Whether that's Leica magic or just good industrial design is a fair question, but the effect is real either way.
+
+The M EV1 looks like an M11 at a glance, and that's intentional. But look closer and the differences start to matter: there's no rangefinder window on the front plate, no ISO dial on the top plate, and a new diamond-pattern leatherette wraps the body. It's 46 grams lighter than the M11-P, which doesn't sound like much until you've carried both for a full day of shooting.
+
+## What's Actually New Here
+
+For 70-plus years, the defining feature of an M camera was the optical rangefinder — a manual, coupled focusing mechanism that's as much a philosophy as a spec. The M EV1 replaces it entirely with a 5.76-million-dot electronic viewfinder, borrowed and adapted from the Q3 line, with 0.76x magnification and diopter adjustment from -4 to +2.
+
+That's the headline, and it's a genuinely significant departure for the M line. Whether it's the right one depends entirely on why you picked up an M camera in the first place.`,
+    bodyMainMd: `## Image Quality
+
+The sensor here is the same 60MP BSI CMOS unit found in the M11, with the same dual-layer UV/IR cut-off filter and offset microlenses tuned specifically for the way older M-mount glass projects light onto the sensor at steep angles. In practice, that means classic Leica lenses — Summicrons and Summiluxes from decades ago — render the way they're supposed to, without the smearing or heavy vignetting you sometimes get pairing vintage optics with a modern sensor not designed for them.
+
+Detail retention at full 60MP is excellent, and the option to shoot at 36MP or 18MP instead is genuinely useful rather than a checkbox feature — smaller files mean faster buffer clearing and easier storage, and there's no meaningful quality penalty for most use cases. Dynamic range holds up well in high-contrast scenes, and color rendering has that slightly warm, slightly restrained "Leica look" that's hard to quantify but easy to recognize once you've shot with one for a while.
+
+## Handling and the EVF Question
+
+This is where the M EV1 either wins you over or doesn't. Losing the rangefinder means losing the manual, mechanical focusing ritual that's core to the M experience for a lot of longtime users — the patch-and-frame coincidence, the tactile feel of nailing focus without any electronic assistance. In its place, you get focus peaking, magnified live view, and a viewfinder that shows you exactly what the sensor sees, including accurate framing for ultra-wide lenses (21mm, 24mm) that traditional M viewfinders have always struggled to represent well.
+
+For photographers who found the rangefinder more nostalgic than functional, this is a clear upgrade — faster, more accurate manual focus, especially with fast glass like the Summilux and Noctilux lines. For photographers who bought into the M system specifically for the rangefinder experience, the EV1 may feel like it's solving a problem they didn't have.
+
+The new custom function lever on the front plate is a nice touch — it handles focus aids and digital zoom without taking your eye off the viewfinder, and it's clearly borrowed from lessons learned on the Q and SL lines.
+
+## Battery Life and Storage
+
+CIPA ratings of 237–244 shots per charge are on the modest side, even by mirrorless standards, though CIPA numbers tend to undersell real-world performance for most shooters. The 64GB of built-in storage is a genuinely nice safety net — you can shoot without a card at all, or use internal memory alongside an SD card to split file types or add overflow capacity. A single UHS-II slot is a minor ding for anyone used to dual-card redundancy, though that's consistent with the rest of the M line.
+
+## Who This Camera Is For
+
+The M EV1 isn't trying to replace the M11-P, and it shouldn't be read as a rangefinder killer. It's a genuinely new branch of the M system — Leica's own materials frame it as a third category alongside the digital and analog rangefinder lines, and that framing feels accurate. If you shoot wide or with fast lenses and have ever fought a rangefinder to get exact framing, or if you're coming to the M system from a modern mirrorless background and want the lens ecosystem without the learning curve of zone/rangefinder focusing, this is the more usable camera.
+
+If the rangefinder itself was ever the point for you, the M11-P remains the better fit — and it's worth saying plainly that you can get comparable sensor performance from cameras costing a fraction of the price if the Leica name and rangefinder heritage aren't part of what you're paying for.`,
   },
   "nikon-zr-review": {
     slug: "nikon-zr-review",
