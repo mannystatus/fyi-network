@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Brand } from "../lib/api";
 import CamsLogoMark from "./CamsLogoMark";
 import NetworkFooterLinks from "./NetworkFooterLinks";
+import SendTipForm from "./SendTipForm";
 
 // Shared between the bare homepage and every other fyiCams page, same
 // reasoning as CamsHeader.
@@ -29,7 +30,8 @@ export default function CamsFooter({ brand, brands }: { brand: Brand; brands: Br
             <a href="https://www.youtube.com/@fyicams" target="_blank" rel="noopener noreferrer">
               YouTube
             </a>
-            <Link href="/advertise">Contact / Advertising</Link>
+            <SendTipForm brandName={brandName} />
+            <Link href="/advertise">Advertise</Link>
           </div>
           <div className="cams-footer-col">
             <h5>Network</h5>

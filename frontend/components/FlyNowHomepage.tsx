@@ -6,6 +6,7 @@ import { canonicalOrigin } from "../lib/url";
 import FlyNowNavbar from "./FlyNowNavbar";
 import FlyNowTitlebar from "./FlyNowTitlebar";
 import NetworkFooterLinks from "./NetworkFooterLinks";
+import SendTipForm from "./SendTipForm";
 
 const BLOG_POST_COUNT = 6;
 
@@ -355,7 +356,8 @@ export default async function FlyNowHomepage({ brands, currentSlug }: { brands: 
               <h4>Legal</h4>
               <a href="/privacy">Privacy</a>
               <a href="/terms">Terms</a>
-              <Link href="/advertise">Contact / Advertising</Link>
+              <SendTipForm brandName={brand?.name ?? "fyiFlyNow"} />
+              <Link href="/advertise">Advertise</Link>
             </div>
           </div>
         </div>

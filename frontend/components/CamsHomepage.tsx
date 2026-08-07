@@ -4,6 +4,7 @@ import { getArticles } from "../lib/api";
 import CamsHeader from "./CamsHeader";
 import CamsFooter from "./CamsFooter";
 import CamsNewsletterForm from "./CamsNewsletterForm";
+import SendTipForm from "./SendTipForm";
 import { CAMS_REVIEWS } from "../lib/camsReviews";
 import { COMPARE_ROWS, DEALS } from "../lib/camsHomeContent";
 
@@ -461,10 +462,10 @@ export default async function CamsHomepage({ brand, brands }: { brand: Brand; br
               <a href="#newsletter">Get notified →</a>
             </div>
             <div className="cams-info-card">
-              <span className="cams-info-eyebrow">Community</span>
-              <h4>Shooters trading notes in the forum</h4>
-              <p>Gear troubleshooting, sample galleries, and honest secondhand-market advice.</p>
-              <a href="mailto:tips@fyicams.com?subject=Contact">Join the discussion →</a>
+              <span className="cams-info-eyebrow">Got a tip?</span>
+              <h4>Gear leaks, corrections, or a review we should be chasing</h4>
+              <p>Spotted something we got wrong, or have a story worth looking into? We read every message.</p>
+              <SendTipForm brandName={brand.name} />
             </div>
           </div>
         </section>
