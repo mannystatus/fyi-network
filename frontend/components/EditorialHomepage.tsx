@@ -10,6 +10,7 @@ import EditorialNewsletterForm from "./EditorialNewsletterForm";
 const NEWS_GRID_COUNT = 8;
 const TOP_STORIES_COUNT = 3;
 const RUMORS_COUNT = 5;
+const ORIGINALS_COUNT = 6;
 
 // PetaPixel-style mosaic card — same pattern as fyiCams' MosaicCard, reused
 // here for the 6 brands sharing this template. Headline sits directly over
@@ -54,12 +55,20 @@ export default async function EditorialHomepage({
   brands: Brand[];
   config: EditorialConfig;
 }) {
-  const [articles, rumors] = await Promise.all([
+  const [articles, rumors, originalsFetched] = await Promise.all([
     getArticles(undefined, NEWS_GRID_COUNT),
     config.rumorsTopic ? getArticles(config.rumorsTopic, RUMORS_COUNT) : Promise.resolve([]),
+    getArticles(undefined, ORIGINALS_COUNT, undefined, undefined, true),
   ]);
   const topStories = articles.slice(0, TOP_STORIES_COUNT);
   const isSports = config.variant === "sports";
+  // Hand-written pieces (is_featured) are otherwise sorted into the news
+  // grid purely by publish date alongside auto-ingested wire content, so a
+  // high-volume ingest day can push them off-page fast — this section
+  // guarantees them a visible slot regardless. Dropping anything already
+  // shown above avoids showing the same card twice on a slow news day.
+  const shownSlugs = new Set(articles.map((a) => a.slug));
+  const originals = originalsFetched.filter((a) => !shownSlugs.has(a.slug));
 
   return (
     // theme-<brand> matches the same class the shared #site.theme-<brand>
@@ -141,6 +150,20 @@ export default async function EditorialHomepage({
             )}
           </div>
         </section>
+
+        {originals.length > 0 && (
+          <section className="editorial-section editorial-band" id="from-us">
+            <div className="wrap">
+              <div className="editorial-section-head editorial-rule-inner">
+                <h2>From {brand.name}</h2>
+                <Link href="/from-us" prefetch={false}>
+                  View all →
+                </Link>
+              </div>
+              <ArticleList articles={originals} brandName={brand.name} brandSlug={brand.slug} emptyMessage="" />
+            </div>
+          </section>
+        )}
 
         <section className="editorial-hero">
           <div className="wrap editorial-hero-grid">

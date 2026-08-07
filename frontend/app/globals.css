@@ -873,6 +873,22 @@ main {
   color: var(--comment);
 }
 
+/* Inline images pasted/dropped into an article body via /admin (see
+   insertEditBodyImage) render as plain markdown <img> tags with no size of
+   their own — a straight-from-camera upload can be a few thousand pixels
+   tall, which without a cap renders at full native size and blows out the
+   article column. Match the same capped-height, cropped-to-fit treatment
+   .article-banner already uses for header images, so any uploaded image
+   fits the site's design regardless of its original dimensions. */
+.article-body img {
+  display: block;
+  width: 100%;
+  max-height: 420px;
+  margin: 4px 0 18px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
 .article-body table {
   width: 100%;
   margin: 0 0 18px;
