@@ -74,6 +74,14 @@ export async function generateMetadata({
     description,
     keywords: buildKeywords(brand, [article.category]),
     alternates: { canonical: `/${slug}` },
+    // Aggregated briefs are a verbatim copy of the source's own meta
+    // description (see lib/adEligibility.ts) — Google was already declining
+    // to index these as duplicate content ("Crawled - currently not
+    // indexed"). noindex says so explicitly instead of leaving Google to
+    // keep re-evaluating hundreds of near-identical pages, which can drag
+    // down how much of the rest of the site gets indexed. follow: true so
+    // internal nav/topic links on the page still get crawled.
+    ...(isAggregatedBrief(article.body_md) ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: article.title,
       description,
